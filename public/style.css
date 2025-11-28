@@ -113,9 +113,9 @@ header {
     opacity: 0.8;
 }
 
-/* Login Button */
-.login-btn {
-    padding: 0.6rem 1.5rem;
+/* Search Button */
+.search-btn {
+    padding: 0.6rem 1.2rem;
     border: 2px solid rgba(255,255,255,0.6);
     border-radius: 20px;
     background: transparent;
@@ -125,29 +125,30 @@ header {
     cursor: pointer;
     transition: all 0.3s ease;
     flex-shrink: 0;
+    white-space: nowrap;
 }
 
-.login-btn:hover {
+.search-btn:hover {
     background: rgba(255,255,255,0.15);
     border-color: rgba(255,255,255,0.9);
 }
 
-.login-btn:active {
+.search-btn:active {
     transform: scale(0.98);
     background: rgba(255,255,255,0.2);
 }
 
 @media (max-width: 768px) {
-    .login-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.85rem;
+    .search-btn {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
     }
 }
 
 @media (max-width: 480px) {
-    .login-btn {
-        padding: 0.5rem 0.8rem;
-        font-size: 0.8rem;
+    .search-btn {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.75rem;
     }
 }
 

@@ -22,9 +22,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Login button handler
-    document.getElementById('loginBtn').addEventListener('click', () => {
-        alert('Login feature coming soon!');
+    // Search button handler
+    document.getElementById('searchBtn').addEventListener('click', () => {
+        const query = prompt('Search projects by name, subject, or college:');
+        if (query && query.trim() !== '') {
+            const searchTerm = query.toLowerCase().trim();
+            const filtered = allProjects.filter(project => 
+                project.topic.toLowerCase().includes(searchTerm) ||
+                project.subject.toLowerCase().includes(searchTerm) ||
+                project.college.toLowerCase().includes(searchTerm)
+            );
+            displayProjects(filtered);
+        }
     });
 
     fetchProjects();
