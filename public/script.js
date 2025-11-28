@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchProjects();
     document.getElementById('cartIcon').addEventListener('click', openCart);
+    document.getElementById('searchInput').addEventListener('input', handleSearch);
     loadCartFromStorage();
     updateCartCount();
 });
@@ -37,6 +38,24 @@ async function fetchProjects() {
     } catch (error) {
         console.error('Error fetching projects:', error);
     }
+}
+
+// Handle search
+function handleSearch() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    
+    if (searchTerm === '') {
+        displayProjects(allProjects);
+        return;
+    }
+    
+    const filtered = allProjects.filter(project => 
+        project.topic.toLowerCase().includes(searchTerm) ||
+        project.subject.toLowerCase().includes(searchTerm) ||
+        project.college.toLowerCase().includes(searchTerm)
+    );
+    
+    displayProjects(filtered);
 }
 
 // Display projects
