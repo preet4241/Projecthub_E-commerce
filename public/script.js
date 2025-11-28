@@ -156,7 +156,7 @@ function displayProjects(projects) {
     grid.innerHTML = '';
     
     if (projects.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">No projects found.</p>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem;"><p style="font-size: 1.1rem; color: #6b7280;">📭 No projects available yet.</p><p style="color: #9ca3af; font-size: 0.9rem;">Check back later or add projects from the admin panel.</p></div>';
         return;
     }
     
@@ -592,29 +592,47 @@ function addNewProject(event) {
     const price = parseInt(document.getElementById('newProjectPrice').value);
     
     const newProject = {
-        id: Math.max(...allProjects.map(p => p.id), 0) + 1,
         subject,
         college,
         topic,
         price,
-        file: topic.toLowerCase().replace(/\s+/g, '-') + '.zip',
-        downloads: 0
+        file: topic.toLowerCase().replace(/\s+/g, '-') + '.zip'
     };
     
-    allProjects.push(newProject);
-    
-    // Clear form
-    event.target.reset();
-    
-    alert(`✓ Project "${topic}" added successfully!`);
-    updateAdminDashboard();
-    switchAdminTab('projects');
+    // Send to server
+    fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProject)
+    })
+    .then(res => res.json())
+    .then(project => {
+        allProjects.push(project);
+        event.target.reset();
+        alert(`✓ Project "${topic}" added successfully!`);
+        updateAdminDashboard();
+        switchAdminTab('projects');
+        fetchProjects();
+    })
+    .catch(error => {
+        console.error('Error adding project:', error);
+        alert('Failed to add project. Ensure database is connected.');
+    });
 }
 
 function deleteProject(projectId) {
     if (confirm('Are you sure you want to delete this project?')) {
-        allProjects = allProjects.filter(p => p.id !== projectId);
-        updateAdminDashboard();
+        fetch(`/api/projects/${projectId}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(() => {
+            allProjects = allProjects.filter(p => p.id !== projectId);
+            updateAdminDashboard();
+            fetchProjects();
+        })
+        .catch(error => {
+            console.error('Error deleting project:', error);
+            alert('Failed to delete project.');
+        });
     }
 }
 

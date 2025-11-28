@@ -7,6 +7,7 @@ requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 
 [nix]
 channel = "stable-24_11"
+packages = ["postgresql"]
 
 [deployment]
 run = ["node", "index.js"]
@@ -47,6 +48,10 @@ externalPort = 80
 [[ports]]
 localPort = 41507
 externalPort = 3000
+
+[[ports]]
+localPort = 43255
+externalPort = 3002
 
 [[ports]]
 localPort = 43401
