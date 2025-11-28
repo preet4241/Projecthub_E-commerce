@@ -156,6 +156,7 @@ function displayProjects(projects) {
     grid.innerHTML = '';
     
     if (projects.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem;"><p style="font-size: 1.1rem; color: #6b7280;">No projects available.</p></div>';
         return;
     }
     
