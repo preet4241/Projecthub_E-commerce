@@ -477,18 +477,18 @@ function showAdminDashboard() {
 }
 
 function updateAdminDashboard() {
-    // Calculate advanced stats
-    const totalRevenue = allProjects.reduce((sum, p) => sum + p.price, 0);
-    const avgPrice = allProjects.length > 0 ? Math.round(totalRevenue / allProjects.length) : 0;
+    // Calculate meaningful stats
+    const totalValue = allProjects.reduce((sum, p) => sum + p.price, 0);
+    const subjects = [...new Set(allProjects.map(p => p.subject))];
+    const colleges = [...new Set(allProjects.map(p => p.college))];
     
     // Update stats
     document.getElementById('totalProjects').textContent = allProjects.length;
-    document.getElementById('totalRevenue').textContent = '₹' + totalRevenue;
-    document.getElementById('totalCartItems').textContent = cart.length;
-    document.getElementById('avgPrice').textContent = '₹' + avgPrice;
+    document.getElementById('totalSubjects').textContent = subjects.length;
+    document.getElementById('totalColleges').textContent = colleges.length;
+    document.getElementById('totalValue').textContent = '₹' + totalValue.toLocaleString();
     
     // Populate filter dropdown
-    const subjects = [...new Set(allProjects.map(p => p.subject))];
     const filterSelect = document.getElementById('adminFilterSubject');
     filterSelect.innerHTML = '<option value="">All Subjects</option>';
     subjects.forEach(subject => {
@@ -496,6 +496,17 @@ function updateAdminDashboard() {
         option.value = subject;
         option.textContent = subject;
         filterSelect.appendChild(option);
+    });
+    
+    // Populate filter dropdown in main dropdown too
+    const mainDropdown = document.getElementById('dropdownMenu');
+    mainDropdown.innerHTML = '<button class="dropdown-item" onclick="filterBySubject(\'All\')">All Subjects</button>';
+    subjects.forEach(subject => {
+        const btn = document.createElement('button');
+        btn.className = 'dropdown-item';
+        btn.onclick = () => filterBySubject(subject);
+        btn.textContent = subject;
+        mainDropdown.appendChild(btn);
     });
     
     // Display all projects
@@ -507,15 +518,29 @@ function updateAdminDashboard() {
 
 function displayAdminProjects(projects) {
     const projectsList = document.getElementById('adminProjectsList');
+    
+    if (projects.length === 0) {
+        projectsList.innerHTML = '<div class="admin-empty-state"><p>No projects found</p></div>';
+        return;
+    }
+    
     projectsList.innerHTML = projects.map((project, index) => `
         <div class="admin-project-card">
+            <div class="admin-project-number">#${project.id}</div>
             <div class="admin-project-info">
                 <h4>${project.topic}</h4>
-                <p><strong>Subject:</strong> ${project.subject} | <strong>College:</strong> ${project.college}</p>
-                <p><strong>Price:</strong> ₹${project.price} | <strong>Downloads:</strong> ${project.downloads}</p>
+                <div class="admin-project-meta">
+                    <span class="meta-badge subject-badge">${project.subject}</span>
+                    <span class="meta-badge college-badge">${project.college}</span>
+                </div>
+                <div class="admin-project-details">
+                    <span class="detail-item">💰 ₹${project.price}</span>
+                    <span class="detail-item">📥 ${project.downloads || 0} downloads</span>
+                    <span class="detail-item">📅 ${project.created_at ? new Date(project.created_at).toLocaleDateString() : 'N/A'}</span>
+                </div>
             </div>
             <div class="admin-project-actions">
-                <button class="admin-btn-delete" onclick="deleteProject(${project.id})">Delete</button>
+                <button class="admin-btn-delete" onclick="deleteProject(${project.id})" title="Delete Project">🗑️ Delete</button>
             </div>
         </div>
     `).join('');
