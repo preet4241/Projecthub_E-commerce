@@ -1,5 +1,6 @@
 let cart = [];
 let allProjects = [];
+let favorites = [];
 
 // Mobile menu toggle
 document.addEventListener('DOMContentLoaded', () => {
@@ -74,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchProjects();
     document.getElementById('cartIcon').addEventListener('click', openCart);
     loadCartFromStorage();
+    loadFavoritesFromStorage();
     updateCartCount();
 });
 
@@ -180,7 +182,47 @@ function viewProductDetail(project) {
     document.getElementById('detailSubject').textContent = project.subject;
     document.getElementById('detailCollege').textContent = project.college;
     document.getElementById('detailPrice').textContent = `₹${project.price}`;
+    updateFavoriteButton();
     window.scrollTo(0, 0);
+}
+
+// Favorites functionality
+function toggleFavorite() {
+    if (!currentProductDetail) return;
+    
+    const productId = currentProductDetail.id;
+    const index = favorites.indexOf(productId);
+    
+    if (index > -1) {
+        // Remove from favorites
+        favorites.splice(index, 1);
+    } else {
+        // Add to favorites
+        favorites.push(productId);
+    }
+    
+    saveFavoritesToStorage();
+    updateFavoriteButton();
+}
+
+function updateFavoriteButton() {
+    if (!currentProductDetail) return;
+    
+    const btn = document.getElementById('favoriteBtn');
+    if (favorites.includes(currentProductDetail.id)) {
+        btn.textContent = '❤️';
+    } else {
+        btn.textContent = '🤍';
+    }
+}
+
+function saveFavoritesToStorage() {
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+function loadFavoritesFromStorage() {
+    const saved = localStorage.getItem('favorites');
+    favorites = saved ? JSON.parse(saved) : [];
 }
 
 function backToProjects() {
