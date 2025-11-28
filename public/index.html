@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShopHub - Your Online Store</title>
+    <title>ProjectHub - Academic Project Marketplace</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,15 +11,15 @@
     <header>
         <nav class="navbar">
             <div class="nav-container">
-                <div class="logo">🛒 ShopHub</div>
+                <div class="logo">📚 ProjectHub</div>
                 <ul class="nav-menu">
                     <li><a href="#" class="nav-link">Home</a></li>
-                    <li><a href="#products" class="nav-link">Shop</a></li>
+                    <li><a href="#projects" class="nav-link">Projects</a></li>
                     <li><a href="#" class="nav-link">About</a></li>
                     <li><a href="#" class="nav-link">Contact</a></li>
                 </ul>
                 <div class="cart-icon">
-                    <span>🛍️</span>
+                    <span>🛒</span>
                     <span class="cart-count" id="cartCount">0</span>
                 </div>
             </div>
@@ -29,10 +29,10 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Welcome to ShopHub</h1>
-            <p>Discover amazing products at unbeatable prices</p>
-            <button class="btn btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})">
-                Shop Now
+            <h1>ProjectHub</h1>
+            <p>Premium Academic Projects for All Engineering Branches</p>
+            <button class="btn btn-primary" onclick="document.getElementById('projects').scrollIntoView({behavior: 'smooth'})">
+                Browse Projects
             </button>
         </div>
     </section>
@@ -40,19 +40,28 @@
     <!-- Filter Section -->
     <section class="filters">
         <div class="filter-container">
-            <button class="filter-btn active" onclick="filterProducts('All')">All Products</button>
-            <button class="filter-btn" onclick="filterProducts('Electronics')">Electronics</button>
-            <button class="filter-btn" onclick="filterProducts('Accessories')">Accessories</button>
-            <button class="filter-btn" onclick="filterProducts('Office')">Office</button>
+            <div class="filter-group">
+                <label>Subject:</label>
+                <select id="subjectFilter" onchange="applyFilters()">
+                    <option value="">All Subjects</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>College:</label>
+                <select id="collegeFilter" onchange="applyFilters()">
+                    <option value="">All Colleges</option>
+                </select>
+            </div>
+            <button class="btn btn-secondary" onclick="resetFilters()">Reset Filters</button>
         </div>
     </section>
 
-    <!-- Products Section -->
-    <section class="products" id="products">
+    <!-- Projects Section -->
+    <section class="projects" id="projects">
         <div class="container">
-            <h2>Featured Products</h2>
-            <div class="products-grid" id="productsGrid">
-                <!-- Products will be loaded here by JavaScript -->
+            <h2>Available Projects</h2>
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Projects will be loaded here -->
             </div>
         </div>
     </section>
@@ -61,7 +70,7 @@
     <div class="cart-modal" id="cartModal">
         <div class="modal-content">
             <span class="close" onclick="closeCart()">&times;</span>
-            <h2>Shopping Cart</h2>
+            <h2>Your Cart</h2>
             <div class="cart-items" id="cartItems">
                 <p class="empty-cart">Your cart is empty</p>
             </div>
@@ -69,14 +78,14 @@
                 <div class="cart-total">
                     <strong>Total: ₹<span id="cartTotal">0</span></strong>
                 </div>
-                <button class="btn btn-primary" onclick="checkout()">Checkout</button>
+                <button class="btn btn-primary" onclick="checkout()">Proceed to Checkout</button>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 ShopHub. All rights reserved. | Made with ❤️</p>
+        <p>&copy; 2025 ProjectHub. All rights reserved. | Academic Projects for Students</p>
     </footer>
 
     <script src="script.js"></script>

@@ -1,72 +1,150 @@
 let cart = [];
-let allProducts = [];
-let currentFilter = 'All';
+let allProjects = [];
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    fetchProducts();
+    fetchProjects();
+    fetchFilterOptions();
     document.querySelector('.cart-icon').addEventListener('click', openCart);
     loadCartFromStorage();
     updateCartCount();
 });
 
-// Fetch products from API
-async function fetchProducts() {
+// Fetch projects
+async function fetchProjects() {
     try {
-        const response = await fetch('/api/products');
-        allProducts = await response.json();
-        displayProducts(allProducts);
+        const response = await fetch('/api/projects');
+        allProjects = await response.json();
+        displayProjects(allProjects);
     } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching projects:', error);
     }
 }
 
-// Display products
-function displayProducts(products) {
-    const grid = document.getElementById('productsGrid');
+// Fetch filter options
+async function fetchFilterOptions() {
+    try {
+        const [subjResponse, collegeResponse] = await Promise.all([
+            fetch('/api/subjects'),
+            fetch('/api/colleges')
+        ]);
+        
+        const subjects = await subjResponse.json();
+        const colleges = await collegeResponse.json();
+        
+        populateFilters(subjects, colleges);
+    } catch (error) {
+        console.error('Error fetching filter options:', error);
+    }
+}
+
+// Populate filter dropdowns
+function populateFilters(subjects, colleges) {
+    const subjectFilter = document.getElementById('subjectFilter');
+    const collegeFilter = document.getElementById('collegeFilter');
+    
+    subjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.value = subject;
+        option.textContent = subject;
+        subjectFilter.appendChild(option);
+    });
+    
+    colleges.forEach(college => {
+        const option = document.createElement('option');
+        option.value = college;
+        option.textContent = college;
+        collegeFilter.appendChild(option);
+    });
+}
+
+// Display projects
+function displayProjects(projects) {
+    const grid = document.getElementById('projectsGrid');
     grid.innerHTML = '';
     
-    products.forEach(product => {
+    if (projects.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">No projects found matching your filters.</p>';
+        return;
+    }
+    
+    projects.forEach(project => {
         const card = document.createElement('div');
-        card.className = 'product-card';
+        card.className = 'project-card';
         card.innerHTML = `
-            <div class="product-image">${product.image}</div>
-            <div class="product-content">
-                <div class="product-name">${product.name}</div>
-                <div class="product-category">${product.category}</div>
-                <div class="product-price">₹${product.price}</div>
-                <button class="product-button" onclick="addToCart(${product.id}, '${product.name}', ${product.price})">
-                    Add to Cart
-                </button>
+            <div class="project-header">
+                <div class="project-meta">
+                    <div class="project-subject">${project.subject}</div>
+                    <div class="project-college">${project.college}</div>
+                </div>
+                <div class="project-badge">📥 ${project.downloads}</div>
+            </div>
+            <div class="project-content">
+                <div class="project-topic">${project.topic}</div>
+                <div class="project-info">
+                    <span>📄 ${project.file}</span>
+                    <span>⭐ ${Math.floor(Math.random() * 2) + 4}.0</span>
+                </div>
+                <div class="project-price">₹${project.price}</div>
+                <div class="project-buttons">
+                    <button class="project-btn-add" onclick="addToCart(${project.id}, '${project.topic}', ${project.price}, '${project.college}')">
+                        Add to Cart
+                    </button>
+                    <button class="project-btn-preview" onclick="previewProject('${project.topic}')">
+                        Preview
+                    </button>
+                </div>
             </div>
         `;
         grid.appendChild(card);
     });
 }
 
-// Filter products
-function filterProducts(category) {
-    currentFilter = category;
+// Apply filters
+function applyFilters() {
+    const subjectFilter = document.getElementById('subjectFilter').value;
+    const collegeFilter = document.getElementById('collegeFilter').value;
     
-    // Update active button
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
+    let filtered = allProjects;
     
-    // Filter and display
-    const filtered = category === 'All' 
-        ? allProducts 
-        : allProducts.filter(p => p.category === category);
-    displayProducts(filtered);
+    if (subjectFilter) {
+        filtered = filtered.filter(p => p.subject === subjectFilter);
+    }
+    
+    if (collegeFilter) {
+        filtered = filtered.filter(p => p.college === collegeFilter);
+    }
+    
+    displayProjects(filtered);
+}
+
+// Reset filters
+function resetFilters() {
+    document.getElementById('subjectFilter').value = '';
+    document.getElementById('collegeFilter').value = '';
+    displayProjects(allProjects);
+}
+
+// Preview project
+function previewProject(topic) {
+    alert(`Preview: ${topic}\n\nThis will show project details, specifications, and requirements.`);
 }
 
 // Add to cart
-function addToCart(id, name, price) {
-    cart.push({ id, name, price, quantity: 1 });
-    saveCartToStorage();
-    updateCartCount();
-    alert(`${name} added to cart!`);
+function addToCart(id, topic, price, college) {
+    const project = allProjects.find(p => p.id === id);
+    if (project) {
+        cart.push({
+            id,
+            topic,
+            price,
+            college,
+            subject: project.subject
+        });
+        saveCartToStorage();
+        updateCartCount();
+        alert(`✓ ${topic} added to cart!`);
+    }
 }
 
 // Update cart count
@@ -74,14 +152,14 @@ function updateCartCount() {
     document.getElementById('cartCount').textContent = cart.length;
 }
 
-// Open cart modal
+// Open cart
 function openCart() {
     const modal = document.getElementById('cartModal');
     modal.style.display = 'block';
     displayCart();
 }
 
-// Close cart modal
+// Close cart
 function closeCart() {
     document.getElementById('cartModal').style.display = 'none';
 }
@@ -99,10 +177,11 @@ function displayCart() {
     cartItems.innerHTML = cart.map((item, index) => `
         <div class="cart-item">
             <div class="cart-item-info">
-                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-name">${item.topic}</div>
+                <div class="cart-item-college">${item.college} • ${item.subject}</div>
                 <div class="cart-item-price">₹${item.price}</div>
             </div>
-            <button class="cart-item-remove" onclick="removeFromCart(${index})">Remove</button>
+            <button class="cart-item-remove" onclick="removeFromCart(${index})">✕</button>
         </div>
     `).join('');
     
@@ -126,7 +205,10 @@ function checkout() {
     }
     
     const total = cart.reduce((sum, item) => sum + item.price, 0);
-    alert(`Order placed! Total: ₹${total}\n\nThank you for shopping at ShopHub!`);
+    const projects = cart.map(item => item.topic).join('\n  - ');
+    
+    alert(`✓ Order Confirmed!\n\nProjects:\n  - ${projects}\n\nTotal: ₹${total}\n\nProject files will be sent to your email shortly!`);
+    
     cart = [];
     saveCartToStorage();
     updateCartCount();
@@ -141,7 +223,11 @@ function saveCartToStorage() {
 function loadCartFromStorage() {
     const saved = localStorage.getItem('cart');
     if (saved) {
-        cart = JSON.parse(saved);
+        try {
+            cart = JSON.parse(saved);
+        } catch (e) {
+            cart = [];
+        }
     }
 }
 
