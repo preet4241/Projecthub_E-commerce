@@ -139,22 +139,90 @@
 
     <!-- Full Page Cart Section -->
     <section class="cart-page" id="cartPage" style="display: none;">
+        <!-- Header -->
         <div class="cart-page-header">
-            <button class="cart-back-btn" onclick="backToProjects()">← Back</button>
-            <h2>Your Cart</h2>
-            <div style="width: 40px;"></div>
+            <button class="cart-close-btn" onclick="backToProjects()">✕</button>
+            <button class="cart-heart-btn">🤍</button>
         </div>
+
+        <!-- Content -->
         <div class="cart-page-content">
+            <!-- Bag Title -->
+            <div class="cart-bag-title">
+                <h2>Bag (<span id="cartItemCount">0</span> product<span id="cartProductS">s</span>)</h2>
+            </div>
+
+            <!-- Delivery Address -->
+            <div class="cart-delivery-section">
+                <div class="delivery-icon">📍</div>
+                <div class="delivery-info">
+                    <div class="delivery-text">Deliver to You</div>
+                    <div class="delivery-location">Address Available</div>
+                </div>
+                <a href="#" class="delivery-change">Change</a>
+            </div>
+
+            <!-- Cart Items -->
             <div class="cart-page-items" id="cartPageItems">
                 <p class="empty-cart">Your cart is empty</p>
             </div>
-            <div class="cart-page-footer">
-                <div class="cart-total-box">
-                    <div class="cart-total-label">Total Amount:</div>
-                    <div class="cart-total-price">₹<span id="cartPageTotal">0</span></div>
-                </div>
-                <button class="cart-checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+
+            <!-- Benefits Bar -->
+            <div class="cart-benefits">
+                <span>✓ Assured Quality</span>
+                <span>| Easy Returns</span>
+                <span>| Free Shipping</span>
             </div>
+
+            <!-- Coupon Section -->
+            <div class="cart-coupon-section">
+                <div class="coupon-icon">🎟️</div>
+                <div class="coupon-text">Apply coupon</div>
+                <a href="#" class="coupon-select">Select</a>
+            </div>
+
+            <!-- Order Details -->
+            <div class="cart-order-details">
+                <h3>Order Details</h3>
+                <div class="detail-row">
+                    <span>Bag Total</span>
+                    <span>₹<span id="cartBagTotal">0</span></span>
+                </div>
+                <div class="detail-row">
+                    <span>Coupon savings</span>
+                    <a href="#">Apply coupon</a>
+                </div>
+                <div class="detail-row">
+                    <span>Convenience Fee <span class="detail-info-icon">?</span></span>
+                    <span class="detail-fee">
+                        <a href="#">Launch offer</a> ₹49.00
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span>Delivery Fee</span>
+                    <span class="detail-free">Free</span>
+                </div>
+                <div class="detail-row">
+                    <span>Platform Fee</span>
+                    <span class="detail-free">Free</span>
+                </div>
+                <div class="detail-row total">
+                    <span>Amount Payable</span>
+                    <span>₹<span id="cartAmountPayable">0</span></span>
+                </div>
+            </div>
+
+            <!-- Spacer for fixed footer -->
+            <div style="height: 150px;"></div>
+        </div>
+
+        <!-- Fixed Footer -->
+        <div class="cart-page-footer">
+            <div class="footer-amount">
+                ₹<span id="cartPageTotal">0</span>
+                <a href="#">View details</a>
+            </div>
+            <button class="cart-checkout-btn" onclick="checkout()">Proceed to Payment</button>
         </div>
     </section>
 

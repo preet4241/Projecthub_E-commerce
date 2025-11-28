@@ -317,24 +317,41 @@ function displayFullCart() {
     if (cart.length === 0) {
         cartPageItems.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
         document.getElementById('cartPageTotal').textContent = '0';
+        document.getElementById('cartItemCount').textContent = '0';
+        document.getElementById('cartBagTotal').textContent = '0';
+        document.getElementById('cartAmountPayable').textContent = '0';
         return;
     }
     
     cartPageItems.innerHTML = cart.map((item, index) => `
         <div class="cart-page-item">
+            <div class="cart-page-item-image"></div>
             <div class="cart-page-item-info">
                 <div class="cart-page-item-name">${item.topic}</div>
                 <div class="cart-page-item-college">${item.college} • ${item.subject}</div>
+                <div class="cart-page-item-options">
+                    <span>Subject ▼</span>
+                    <span>Qty 1 ▼</span>
+                </div>
+                <div class="cart-page-item-returns">3 day Return and Exchange</div>
             </div>
             <div class="cart-page-item-right">
                 <div class="cart-page-item-price">₹${item.price}</div>
-                <button class="cart-page-item-remove" onclick="removeFromCart(${index})">✕</button>
+                <div class="cart-page-item-delivery">Delivery by 05th Jan</div>
+                <button class="cart-page-item-remove" onclick="removeFromCart(${index})">Remove</button>
             </div>
         </div>
     `).join('');
     
     const total = cart.reduce((sum, item) => sum + item.price, 0);
+    const itemCount = cart.length;
+    const itemS = itemCount === 1 ? '' : 's';
+    
+    document.getElementById('cartItemCount').textContent = itemCount;
+    document.getElementById('cartProductS').textContent = itemS;
     document.getElementById('cartPageTotal').textContent = total;
+    document.getElementById('cartBagTotal').textContent = total;
+    document.getElementById('cartAmountPayable').textContent = total;
 }
 
 // View full cart page
