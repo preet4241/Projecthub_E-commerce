@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ProjectHub - Academic Project Marketplace</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Header/Navigation -->
@@ -250,22 +251,61 @@
         </div>
         <div class="admin-content">
             <!-- Advanced Stats -->
-            <div class="admin-stats">
-                <div class="stat-card">
-                    <h3>📊 Total Projects</h3>
-                    <p id="totalProjects">0</p>
+            <div class="admin-stats-container">
+                <!-- Main Box 1: Users & Revenue -->
+                <div class="stat-main-box">
+                    <div class="stat-box-grid">
+                        <div class="stat-mini">
+                            <h4>Registered Users</h4>
+                            <p id="registeredUsers">0</p>
+                        </div>
+                        <div class="stat-mini">
+                            <h4>Visitors</h4>
+                            <p id="visitors">0</p>
+                        </div>
+                        <div class="stat-mini">
+                            <h4>Today Sales</h4>
+                            <p id="todaySales">0</p>
+                        </div>
+                        <div class="stat-mini">
+                            <h4>Total Revenue</h4>
+                            <p id="totalRevenue">₹0</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <h3>📚 Subjects</h3>
-                    <p id="totalSubjects">0</p>
+
+                <!-- Main Box 2: Projects & Classification -->
+                <div class="stat-main-box">
+                    <div class="stat-box-grid">
+                        <div class="stat-mini">
+                            <h4>Total Projects</h4>
+                            <p id="totalProjects">0</p>
+                        </div>
+                        <div class="stat-mini">
+                            <h4>Types of Projects</h4>
+                            <p id="projectTypes">0</p>
+                        </div>
+                        <div class="stat-mini">
+                            <h4>Subjects</h4>
+                            <p id="totalSubjects">0</p>
+                        </div>
+                        <div class="stat-mini">
+                            <h4>Colleges</h4>
+                            <p id="totalColleges">0</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <h3>🏛️ Colleges</h3>
-                    <p id="totalColleges">0</p>
+            </div>
+
+            <!-- Bar Graphs -->
+            <div class="admin-graphs">
+                <div class="graph-box">
+                    <h3>Projects by Subject</h3>
+                    <canvas id="subjectChart"></canvas>
                 </div>
-                <div class="stat-card">
-                    <h3>💰 Total Value</h3>
-                    <p id="totalValue">₹0</p>
+                <div class="graph-box">
+                    <h3>Projects by College</h3>
+                    <canvas id="collegeChart"></canvas>
                 </div>
             </div>
 

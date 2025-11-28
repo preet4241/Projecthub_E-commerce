@@ -478,15 +478,21 @@ function showAdminDashboard() {
 
 function updateAdminDashboard() {
     // Calculate meaningful stats
-    const totalValue = allProjects.reduce((sum, p) => sum + p.price, 0);
+    const totalRevenue = allProjects.reduce((sum, p) => sum + p.price, 0);
     const subjects = [...new Set(allProjects.map(p => p.subject))];
     const colleges = [...new Set(allProjects.map(p => p.college))];
     
-    // Update stats
+    // Update stats - Box 1: Users & Revenue
+    document.getElementById('registeredUsers').textContent = '1,234';
+    document.getElementById('visitors').textContent = '5,678';
+    document.getElementById('todaySales').textContent = '42';
+    document.getElementById('totalRevenue').textContent = '₹' + totalRevenue.toLocaleString();
+    
+    // Update stats - Box 2: Projects & Classification
     document.getElementById('totalProjects').textContent = allProjects.length;
+    document.getElementById('projectTypes').textContent = allProjects.length;
     document.getElementById('totalSubjects').textContent = subjects.length;
     document.getElementById('totalColleges').textContent = colleges.length;
-    document.getElementById('totalValue').textContent = '₹' + totalValue.toLocaleString();
     
     // Populate filter dropdown
     const filterSelect = document.getElementById('adminFilterSubject');
@@ -512,8 +518,85 @@ function updateAdminDashboard() {
     // Display all projects
     displayAdminProjects(allProjects);
     
+    // Create bar graphs
+    createProjectCharts(subjects, colleges);
+    
     // Update analytics
     updateAnalytics();
+}
+
+function createProjectCharts(subjects, colleges) {
+    // Projects by Subject
+    const subjectCounts = {};
+    subjects.forEach(s => {
+        subjectCounts[s] = allProjects.filter(p => p.subject === s).length;
+    });
+    
+    const subjectCtx = document.getElementById('subjectChart');
+    if (subjectCtx && window.subjectChartInstance) {
+        window.subjectChartInstance.destroy();
+    }
+    
+    if (subjectCtx) {
+        window.subjectChartInstance = new Chart(subjectCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(subjectCounts),
+                datasets: [{
+                    label: 'Projects',
+                    data: Object.values(subjectCounts),
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    }
+    
+    // Projects by College
+    const collegeCounts = {};
+    colleges.forEach(c => {
+        collegeCounts[c] = allProjects.filter(p => p.college === c).length;
+    });
+    
+    const collegeCtx = document.getElementById('collegeChart');
+    if (collegeCtx && window.collegeChartInstance) {
+        window.collegeChartInstance.destroy();
+    }
+    
+    if (collegeCtx) {
+        window.collegeChartInstance = new Chart(collegeCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(collegeCounts),
+                datasets: [{
+                    label: 'Projects',
+                    data: Object.values(collegeCounts),
+                    backgroundColor: '#8b5cf6',
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    }
 }
 
 function displayAdminProjects(projects) {
