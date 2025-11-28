@@ -42,9 +42,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Close search when pressing Escape
+    // Close search when pressing Escape or clicking outside
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
+            closeSearch();
+        }
+    });
+
+    // Close search when clicking outside the search container
+    document.getElementById('searchModal').addEventListener('click', (e) => {
+        if (e.target.id === 'searchModal') {
             closeSearch();
         }
     });
