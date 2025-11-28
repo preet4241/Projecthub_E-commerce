@@ -267,7 +267,7 @@ header {
     align-items: center;
     margin-bottom: 2rem;
     gap: 1rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .projects h2 {
