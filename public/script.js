@@ -227,6 +227,7 @@ function loadFavoritesFromStorage() {
 
 function backToProjects() {
     document.getElementById('productDetail').style.display = 'none';
+    document.getElementById('cartPage').style.display = 'none';
     document.getElementById('projects').style.display = 'block';
     currentProductDetail = null;
 }
@@ -234,7 +235,7 @@ function backToProjects() {
 function addToCartFromDetail() {
     if (currentProductDetail) {
         addToCart(currentProductDetail.id, currentProductDetail.topic, currentProductDetail.price, currentProductDetail.college);
-        backToProjects();
+        viewFullCart();
     }
 }
 
@@ -275,7 +276,7 @@ function closeCart() {
     document.body.style.overflow = 'auto';
 }
 
-// Display cart items
+// Display cart items in modal
 function displayCart() {
     const cartItems = document.getElementById('cartItems');
     
@@ -298,6 +299,42 @@ function displayCart() {
     
     const total = cart.reduce((sum, item) => sum + item.price, 0);
     document.getElementById('cartTotal').textContent = total;
+}
+
+// Display cart items in full page
+function displayFullCart() {
+    const cartPageItems = document.getElementById('cartPageItems');
+    
+    if (cart.length === 0) {
+        cartPageItems.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
+        document.getElementById('cartPageTotal').textContent = '0';
+        return;
+    }
+    
+    cartPageItems.innerHTML = cart.map((item, index) => `
+        <div class="cart-page-item">
+            <div class="cart-page-item-info">
+                <div class="cart-page-item-name">${item.topic}</div>
+                <div class="cart-page-item-college">${item.college} • ${item.subject}</div>
+            </div>
+            <div class="cart-page-item-right">
+                <div class="cart-page-item-price">₹${item.price}</div>
+                <button class="cart-page-item-remove" onclick="removeFromCart(${index})">✕</button>
+            </div>
+        </div>
+    `).join('');
+    
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    document.getElementById('cartPageTotal').textContent = total;
+}
+
+// View full cart page
+function viewFullCart() {
+    document.getElementById('productDetail').style.display = 'none';
+    document.getElementById('projects').style.display = 'none';
+    document.getElementById('cartPage').style.display = 'flex';
+    displayFullCart();
+    window.scrollTo(0, 0);
 }
 
 // Remove from cart

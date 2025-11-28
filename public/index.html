@@ -137,7 +137,28 @@
         </div>
     </div>
 
-    <!-- Cart Modal -->
+    <!-- Full Page Cart Section -->
+    <section class="cart-page" id="cartPage" style="display: none;">
+        <div class="cart-page-header">
+            <button class="cart-back-btn" onclick="backToProjects()">← Back</button>
+            <h2>Your Cart</h2>
+            <div style="width: 40px;"></div>
+        </div>
+        <div class="cart-page-content">
+            <div class="cart-page-items" id="cartPageItems">
+                <p class="empty-cart">Your cart is empty</p>
+            </div>
+            <div class="cart-page-footer">
+                <div class="cart-total-box">
+                    <div class="cart-total-label">Total Amount:</div>
+                    <div class="cart-total-price">₹<span id="cartPageTotal">0</span></div>
+                </div>
+                <button class="cart-checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Modal (Small Popup) -->
     <div class="cart-modal" id="cartModal">
         <div class="modal-content">
             <span class="close" onclick="closeCart()">&times;</span>
@@ -149,7 +170,7 @@
                 <div class="cart-total">
                     <strong>Total: ₹<span id="cartTotal">0</span></strong>
                 </div>
-                <button class="btn btn-primary" onclick="checkout()">Checkout</button>
+                <button class="btn btn-primary" onclick="closeCart(); viewFullCart();">View Full Cart</button>
             </div>
         </div>
     </div>
