@@ -22,23 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Search focus/blur handlers
-    const searchInput = document.getElementById('searchInput');
-    const searchContainer = document.querySelector('.search-container');
-    
-    searchInput.addEventListener('focus', () => {
-        searchContainer.classList.add('search-active');
-        navMenu.classList.add('search-active');
-    });
-    
-    searchInput.addEventListener('blur', () => {
-        searchContainer.classList.remove('search-active');
-        navMenu.classList.remove('search-active');
+    // Login button handler
+    document.getElementById('loginBtn').addEventListener('click', () => {
+        alert('Login feature coming soon!');
     });
 
     fetchProjects();
     document.getElementById('cartIcon').addEventListener('click', openCart);
-    document.getElementById('searchInput').addEventListener('input', handleSearch);
     loadCartFromStorage();
     updateCartCount();
 });
@@ -52,24 +42,6 @@ async function fetchProjects() {
     } catch (error) {
         console.error('Error fetching projects:', error);
     }
-}
-
-// Handle search
-function handleSearch() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-    
-    if (searchTerm === '') {
-        displayProjects(allProjects);
-        return;
-    }
-    
-    const filtered = allProjects.filter(project => 
-        project.topic.toLowerCase().includes(searchTerm) ||
-        project.subject.toLowerCase().includes(searchTerm) ||
-        project.college.toLowerCase().includes(searchTerm)
-    );
-    
-    displayProjects(filtered);
 }
 
 // Display projects
