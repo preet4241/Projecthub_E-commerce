@@ -43,7 +43,7 @@ header {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     gap: 1rem;
 }
@@ -64,6 +64,7 @@ header {
     cursor: pointer;
     padding: 0.5rem;
     gap: 5px;
+    order: -1;
 }
 
 .hamburger span {
@@ -112,6 +113,7 @@ header {
     padding: 0.5rem;
     white-space: nowrap;
     flex-shrink: 0;
+    margin-left: auto;
 }
 
 .cart-icon:active {
@@ -197,45 +199,6 @@ header {
 .btn-secondary:hover {
     background: var(--primary);
     color: white;
-}
-
-/* Filters */
-.filters {
-    padding: 1.5rem 1rem;
-    background: var(--light);
-}
-
-.filter-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.filter-group {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    min-height: 44px;
-}
-
-.filter-group label {
-    font-weight: bold;
-    font-size: 0.95rem;
-}
-
-.filter-group select {
-    padding: 0.6rem 0.8rem;
-    border: 2px solid var(--border);
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    min-height: 44px;
-    background: white;
-    touch-action: manipulation;
 }
 
 /* Projects Section */
@@ -614,25 +577,6 @@ footer {
         margin-bottom: 1.5rem;
     }
 
-    .filter-container {
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-
-    .filter-group {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .filter-group select {
-        flex: 1;
-        min-width: 150px;
-    }
-
-    .btn.btn-secondary {
-        width: 100%;
-    }
-
     .projects {
         padding: 1.5rem 0.8rem;
     }
@@ -697,25 +641,6 @@ footer {
         padding: 0.65rem 1.2rem;
         font-size: 0.9rem;
         min-height: 40px;
-    }
-
-    .filters {
-        padding: 1rem 0.8rem;
-    }
-
-    .filter-group {
-        flex-direction: column;
-        align-items: flex-start;
-        width: 100%;
-    }
-
-    .filter-group label {
-        font-size: 0.85rem;
-    }
-
-    .filter-group select {
-        width: 100%;
-        font-size: 0.95rem;
     }
 
     .projects h2 {

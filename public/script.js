@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     fetchProjects();
-    fetchFilterOptions();
     document.getElementById('cartIcon').addEventListener('click', openCart);
     loadCartFromStorage();
     updateCartCount();
@@ -40,50 +39,13 @@ async function fetchProjects() {
     }
 }
 
-// Fetch filter options
-async function fetchFilterOptions() {
-    try {
-        const [subjResponse, collegeResponse] = await Promise.all([
-            fetch('/api/subjects'),
-            fetch('/api/colleges')
-        ]);
-        
-        const subjects = await subjResponse.json();
-        const colleges = await collegeResponse.json();
-        
-        populateFilters(subjects, colleges);
-    } catch (error) {
-        console.error('Error fetching filter options:', error);
-    }
-}
-
-// Populate filter dropdowns
-function populateFilters(subjects, colleges) {
-    const subjectFilter = document.getElementById('subjectFilter');
-    const collegeFilter = document.getElementById('collegeFilter');
-    
-    subjects.forEach(subject => {
-        const option = document.createElement('option');
-        option.value = subject;
-        option.textContent = subject;
-        subjectFilter.appendChild(option);
-    });
-    
-    colleges.forEach(college => {
-        const option = document.createElement('option');
-        option.value = college;
-        option.textContent = college;
-        collegeFilter.appendChild(option);
-    });
-}
-
 // Display projects
 function displayProjects(projects) {
     const grid = document.getElementById('projectsGrid');
     grid.innerHTML = '';
     
     if (projects.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">No projects found matching your filters.</p>';
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">No projects found.</p>';
         return;
     }
     
@@ -117,31 +79,6 @@ function displayProjects(projects) {
         `;
         grid.appendChild(card);
     });
-}
-
-// Apply filters
-function applyFilters() {
-    const subjectFilter = document.getElementById('subjectFilter').value;
-    const collegeFilter = document.getElementById('collegeFilter').value;
-    
-    let filtered = allProjects;
-    
-    if (subjectFilter) {
-        filtered = filtered.filter(p => p.subject === subjectFilter);
-    }
-    
-    if (collegeFilter) {
-        filtered = filtered.filter(p => p.college === collegeFilter);
-    }
-    
-    displayProjects(filtered);
-}
-
-// Reset filters
-function resetFilters() {
-    document.getElementById('subjectFilter').value = '';
-    document.getElementById('collegeFilter').value = '';
-    displayProjects(allProjects);
 }
 
 // Preview project

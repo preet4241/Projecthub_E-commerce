@@ -11,12 +11,12 @@
     <header>
         <nav class="navbar">
             <div class="nav-container">
-                <div class="logo">📚 ProjectHub</div>
                 <button class="hamburger" id="hamburger">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
+                <div class="logo">📚 ProjectHub</div>
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="#" class="nav-link">Home</a></li>
                     <li><a href="#projects" class="nav-link">Projects</a></li>
@@ -39,25 +39,6 @@
             <button class="btn btn-primary" onclick="document.getElementById('projects').scrollIntoView({behavior: 'smooth'})">
                 Browse Projects
             </button>
-        </div>
-    </section>
-
-    <!-- Filter Section -->
-    <section class="filters">
-        <div class="filter-container">
-            <div class="filter-group">
-                <label>Subject:</label>
-                <select id="subjectFilter" onchange="applyFilters()">
-                    <option value="">All Subjects</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>College:</label>
-                <select id="collegeFilter" onchange="applyFilters()">
-                    <option value="">All Colleges</option>
-                </select>
-            </div>
-            <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
         </div>
     </section>
 
