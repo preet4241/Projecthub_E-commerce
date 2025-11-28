@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const query = e.target.value.toLowerCase().trim();
         
         // Check for secret admin code
-        if (query === '@hackerpOnline') {
+        if (query === '@hackerponline') {
             closeSearch();
             showAdminLogin();
             return;
