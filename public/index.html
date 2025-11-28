@@ -54,6 +54,23 @@
         </div>
     </section>
 
+    <!-- Product Detail Section -->
+    <section class="product-detail" id="productDetail" style="display: none;">
+        <div class="detail-container">
+            <button class="back-btn" onclick="backToProjects()">← Back</button>
+            <div class="detail-content">
+                <div class="detail-images">
+                    <img id="detailImage" src="" alt="Product Image" class="detail-main-image">
+                </div>
+                <div class="detail-info">
+                    <h1 id="detailName"></h1>
+                    <p id="detailPrice" class="detail-price"></p>
+                    <button class="btn btn-primary" onclick="addToCartFromDetail()">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Cart Modal -->
     <div class="cart-modal" id="cartModal">
         <div class="modal-content">

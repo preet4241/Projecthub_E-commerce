@@ -94,38 +94,45 @@ function displayProjects(projects) {
     projects.forEach(project => {
         const card = document.createElement('div');
         card.className = 'project-card';
+        card.style.cursor = 'pointer';
         card.innerHTML = `
-            <div class="project-header">
-                <div class="project-meta">
-                    <div class="project-subject">${project.subject}</div>
-                    <div class="project-college">${project.college}</div>
-                </div>
-                <div class="project-badge">📥 ${project.downloads}</div>
+            <div class="card-image">
+                <img src="https://via.placeholder.com/300x200?text=${encodeURIComponent(project.topic)}" alt="${project.topic}">
             </div>
-            <div class="project-content">
-                <div class="project-topic">${project.topic}</div>
-                <div class="project-info">
-                    <span>📄 ${project.file}</span>
-                    <span>⭐ ${Math.floor(Math.random() * 2) + 4}.0</span>
-                </div>
-                <div class="project-price">₹${project.price}</div>
-                <div class="project-buttons">
-                    <button class="project-btn-add" onclick="addToCart(${project.id}, '${project.topic}', ${project.price}, '${project.college}')">
-                        Add to Cart
-                    </button>
-                    <button class="project-btn-preview" onclick="previewProject('${project.topic}')">
-                        Preview
-                    </button>
-                </div>
+            <div class="card-info">
+                <h3 class="card-title">${project.topic}</h3>
+                <p class="card-price">₹${project.price}</p>
             </div>
         `;
+        card.addEventListener('click', () => viewProductDetail(project));
         grid.appendChild(card);
     });
 }
 
-// Preview project
-function previewProject(topic) {
-    alert(`Preview: ${topic}\n\nThis will show project details, specifications, and requirements.`);
+// View product detail
+let currentProductDetail = null;
+
+function viewProductDetail(project) {
+    currentProductDetail = project;
+    document.getElementById('projects').style.display = 'none';
+    document.getElementById('productDetail').style.display = 'block';
+    document.getElementById('detailImage').src = `https://via.placeholder.com/500x400?text=${encodeURIComponent(project.topic)}`;
+    document.getElementById('detailName').textContent = project.topic;
+    document.getElementById('detailPrice').textContent = `₹${project.price}`;
+    window.scrollTo(0, 0);
+}
+
+function backToProjects() {
+    document.getElementById('productDetail').style.display = 'none';
+    document.getElementById('projects').style.display = 'block';
+    currentProductDetail = null;
+}
+
+function addToCartFromDetail() {
+    if (currentProductDetail) {
+        addToCart(currentProductDetail.id, currentProductDetail.topic, currentProductDetail.price, currentProductDetail.college);
+        backToProjects();
+    }
 }
 
 // Add to cart
