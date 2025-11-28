@@ -253,17 +253,35 @@ header {
 .projects {
     padding: 2rem 1rem;
     min-height: 100vh;
+    width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+@media (max-width: 768px) {
+    .projects {
+        padding: 1rem 0.5rem !important;
+        width: 100% !important;
+    }
 }
 
 @media (max-width: 600px) {
     .projects {
-        padding: 1.5rem 0.5rem;
+        padding: 1rem 0.25rem !important;
+        width: 100% !important;
     }
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 100% !important;
+    }
 }
 
 /* Projects Header */
@@ -394,28 +412,42 @@ header {
 }
 
 .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1.5rem !important;
 }
 
 @media (max-width: 1200px) {
     .projects-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr) !important;
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
     .projects-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.75rem !important;
     }
 }
 
 @media (max-width: 600px) {
     .projects-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
     }
 }
 
@@ -426,8 +458,16 @@ header {
     overflow: hidden;
     transition: all 0.3s;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+@media (max-width: 1024px) {
+    .project-card {
+        max-width: 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
 }
 
 .project-card:active {
