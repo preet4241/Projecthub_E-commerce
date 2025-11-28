@@ -253,19 +253,73 @@
             <button class="admin-logout-btn" onclick="adminLogout()">Logout</button>
         </div>
         <div class="admin-content">
+            <!-- Advanced Stats -->
             <div class="admin-stats">
                 <div class="stat-card">
-                    <h3>Total Projects</h3>
+                    <h3>📊 Total Projects</h3>
                     <p id="totalProjects">0</p>
                 </div>
                 <div class="stat-card">
-                    <h3>Total Cart Items</h3>
+                    <h3>💰 Total Revenue</h3>
+                    <p id="totalRevenue">₹0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>🛒 Cart Items</h3>
                     <p id="totalCartItems">0</p>
                 </div>
+                <div class="stat-card">
+                    <h3>📈 Avg Price</h3>
+                    <p id="avgPrice">₹0</p>
+                </div>
             </div>
-            <div class="admin-projects">
-                <h3>All Projects</h3>
-                <div id="adminProjectsList"></div>
+
+            <!-- Tab Navigation -->
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="switchAdminTab('projects')">📋 Projects</button>
+                <button class="tab-btn" onclick="switchAdminTab('analytics')">📊 Analytics</button>
+                <button class="tab-btn" onclick="switchAdminTab('addproject')">➕ Add Project</button>
+            </div>
+
+            <!-- Projects Tab -->
+            <div id="projectsTab" class="admin-tab active">
+                <div class="admin-projects-header">
+                    <input type="text" id="adminSearchInput" placeholder="Search projects..." class="admin-search" onkeyup="adminSearchProjects()">
+                    <select id="adminFilterSubject" class="admin-filter" onchange="adminFilterProjects()">
+                        <option value="">All Subjects</option>
+                    </select>
+                </div>
+                <div id="adminProjectsList" class="admin-projects-list"></div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analyticsTab" class="admin-tab" style="display: none;">
+                <div class="analytics-container">
+                    <div class="analytics-section">
+                        <h3>Projects by Subject</h3>
+                        <div id="projectsBySubject"></div>
+                    </div>
+                    <div class="analytics-section">
+                        <h3>Projects by College</h3>
+                        <div id="projectsByCollege"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Project Tab -->
+            <div id="addprojectTab" class="admin-tab" style="display: none;">
+                <form class="add-project-form" onsubmit="addNewProject(event)">
+                    <input type="text" placeholder="Project Topic" id="newProjectTopic" required>
+                    <select id="newProjectSubject" required>
+                        <option value="">Select Subject</option>
+                        <option value="CSE">CSE</option>
+                        <option value="ECE">ECE</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Civil">Civil</option>
+                    </select>
+                    <input type="text" placeholder="College Name" id="newProjectCollege" required>
+                    <input type="number" placeholder="Price (₹)" id="newProjectPrice" required min="1">
+                    <button type="submit" class="add-project-btn">Add Project</button>
+                </form>
             </div>
         </div>
     </section>

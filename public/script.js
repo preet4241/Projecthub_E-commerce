@@ -477,23 +477,145 @@ function showAdminDashboard() {
 }
 
 function updateAdminDashboard() {
+    // Calculate advanced stats
+    const totalRevenue = allProjects.reduce((sum, p) => sum + p.price, 0);
+    const avgPrice = allProjects.length > 0 ? Math.round(totalRevenue / allProjects.length) : 0;
+    
     // Update stats
     document.getElementById('totalProjects').textContent = allProjects.length;
+    document.getElementById('totalRevenue').textContent = '₹' + totalRevenue;
     document.getElementById('totalCartItems').textContent = cart.length;
+    document.getElementById('avgPrice').textContent = '₹' + avgPrice;
+    
+    // Populate filter dropdown
+    const subjects = [...new Set(allProjects.map(p => p.subject))];
+    const filterSelect = document.getElementById('adminFilterSubject');
+    filterSelect.innerHTML = '<option value="">All Subjects</option>';
+    subjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.value = subject;
+        option.textContent = subject;
+        filterSelect.appendChild(option);
+    });
     
     // Display all projects
+    displayAdminProjects(allProjects);
+    
+    // Update analytics
+    updateAnalytics();
+}
+
+function displayAdminProjects(projects) {
     const projectsList = document.getElementById('adminProjectsList');
-    projectsList.innerHTML = allProjects.map(project => `
-        <div style="padding: 1rem; border: 1px solid var(--border); border-radius: 5px;">
-            <h4 style="margin: 0 0 0.5rem 0;">${project.topic}</h4>
-            <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #6b7280;">
-                <strong>Subject:</strong> ${project.subject} | <strong>College:</strong> ${project.college}
-            </p>
-            <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #6b7280;">
-                <strong>Price:</strong> ₹${project.price} | <strong>Downloads:</strong> ${project.downloads}
-            </p>
+    projectsList.innerHTML = projects.map((project, index) => `
+        <div class="admin-project-card">
+            <div class="admin-project-info">
+                <h4>${project.topic}</h4>
+                <p><strong>Subject:</strong> ${project.subject} | <strong>College:</strong> ${project.college}</p>
+                <p><strong>Price:</strong> ₹${project.price} | <strong>Downloads:</strong> ${project.downloads}</p>
+            </div>
+            <div class="admin-project-actions">
+                <button class="admin-btn-delete" onclick="deleteProject(${project.id})">Delete</button>
+            </div>
         </div>
     `).join('');
+}
+
+function switchAdminTab(tabName) {
+    // Hide all tabs
+    document.getElementById('projectsTab').classList.remove('active');
+    document.getElementById('analyticsTab').classList.remove('active');
+    document.getElementById('addprojectTab').classList.remove('active');
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected tab
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+}
+
+function adminSearchProjects() {
+    const query = document.getElementById('adminSearchInput').value.toLowerCase();
+    const filtered = allProjects.filter(p =>
+        p.topic.toLowerCase().includes(query) ||
+        p.subject.toLowerCase().includes(query) ||
+        p.college.toLowerCase().includes(query)
+    );
+    displayAdminProjects(filtered);
+}
+
+function adminFilterProjects() {
+    const subject = document.getElementById('adminFilterSubject').value;
+    const filtered = subject === '' ? allProjects : allProjects.filter(p => p.subject === subject);
+    displayAdminProjects(filtered);
+}
+
+function updateAnalytics() {
+    // Projects by subject
+    const bySubject = {};
+    allProjects.forEach(p => {
+        bySubject[p.subject] = (bySubject[p.subject] || 0) + 1;
+    });
+    
+    const subjectHTML = Object.entries(bySubject).map(([subject, count]) => `
+        <div class="analytics-item">
+            <span class="analytics-label">${subject}</span>
+            <span class="analytics-value">${count}</span>
+        </div>
+    `).join('');
+    document.getElementById('projectsBySubject').innerHTML = subjectHTML;
+    
+    // Projects by college
+    const byCollege = {};
+    allProjects.forEach(p => {
+        byCollege[p.college] = (byCollege[p.college] || 0) + 1;
+    });
+    
+    const collegeHTML = Object.entries(byCollege).map(([college, count]) => `
+        <div class="analytics-item">
+            <span class="analytics-label">${college}</span>
+            <span class="analytics-value">${count}</span>
+        </div>
+    `).join('');
+    document.getElementById('projectsByCollege').innerHTML = collegeHTML;
+}
+
+function addNewProject(event) {
+    event.preventDefault();
+    
+    const topic = document.getElementById('newProjectTopic').value;
+    const subject = document.getElementById('newProjectSubject').value;
+    const college = document.getElementById('newProjectCollege').value;
+    const price = parseInt(document.getElementById('newProjectPrice').value);
+    
+    const newProject = {
+        id: Math.max(...allProjects.map(p => p.id), 0) + 1,
+        subject,
+        college,
+        topic,
+        price,
+        file: topic.toLowerCase().replace(/\s+/g, '-') + '.zip',
+        downloads: 0
+    };
+    
+    allProjects.push(newProject);
+    
+    // Clear form
+    event.target.reset();
+    
+    alert(`✓ Project "${topic}" added successfully!`);
+    updateAdminDashboard();
+    switchAdminTab('projects');
+}
+
+function deleteProject(projectId) {
+    if (confirm('Are you sure you want to delete this project?')) {
+        allProjects = allProjects.filter(p => p.id !== projectId);
+        updateAdminDashboard();
+    }
 }
 
 // Close admin login modal on outside click
