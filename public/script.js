@@ -22,6 +22,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Search focus/blur handlers
+    const searchInput = document.getElementById('searchInput');
+    const searchContainer = document.querySelector('.search-container');
+    
+    searchInput.addEventListener('focus', () => {
+        searchContainer.classList.add('search-active');
+        navMenu.classList.add('search-active');
+    });
+    
+    searchInput.addEventListener('blur', () => {
+        searchContainer.classList.remove('search-active');
+        navMenu.classList.remove('search-active');
+    });
+
     fetchProjects();
     document.getElementById('cartIcon').addEventListener('click', openCart);
     document.getElementById('searchInput').addEventListener('input', handleSearch);
