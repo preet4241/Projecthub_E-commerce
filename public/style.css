@@ -2003,3 +2003,260 @@ footer {
 .add-project-btn:hover {
     background: #2563eb;
 }
+
+/* Mobile Responsive Fixes */
+@media (max-width: 768px) {
+    /* Admin stats - single column on tablet */
+    .admin-stats-container {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Admin graphs - single column */
+    .admin-graphs {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Admin tabs - wrap better */
+    .admin-tabs {
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+    
+    .tab-btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Admin content padding */
+    .admin-content {
+        padding: 1rem;
+    }
+    
+    /* Stat boxes - better spacing */
+    .stat-main-box {
+        padding: 1.5rem;
+    }
+    
+    .stat-mini p {
+        font-size: 1.5rem;
+    }
+    
+    /* Product detail adjustments */
+    .detail-content-wrapper {
+        flex-direction: column;
+    }
+    
+    .detail-image-section {
+        width: 100%;
+        margin-right: 0;
+    }
+    
+    .detail-info-section {
+        width: 100%;
+    }
+    
+    /* Project card - optimize for tablet */
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.75rem !important;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Container padding */
+    .container {
+        padding: 0.75rem;
+    }
+    
+    /* Header */
+    .nav-container {
+        gap: 0.5rem;
+    }
+    
+    .logo {
+        font-size: 1.2rem;
+    }
+    
+    .search-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Projects section */
+    .projects-header {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .projects-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .filter-btn {
+        width: 100%;
+        padding: 0.6rem 1rem;
+    }
+    
+    /* Project grid - single column */
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+    
+    .project-card {
+        border-radius: 8px;
+    }
+    
+    .card-image {
+        height: 140px;
+    }
+    
+    .card-content {
+        padding: 0.75rem;
+    }
+    
+    /* Admin stats - stack vertically */
+    .stat-box-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .stat-mini {
+        padding: 0.8rem;
+    }
+    
+    .stat-mini h4 {
+        font-size: 0.75rem;
+    }
+    
+    .stat-mini p {
+        font-size: 1.3rem;
+    }
+    
+    /* Product detail modal */
+    .detail-scroll-content {
+        padding: 0.75rem;
+    }
+    
+    .detail-image-section img {
+        border-radius: 8px;
+    }
+    
+    .product-detail-header {
+        padding: 1rem 0.75rem;
+    }
+    
+    /* Cart modal */
+    .cart-modal {
+        max-height: 80vh;
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .cart-modal-content {
+        padding: 1rem;
+    }
+    
+    .cart-item {
+        gap: 0.75rem;
+    }
+    
+    .cart-item-details {
+        flex: 1;
+    }
+    
+    /* Admin section */
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .admin-logout-btn {
+        width: 100%;
+    }
+    
+    .admin-tabs {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .tab-btn {
+        width: 100%;
+        text-align: left;
+        padding: 0.7rem 1rem;
+    }
+    
+    /* Admin projects search */
+    .admin-projects-header {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .admin-search,
+    .admin-filter {
+        width: 100%;
+    }
+    
+    /* Admin project card */
+    .admin-project-card {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .admin-project-number {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .admin-project-actions {
+        width: 100%;
+    }
+    
+    .admin-btn-delete {
+        width: 100%;
+        padding: 0.6rem;
+    }
+    
+    /* Add project form */
+    .add-project-form {
+        max-width: 100%;
+        padding: 1.5rem 1rem;
+    }
+    
+    /* Analytics */
+    .analytics-container {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 400px) {
+    /* Extreme mobile - ultra compact */
+    .logo {
+        font-size: 1rem;
+    }
+    
+    .nav-menu {
+        font-size: 0.85rem;
+    }
+    
+    .projects-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .projects-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+    }
+    
+    .card-content {
+        padding: 0.6rem;
+    }
+    
+    .card-content h3 {
+        font-size: 1rem;
+    }
+    
+    .stat-mini p {
+        font-size: 1.1rem;
+    }
+}
