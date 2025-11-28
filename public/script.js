@@ -174,9 +174,11 @@ let currentProductDetail = null;
 function viewProductDetail(project) {
     currentProductDetail = project;
     document.getElementById('projects').style.display = 'none';
-    document.getElementById('productDetail').style.display = 'block';
-    document.getElementById('detailImage').src = `https://via.placeholder.com/500x400?text=${encodeURIComponent(project.topic)}`;
+    document.getElementById('productDetail').style.display = 'flex';
+    document.getElementById('detailImage').src = `https://via.placeholder.com/500x600?text=${encodeURIComponent(project.topic)}`;
     document.getElementById('detailName').textContent = project.topic;
+    document.getElementById('detailSubject').textContent = project.subject;
+    document.getElementById('detailCollege').textContent = project.college;
     document.getElementById('detailPrice').textContent = `₹${project.price}`;
     window.scrollTo(0, 0);
 }

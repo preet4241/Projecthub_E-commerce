@@ -56,18 +56,53 @@
 
     <!-- Product Detail Section -->
     <section class="product-detail" id="productDetail" style="display: none;">
-        <div class="detail-container">
-            <button class="back-btn" onclick="backToProjects()">← Back</button>
-            <div class="detail-content">
-                <div class="detail-images">
-                    <img id="detailImage" src="" alt="Product Image" class="detail-main-image">
+        <!-- Detail Header -->
+        <div class="detail-header">
+            <button class="detail-back-btn" onclick="backToProjects()">←</button>
+            <div class="detail-header-icons">
+                <button class="header-icon">🔍</button>
+                <button class="header-icon">❤️</button>
+                <button class="header-icon" onclick="openCart()">🛒</button>
+            </div>
+        </div>
+
+        <!-- Detail Content -->
+        <div class="detail-scroll-content">
+            <!-- Image Section -->
+            <div class="detail-image-section">
+                <img id="detailImage" src="" alt="Product Image" class="detail-main-image">
+            </div>
+
+            <!-- Info Section -->
+            <div class="detail-info-section">
+                <h1 id="detailName" class="detail-product-name"></h1>
+                
+                <div class="detail-meta">
+                    <span id="detailSubject" class="detail-subject"></span>
+                    <span id="detailCollege" class="detail-college"></span>
                 </div>
-                <div class="detail-info">
-                    <h1 id="detailName"></h1>
+
+                <div class="detail-price-box">
+                    <p class="detail-price-label">Price</p>
                     <p id="detailPrice" class="detail-price"></p>
-                    <button class="btn btn-primary" onclick="addToCartFromDetail()">Add to Cart</button>
+                </div>
+
+                <div class="detail-actions">
+                    <button class="detail-action-btn">
+                        <span>📤</span>
+                        Share
+                    </button>
+                    <button class="detail-action-btn">
+                        <span>❤️</span>
+                        Wishlist
+                    </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Add to Cart Button (Fixed at bottom) -->
+        <div class="detail-footer">
+            <button class="detail-add-cart-btn" onclick="addToCartFromDetail()">Add to Cart</button>
         </div>
     </section>
 

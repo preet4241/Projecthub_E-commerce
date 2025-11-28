@@ -518,81 +518,173 @@ header {
 
 /* Product Detail Section */
 .product-detail {
-    padding: 2rem 1rem;
-    min-height: 100vh;
-    background: #f5f5f5;
-}
-
-.detail-container {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.back-btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 0.7rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-bottom: 2rem;
-    transition: all 0.3s;
-}
-
-.back-btn:hover {
-    background: var(--secondary);
-}
-
-.detail-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
     background: white;
-    padding: 2rem;
-    border-radius: 10px;
+    z-index: 150;
 }
 
-.detail-images {
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-bottom: 1px solid var(--border);
+    height: 60px;
+}
+
+.detail-back-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.detail-header-icons {
+    display: flex;
+    gap: 1rem;
+}
+
+.header-icon {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: all 0.2s;
+}
+
+.header-icon:active {
+    transform: scale(0.9);
+}
+
+.detail-scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 70px;
+}
+
+.detail-image-section {
+    width: 100%;
+    aspect-ratio: 1;
+    background: #f5f5f5;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .detail-main-image {
     width: 100%;
-    height: auto;
-    border-radius: 8px;
+    height: 100%;
+    object-fit: cover;
 }
 
-.detail-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+.detail-info-section {
+    padding: 1.5rem;
 }
 
-.detail-info h1 {
-    font-size: 1.8rem;
+.detail-product-name {
+    font-size: 1.2rem;
+    font-weight: bold;
     margin: 0 0 1rem 0;
     color: #333;
+    line-height: 1.4;
+}
+
+.detail-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 1.5rem;
+}
+
+.detail-subject,
+.detail-college {
+    background: #f5f5f5;
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+}
+
+.detail-price-box {
+    margin-bottom: 1.5rem;
+}
+
+.detail-price-label {
+    font-size: 0.85rem;
+    color: #999;
+    margin: 0 0 0.3rem 0;
 }
 
 .detail-price {
-    font-size: 1.6rem;
-    color: var(--primary);
+    font-size: 1.5rem;
     font-weight: bold;
-    margin: 0 0 2rem 0;
+    color: var(--primary);
+    margin: 0;
 }
 
-@media (max-width: 768px) {
-    .detail-content {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-        gap: 1.5rem;
-    }
-    
-    .detail-info h1 {
-        font-size: 1.4rem;
-    }
+.detail-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.detail-action-btn {
+    flex: 1;
+    padding: 0.75rem;
+    background: #f5f5f5;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.detail-action-btn:active {
+    background: #e8e8e8;
+}
+
+/* Footer with Add to Cart Button */
+.detail-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: white;
+    border-top: 1px solid var(--border);
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+.detail-add-cart-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: #222;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.detail-add-cart-btn:active {
+    background: #000;
 }
 
 /* Search Modal */
