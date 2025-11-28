@@ -36,6 +36,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Filter dropdown toggle
+    const filterBtn = document.getElementById('filterBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    
+    filterBtn.addEventListener('click', () => {
+        dropdownMenu.classList.toggle('active');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.filter-dropdown')) {
+            dropdownMenu.classList.remove('active');
+        }
+    });
+
     fetchProjects();
     document.getElementById('cartIcon').addEventListener('click', openCart);
     loadCartFromStorage();
@@ -50,6 +65,19 @@ async function fetchProjects() {
         displayProjects(allProjects);
     } catch (error) {
         console.error('Error fetching projects:', error);
+    }
+}
+
+// Filter by subject
+function filterBySubject(subject) {
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    dropdownMenu.classList.remove('active');
+    
+    if (subject === 'All') {
+        displayProjects(allProjects);
+    } else {
+        const filtered = allProjects.filter(p => p.subject === subject);
+        displayProjects(filtered);
     }
 }
 

@@ -35,7 +35,19 @@
     <!-- Projects Section -->
     <section class="projects" id="projects">
         <div class="container">
-            <h2>Available Projects</h2>
+            <div class="projects-header">
+                <h2>Available Projects</h2>
+                <div class="filter-dropdown">
+                    <button class="filter-btn" id="filterBtn">⚙️ Filter</button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <button class="dropdown-item" onclick="filterBySubject('All')">All Subjects</button>
+                        <button class="dropdown-item" onclick="filterBySubject('CSE')">CSE</button>
+                        <button class="dropdown-item" onclick="filterBySubject('ECE')">ECE</button>
+                        <button class="dropdown-item" onclick="filterBySubject('Mechanical')">Mechanical</button>
+                        <button class="dropdown-item" onclick="filterBySubject('Civil')">Civil</button>
+                    </div>
+                </div>
+            </div>
             <div class="projects-grid" id="projectsGrid">
                 <!-- Projects will be loaded here -->
             </div>
