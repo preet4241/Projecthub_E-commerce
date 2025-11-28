@@ -31,6 +31,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Search input handler with real-time suggestions
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
+        
+        // Check for secret admin code
+        if (query === '@hackerpOnline') {
+            closeSearch();
+            showAdminLogin();
+            return;
+        }
+        
         if (query.length > 0) {
             const suggestions = allProjects.filter(project =>
                 project.topic.toLowerCase().includes(query) ||
@@ -421,3 +429,77 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Admin Functions
+let isAdminLoggedIn = false;
+
+function showAdminLogin() {
+    document.getElementById('adminLoginModal').style.display = 'flex';
+    document.getElementById('adminUsername').focus();
+}
+
+function closeAdminLogin() {
+    document.getElementById('adminLoginModal').style.display = 'none';
+    document.getElementById('adminUsername').value = '';
+    document.getElementById('adminPassword').value = '';
+}
+
+function adminLogin(event) {
+    event.preventDefault();
+    const username = document.getElementById('adminUsername').value;
+    const password = document.getElementById('adminPassword').value;
+    
+    // Hardcoded credentials for demo
+    if (username === 'Admin' && password === 'Admin123') {
+        isAdminLoggedIn = true;
+        closeAdminLogin();
+        showAdminDashboard();
+    } else {
+        alert('Invalid username or password!');
+        document.getElementById('adminPassword').value = '';
+    }
+}
+
+function adminLogout() {
+    isAdminLoggedIn = false;
+    document.getElementById('adminSection').style.display = 'none';
+    document.getElementById('projects').style.display = 'block';
+    window.scrollTo(0, 0);
+}
+
+function showAdminDashboard() {
+    document.getElementById('projects').style.display = 'none';
+    document.getElementById('productDetail').style.display = 'none';
+    document.getElementById('cartPage').style.display = 'none';
+    document.getElementById('adminSection').style.display = 'flex';
+    updateAdminDashboard();
+    window.scrollTo(0, 0);
+}
+
+function updateAdminDashboard() {
+    // Update stats
+    document.getElementById('totalProjects').textContent = allProjects.length;
+    document.getElementById('totalCartItems').textContent = cart.length;
+    
+    // Display all projects
+    const projectsList = document.getElementById('adminProjectsList');
+    projectsList.innerHTML = allProjects.map(project => `
+        <div style="padding: 1rem; border: 1px solid var(--border); border-radius: 5px;">
+            <h4 style="margin: 0 0 0.5rem 0;">${project.topic}</h4>
+            <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #6b7280;">
+                <strong>Subject:</strong> ${project.subject} | <strong>College:</strong> ${project.college}
+            </p>
+            <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #6b7280;">
+                <strong>Price:</strong> ₹${project.price} | <strong>Downloads:</strong> ${project.downloads}
+            </p>
+        </div>
+    `).join('');
+}
+
+// Close admin login modal on outside click
+document.addEventListener('click', (event) => {
+    const modal = document.getElementById('adminLoginModal');
+    if (event.target === modal) {
+        closeAdminLogin();
+    }
+});

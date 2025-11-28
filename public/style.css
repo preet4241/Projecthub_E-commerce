@@ -1495,3 +1495,174 @@ footer {
         transform: none;
     }
 }
+
+/* Admin Login Modal */
+.admin-login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.admin-login-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.admin-login-content h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text);
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.admin-login-btn,
+.admin-cancel-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    margin-top: 1rem;
+}
+
+.admin-login-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.admin-login-btn:hover {
+    background: #2563eb;
+}
+
+.admin-cancel-btn {
+    background: var(--light);
+    color: var(--text);
+}
+
+.admin-cancel-btn:hover {
+    background: #e5e7eb;
+}
+
+/* Admin Section */
+.admin-section {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--light);
+    padding: 2rem;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.admin-header h2 {
+    margin: 0;
+    color: var(--text);
+}
+
+.admin-logout-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.admin-logout-btn:hover {
+    background: #dc2626;
+}
+
+.admin-content {
+    flex: 1;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.stat-card h3 {
+    margin: 0 0 1rem 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.stat-card p {
+    margin: 0;
+    color: var(--text);
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.admin-projects {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.admin-projects h3 {
+    margin-top: 0;
+    color: var(--text);
+}
+
+#adminProjectsList {
+    display: grid;
+    gap: 1rem;
+}

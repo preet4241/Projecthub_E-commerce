@@ -227,6 +227,49 @@
         </div>
     </div>
 
+    <!-- Admin Login Modal -->
+    <div class="admin-login-modal" id="adminLoginModal" style="display: none;">
+        <div class="admin-login-content">
+            <h2>Admin Login</h2>
+            <form onsubmit="adminLogin(event)">
+                <div class="form-group">
+                    <label for="adminUsername">Username:</label>
+                    <input type="text" id="adminUsername" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password:</label>
+                    <input type="password" id="adminPassword" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="admin-login-btn">Login</button>
+                <button type="button" class="admin-cancel-btn" onclick="closeAdminLogin()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Section -->
+    <section class="admin-section" id="adminSection" style="display: none;">
+        <div class="admin-header">
+            <h2>Admin Dashboard</h2>
+            <button class="admin-logout-btn" onclick="adminLogout()">Logout</button>
+        </div>
+        <div class="admin-content">
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <h3>Total Projects</h3>
+                    <p id="totalProjects">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Cart Items</h3>
+                    <p id="totalCartItems">0</p>
+                </div>
+            </div>
+            <div class="admin-projects">
+                <h3>All Projects</h3>
+                <div id="adminProjectsList"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer>
         <p>&copy; 2025 ProjectHub. | Academic Projects</p>
