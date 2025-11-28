@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     fetchProjects();
-    document.getElementById('cartIcon').addEventListener('click', openCart);
+    document.getElementById('cartIcon').addEventListener('click', openCartModal);
     loadCartFromStorage();
     loadFavoritesFromStorage();
     updateCartCount();
