@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ProjectHub - Academic Project Marketplace</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -12,13 +12,18 @@
         <nav class="navbar">
             <div class="nav-container">
                 <div class="logo">📚 ProjectHub</div>
-                <ul class="nav-menu">
+                <button class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu" id="navMenu">
                     <li><a href="#" class="nav-link">Home</a></li>
                     <li><a href="#projects" class="nav-link">Projects</a></li>
                     <li><a href="#" class="nav-link">About</a></li>
                     <li><a href="#" class="nav-link">Contact</a></li>
                 </ul>
-                <div class="cart-icon">
+                <div class="cart-icon" id="cartIcon">
                     <span>🛒</span>
                     <span class="cart-count" id="cartCount">0</span>
                 </div>
@@ -30,7 +35,7 @@
     <section class="hero">
         <div class="hero-content">
             <h1>ProjectHub</h1>
-            <p>Premium Academic Projects for All Engineering Branches</p>
+            <p>Premium Academic Projects</p>
             <button class="btn btn-primary" onclick="document.getElementById('projects').scrollIntoView({behavior: 'smooth'})">
                 Browse Projects
             </button>
@@ -52,7 +57,7 @@
                     <option value="">All Colleges</option>
                 </select>
             </div>
-            <button class="btn btn-secondary" onclick="resetFilters()">Reset Filters</button>
+            <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
         </div>
     </section>
 
@@ -78,14 +83,14 @@
                 <div class="cart-total">
                     <strong>Total: ₹<span id="cartTotal">0</span></strong>
                 </div>
-                <button class="btn btn-primary" onclick="checkout()">Proceed to Checkout</button>
+                <button class="btn btn-primary" onclick="checkout()">Checkout</button>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 ProjectHub. All rights reserved. | Academic Projects for Students</p>
+        <p>&copy; 2025 ProjectHub. | Academic Projects</p>
     </footer>
 
     <script src="script.js"></script>

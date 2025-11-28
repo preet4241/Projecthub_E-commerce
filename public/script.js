@@ -1,11 +1,30 @@
 let cart = [];
 let allProjects = [];
 
-// Initialize
+// Mobile menu toggle
 document.addEventListener('DOMContentLoaded', () => {
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
+    
+    if (hamburger) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
+
+    // Close menu when link is clicked
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+        });
+    });
+
     fetchProjects();
     fetchFilterOptions();
-    document.querySelector('.cart-icon').addEventListener('click', openCart);
+    document.getElementById('cartIcon').addEventListener('click', openCart);
     loadCartFromStorage();
     updateCartCount();
 });
@@ -155,13 +174,16 @@ function updateCartCount() {
 // Open cart
 function openCart() {
     const modal = document.getElementById('cartModal');
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
     displayCart();
 }
 
 // Close cart
 function closeCart() {
-    document.getElementById('cartModal').style.display = 'none';
+    const modal = document.getElementById('cartModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
 }
 
 // Display cart items
@@ -238,3 +260,12 @@ window.addEventListener('click', (event) => {
         closeCart();
     }
 });
+
+// Prevent body scroll when modal is open
+const style = document.createElement('style');
+style.textContent = `
+    body.modal-open {
+        overflow: hidden;
+    }
+`;
+document.head.appendChild(style);
