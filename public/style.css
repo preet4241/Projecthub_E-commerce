@@ -263,22 +263,23 @@ header {
 /* Projects Header */
 .projects-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 2rem;
-    gap: 1rem;
-    flex-wrap: nowrap;
+    gap: auto;
 }
 
 .projects h2 {
     font-size: clamp(1.8rem, 6vw, 2.5rem);
     margin: 0;
     text-align: left;
+    flex: 1;
 }
 
 /* Filter Dropdown */
 .filter-dropdown {
     position: relative;
+    margin-left: auto;
 }
 
 .filter-btn {
@@ -375,8 +376,20 @@ header {
 
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .project-card {
