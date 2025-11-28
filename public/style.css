@@ -488,16 +488,16 @@ header {
 }
 
 .card-title {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin: 0 0 0.8rem 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
     line-height: 1.3;
     color: #333;
 }
 
 .card-price {
     color: var(--primary);
-    font-size: 1.3rem;
+    font-size: 0.95rem;
     font-weight: bold;
     margin: 0;
 }
