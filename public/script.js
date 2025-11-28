@@ -24,15 +24,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Search button handler
     document.getElementById('searchBtn').addEventListener('click', () => {
-        const query = prompt('Search projects by name, subject, or college:');
-        if (query && query.trim() !== '') {
-            const searchTerm = query.toLowerCase().trim();
-            const filtered = allProjects.filter(project => 
-                project.topic.toLowerCase().includes(searchTerm) ||
-                project.subject.toLowerCase().includes(searchTerm) ||
-                project.college.toLowerCase().includes(searchTerm)
+        openSearch();
+    });
+
+    // Search input handler with real-time suggestions
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (query.length > 0) {
+            const suggestions = allProjects.filter(project =>
+                project.topic.toLowerCase().includes(query) ||
+                project.subject.toLowerCase().includes(query) ||
+                project.college.toLowerCase().includes(query)
             );
-            displayProjects(filtered);
+            displaySearchSuggestions(suggestions, query);
+        } else {
+            document.getElementById('searchSuggestions').innerHTML = '';
+        }
+    });
+
+    // Close search when pressing Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeSearch();
         }
     });
 
@@ -65,6 +78,45 @@ async function fetchProjects() {
         displayProjects(allProjects);
     } catch (error) {
         console.error('Error fetching projects:', error);
+    }
+}
+
+// Search functions
+function openSearch() {
+    document.getElementById('searchModal').style.display = 'flex';
+    document.getElementById('searchInput').focus();
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSearch() {
+    document.getElementById('searchModal').style.display = 'none';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchSuggestions').innerHTML = '';
+    document.body.style.overflow = 'auto';
+}
+
+function displaySearchSuggestions(suggestions, query) {
+    const suggestionsDiv = document.getElementById('searchSuggestions');
+    
+    if (suggestions.length === 0) {
+        suggestionsDiv.innerHTML = '<div class="suggestion-item no-results">No projects found</div>';
+        return;
+    }
+    
+    suggestionsDiv.innerHTML = suggestions.map(project => `
+        <div class="suggestion-item" onclick="selectSearchResult(${project.id})">
+            <div class="suggestion-title">${project.topic}</div>
+            <div class="suggestion-meta">${project.subject} • ${project.college}</div>
+            <div class="suggestion-price">₹${project.price}</div>
+        </div>
+    `).join('');
+}
+
+function selectSearchResult(projectId) {
+    const project = allProjects.find(p => p.id === projectId);
+    if (project) {
+        closeSearch();
+        viewProductDetail(project);
     }
 }
 

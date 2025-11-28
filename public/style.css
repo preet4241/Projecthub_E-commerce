@@ -595,6 +595,126 @@ header {
     }
 }
 
+/* Search Modal */
+.search-modal {
+    display: none;
+    position: fixed;
+    z-index: 300;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+    animation: fadeIn 0.3s;
+}
+
+.search-container {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.search-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    z-index: 10;
+}
+
+.search-input-wrapper {
+    padding: 1.5rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    border-color: var(--primary);
+}
+
+.search-suggestions {
+    margin-top: 0.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.suggestion-item:hover {
+    background-color: #f5f5f5;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-title {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.3rem;
+}
+
+.suggestion-meta {
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 0.3rem;
+}
+
+.suggestion-price {
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+.no-results {
+    text-align: center;
+    color: #999;
+    padding: 2rem 1rem !important;
+    cursor: default !important;
+}
+
+.no-results:hover {
+    background-color: transparent !important;
+}
+
+@media (max-width: 768px) {
+    .search-modal {
+        padding-top: 60px;
+    }
+    
+    .search-container {
+        width: 95%;
+    }
+    
+    .search-input-wrapper {
+        padding: 1rem;
+    }
+}
+
 /* Cart Modal */
 .cart-modal {
     display: none;
