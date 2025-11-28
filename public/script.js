@@ -235,7 +235,7 @@ function backToProjects() {
 function addToCartFromDetail() {
     if (currentProductDetail) {
         addToCart(currentProductDetail.id, currentProductDetail.topic, currentProductDetail.price, currentProductDetail.college);
-        viewFullCart();
+        openCart();
     }
 }
 
@@ -261,8 +261,17 @@ function updateCartCount() {
     document.getElementById('cartCount').textContent = cart.length;
 }
 
-// Open cart
+// Open cart (Full page)
 function openCart() {
+    document.getElementById('productDetail').style.display = 'none';
+    document.getElementById('projects').style.display = 'none';
+    document.getElementById('cartPage').style.display = 'flex';
+    displayFullCart();
+    window.scrollTo(0, 0);
+}
+
+// Open cart modal (Small popup)
+function openCartModal() {
     const modal = document.getElementById('cartModal');
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
