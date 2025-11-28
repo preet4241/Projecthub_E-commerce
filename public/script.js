@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     fetchProjects();
-    document.getElementById('cartIcon').addEventListener('click', openCartModal);
+    document.getElementById('cartIcon').addEventListener('click', openCart);
     loadCartFromStorage();
     loadFavoritesFromStorage();
     updateCartCount();
@@ -235,7 +235,7 @@ function backToProjects() {
 function addToCartFromDetail() {
     if (currentProductDetail) {
         addToCart(currentProductDetail.id, currentProductDetail.topic, currentProductDetail.price, currentProductDetail.college);
-        openCart();
+        openCartModal();
     }
 }
 
