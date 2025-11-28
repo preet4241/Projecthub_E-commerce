@@ -630,30 +630,59 @@ header {
     margin: 0;
 }
 
-.detail-actions {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.detail-action-btn {
-    flex: 1;
-    padding: 0.75rem;
+.detail-description {
+    margin: 2rem 0;
+    padding: 1rem;
     background: #f5f5f5;
-    border: 1px solid var(--border);
     border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.2s;
 }
 
-.detail-action-btn:active {
-    background: #e8e8e8;
+.detail-description h3 {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.detail-description p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.detail-specs {
+    margin: 1.5rem 0;
+}
+
+.detail-specs h3 {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0 0 1rem 0;
+    color: #333;
+}
+
+.spec-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.spec-row:last-child {
+    border-bottom: none;
+}
+
+.spec-label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.spec-value {
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 600;
 }
 
 /* Footer with Add to Cart Button */
