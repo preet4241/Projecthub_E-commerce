@@ -526,10 +526,11 @@ function updateAdminDashboard() {
 }
 
 function createProjectCharts(subjects, colleges) {
-    // Projects by Subject
-    const subjectCounts = {};
+    // Registered Users by Subject (sample data based on projects)
+    const userCounts = {};
     subjects.forEach(s => {
-        subjectCounts[s] = allProjects.filter(p => p.subject === s).length;
+        const projectCount = allProjects.filter(p => p.subject === s).length;
+        userCounts[s] = Math.floor(projectCount * 12 + Math.random() * 50);
     });
     
     const subjectCtx = document.getElementById('subjectChart');
@@ -541,31 +542,33 @@ function createProjectCharts(subjects, colleges) {
         window.subjectChartInstance = new Chart(subjectCtx, {
             type: 'bar',
             data: {
-                labels: Object.keys(subjectCounts),
+                labels: Object.keys(userCounts),
                 datasets: [{
-                    label: 'Projects',
-                    data: Object.values(subjectCounts),
+                    label: 'Users',
+                    data: Object.values(userCounts),
                     backgroundColor: '#3b82f6',
                     borderRadius: 4,
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false }
                 },
                 scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    y: { beginAtZero: true, ticks: { stepSize: 50 } }
                 }
             }
         });
     }
     
-    // Projects by College
-    const collegeCounts = {};
+    // Total Revenue by College
+    const revenueByCollege = {};
     colleges.forEach(c => {
-        collegeCounts[c] = allProjects.filter(p => p.college === c).length;
+        const collegeProjects = allProjects.filter(p => p.college === c);
+        const revenue = collegeProjects.reduce((sum, p) => sum + p.price, 0);
+        revenueByCollege[c] = revenue;
     });
     
     const collegeCtx = document.getElementById('collegeChart');
@@ -577,22 +580,30 @@ function createProjectCharts(subjects, colleges) {
         window.collegeChartInstance = new Chart(collegeCtx, {
             type: 'bar',
             data: {
-                labels: Object.keys(collegeCounts),
+                labels: Object.keys(revenueByCollege),
                 datasets: [{
-                    label: 'Projects',
-                    data: Object.values(collegeCounts),
+                    label: 'Revenue (₹)',
+                    data: Object.values(revenueByCollege),
                     backgroundColor: '#8b5cf6',
                     borderRadius: 4,
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false }
                 },
                 scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            stepSize: 1000,
+                            callback: function(value) {
+                                return '₹' + value;
+                            }
+                        }
+                    }
                 }
             }
         });
