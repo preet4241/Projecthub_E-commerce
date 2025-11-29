@@ -313,11 +313,19 @@
                 </div>
             </div>
 
-            <!-- Tab Navigation -->
-            <div class="admin-tabs">
-                <button class="tab-btn active" onclick="switchAdminTab('projects')">📋 Manage Projects</button>
-                <button class="tab-btn" onclick="switchAdminTab('analytics')">📊 Analytics</button>
-                <button class="tab-btn" onclick="switchAdminTab('addproject')">➕ New Project</button>
+            <!-- Tab Navigation with Filter -->
+            <div class="admin-tabs-wrapper">
+                <div class="admin-tabs">
+                    <button class="tab-btn active" onclick="switchAdminTab('projects')">📋 Manage Projects</button>
+                    <button class="tab-btn" onclick="switchAdminTab('analytics')">📊 Analytics</button>
+                    <button class="tab-btn" onclick="switchAdminTab('addproject')">➕ New Project</button>
+                </div>
+                <div class="admin-filter-dropdown">
+                    <button class="admin-filter-btn" id="adminFilterDropdownBtn">⚙️ Filter</button>
+                    <div class="admin-dropdown-menu" id="adminDropdownMenu">
+                        <button class="admin-dropdown-item" onclick="adminFilterBySubject('All')">All Subjects</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Projects Tab -->
