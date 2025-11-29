@@ -316,7 +316,7 @@
             <!-- Tab Navigation -->
             <div class="admin-tabs">
                 <button class="tab-btn active" onclick="switchAdminTab('projects')">📋 Manage Projects</button>
-                <button class="tab-btn" onclick="switchAdminTab('users')">👥 User Management</button>
+                <button class="tab-btn" onclick="openUserManagementPage()">👥 User Management</button>
                 <button class="tab-btn" onclick="switchAdminTab('addproject')">➕ New Project</button>
             </div>
 
@@ -331,21 +331,6 @@
                 <div id="adminProjectsList" class="admin-projects-list"></div>
             </div>
 
-            <!-- User Management Tab -->
-            <div id="usersTab" class="admin-tab" style="display: none;">
-                <div class="admin-users-section">
-                    <div class="users-header">
-                        <div>
-                            <h3>Active Users</h3>
-                            <p class="users-count">Total: <span id="totalUsersCount">0</span></p>
-                        </div>
-                        <input type="text" id="userSearchInput" placeholder="Search users by name or email..." class="admin-search" onkeyup="adminSearchUsers()">
-                    </div>
-                    <div class="admin-users-grid" id="adminUsersList">
-                        <div class="admin-empty-state"><p>No users found</p></div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Add Project Tab -->
             <div id="addprojectTab" class="admin-tab" style="display: none;">
@@ -362,6 +347,28 @@
                     <input type="number" placeholder="Price (₹)" id="newProjectPrice" required min="1">
                     <button type="submit" class="add-project-btn">Add Project</button>
                 </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Management Full Page -->
+    <section id="userManagementPage" style="display: none;">
+        <div class="user-management-container">
+            <div class="user-management-header">
+                <button class="back-btn" onclick="closeUserManagementPage()">← Back to Dashboard</button>
+                <h2>👥 User Management</h2>
+                <div class="user-header-stats">
+                    <div class="stat-box">
+                        <span class="stat-label">Total Users</span>
+                        <span class="stat-number" id="totalUsersDisplay">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="user-search-section">
+                <input type="text" id="userSearchInputFull" placeholder="🔍 Search users by name, email or college..." class="user-search-input" onkeyup="adminSearchUsersFull()">
+            </div>
+            <div class="user-management-grid" id="adminUsersListFull">
+                <div class="admin-empty-state"><p>Loading users...</p></div>
             </div>
         </div>
     </section>

@@ -644,7 +644,6 @@ function displayAdminProjects(projects) {
 function switchAdminTab(tabName) {
     // Hide all tabs
     document.getElementById('projectsTab').classList.remove('active');
-    document.getElementById('usersTab').classList.remove('active');
     document.getElementById('addprojectTab').classList.remove('active');
     
     // Remove active class from all buttons
@@ -655,11 +654,76 @@ function switchAdminTab(tabName) {
     
     // Add active class to clicked button
     event.target.classList.add('active');
+}
+
+function openUserManagementPage() {
+    // Hide admin section
+    document.getElementById('adminSection').style.display = 'none';
     
-    // Load users if users tab clicked
-    if (tabName === 'users') {
-        displayAdminUsers();
+    // Show user management page
+    document.getElementById('userManagementPage').style.display = 'block';
+    
+    // Load and display users
+    displayAdminUsersFull();
+    
+    window.scrollTo(0, 0);
+}
+
+function closeUserManagementPage() {
+    // Hide user management page
+    document.getElementById('userManagementPage').style.display = 'none';
+    
+    // Show admin section
+    document.getElementById('adminSection').style.display = 'flex';
+    
+    window.scrollTo(0, 0);
+}
+
+function displayAdminUsersFull(users = sampleUsers) {
+    const usersList = document.getElementById('adminUsersListFull');
+    const totalDisplay = document.getElementById('totalUsersDisplay');
+    
+    totalDisplay.textContent = users.length;
+    
+    if (users.length === 0) {
+        usersList.innerHTML = '<div class="admin-empty-state"><p>No users found</p></div>';
+        return;
     }
+    
+    usersList.innerHTML = users.map(user => `
+        <div class="admin-user-card-grid">
+            <div class="user-card-header">
+                <div class="user-avatar-small">👤</div>
+                <div class="user-card-title">
+                    <h4>${user.name}</h4>
+                    <p class="user-email-small">${user.email}</p>
+                </div>
+            </div>
+            <div class="user-card-body">
+                <p class="user-college-small">🏫 ${user.college}</p>
+                <div class="user-card-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon">🛒</span>
+                        <span class="stat-text">${user.purchases}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">📅</span>
+                        <span class="stat-text">${new Date(user.joinDate).toLocaleDateString()}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function adminSearchUsersFull() {
+    const query = document.getElementById('userSearchInputFull').value.toLowerCase();
+    const filtered = sampleUsers.filter(u =>
+        u.name.toLowerCase().includes(query) ||
+        u.email.toLowerCase().includes(query) ||
+        u.college.toLowerCase().includes(query)
+    );
+    displayAdminUsersFull(filtered);
 }
 
 function adminSearchProjects() {
