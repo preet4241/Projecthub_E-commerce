@@ -644,7 +644,7 @@ function displayAdminProjects(projects) {
 function switchAdminTab(tabName) {
     // Hide all tabs
     document.getElementById('projectsTab').classList.remove('active');
-    document.getElementById('analyticsTab').classList.remove('active');
+    document.getElementById('usersTab').classList.remove('active');
     document.getElementById('addprojectTab').classList.remove('active');
     
     // Remove active class from all buttons
@@ -655,6 +655,11 @@ function switchAdminTab(tabName) {
     
     // Add active class to clicked button
     event.target.classList.add('active');
+    
+    // Load users if users tab clicked
+    if (tabName === 'users') {
+        displayAdminUsers();
+    }
 }
 
 function adminSearchProjects() {
@@ -673,34 +678,53 @@ function adminFilterProjects() {
     displayAdminProjects(filtered);
 }
 
-function updateAnalytics() {
-    // Projects by subject
-    const bySubject = {};
-    allProjects.forEach(p => {
-        bySubject[p.subject] = (bySubject[p.subject] || 0) + 1;
-    });
+// Sample users data
+const sampleUsers = [
+    { id: 1, name: 'Raj Kumar', email: 'raj@example.com', college: 'IIT Delhi', purchases: 5, joinDate: '2025-01-15' },
+    { id: 2, name: 'Priya Singh', email: 'priya@example.com', college: 'NIT Bangalore', purchases: 3, joinDate: '2025-01-20' },
+    { id: 3, name: 'Amit Patel', email: 'amit@example.com', college: 'Delhi University', purchases: 8, joinDate: '2025-01-10' },
+    { id: 4, name: 'Neha Gupta', email: 'neha@example.com', college: 'IIT Bombay', purchases: 2, joinDate: '2025-01-25' },
+    { id: 5, name: 'Arjun Verma', email: 'arjun@example.com', college: 'NIT Pune', purchases: 6, joinDate: '2025-01-18' },
+];
+
+function displayAdminUsers(users = sampleUsers) {
+    const usersList = document.getElementById('adminUsersList');
     
-    const subjectHTML = Object.entries(bySubject).map(([subject, count]) => `
-        <div class="analytics-item">
-            <span class="analytics-label">${subject}</span>
-            <span class="analytics-value">${count}</span>
+    if (users.length === 0) {
+        usersList.innerHTML = '<div class="admin-empty-state"><p>No users found</p></div>';
+        return;
+    }
+    
+    usersList.innerHTML = users.map(user => `
+        <div class="admin-user-card">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <h4>${user.name}</h4>
+                <p class="user-email">${user.email}</p>
+                <p class="user-college">🏫 ${user.college}</p>
+            </div>
+            <div class="user-stats">
+                <div class="stat">
+                    <span class="stat-value">${user.purchases}</span>
+                    <span class="stat-label">Purchases</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">${new Date(user.joinDate).toLocaleDateString()}</span>
+                    <span class="stat-label">Joined</span>
+                </div>
+            </div>
         </div>
     `).join('');
-    document.getElementById('projectsBySubject').innerHTML = subjectHTML;
-    
-    // Projects by college
-    const byCollege = {};
-    allProjects.forEach(p => {
-        byCollege[p.college] = (byCollege[p.college] || 0) + 1;
-    });
-    
-    const collegeHTML = Object.entries(byCollege).map(([college, count]) => `
-        <div class="analytics-item">
-            <span class="analytics-label">${college}</span>
-            <span class="analytics-value">${count}</span>
-        </div>
-    `).join('');
-    document.getElementById('projectsByCollege').innerHTML = collegeHTML;
+}
+
+function adminSearchUsers() {
+    const query = document.getElementById('userSearchInput').value.toLowerCase();
+    const filtered = sampleUsers.filter(u =>
+        u.name.toLowerCase().includes(query) ||
+        u.email.toLowerCase().includes(query) ||
+        u.college.toLowerCase().includes(query)
+    );
+    displayAdminUsers(filtered);
 }
 
 function addNewProject(event) {
