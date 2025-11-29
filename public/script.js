@@ -522,8 +522,8 @@ function updateAdminDashboard() {
     // Create bar graphs
     createProjectCharts(subjects, colleges);
     
-    // Update analytics
-    updateAnalytics();
+    // Display users on dashboard
+    displayAdminUsers();
 }
 
 function createProjectCharts(subjects, colleges) {
@@ -735,6 +735,11 @@ function adminSearchUsers() {
         u.college.toLowerCase().includes(query)
     );
     displayAdminUsers(filtered);
+}
+
+// Empty function for backward compatibility (analytics tab removed)
+function updateAnalytics() {
+    // Analytics tab removed - replaced with User Management
 }
 
 function addNewProject(event) {
