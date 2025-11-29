@@ -515,22 +515,6 @@ function updateAdminDashboard() {
         mainDropdown.appendChild(btn);
     });
     
-    // Populate admin filter dropdown
-    const adminDropdown = document.getElementById('adminDropdownMenu');
-    adminDropdown.innerHTML = '<button class="admin-dropdown-item" onclick="adminFilterBySubject(\'All\')">All Subjects</button>';
-    subjects.forEach(subject => {
-        const btn = document.createElement('button');
-        btn.className = 'admin-dropdown-item';
-        btn.onclick = () => adminFilterBySubject(subject);
-        btn.textContent = subject;
-        adminDropdown.appendChild(btn);
-    });
-    
-    // Add filter button click handler
-    const filterBtn = document.getElementById('adminFilterDropdownBtn');
-    if (filterBtn) {
-        filterBtn.onclick = toggleAdminFilterDropdown;
-    }
     
     // Display all projects
     displayAdminProjects(allProjects);
@@ -688,31 +672,6 @@ function adminFilterProjects() {
     const filtered = subject === '' ? allProjects : allProjects.filter(p => p.subject === subject);
     displayAdminProjects(filtered);
 }
-
-function toggleAdminFilterDropdown() {
-    const menu = document.getElementById('adminDropdownMenu');
-    menu.classList.toggle('active');
-}
-
-function adminFilterBySubject(subject) {
-    const filtered = subject === 'All' ? allProjects : allProjects.filter(p => p.subject === subject);
-    displayAdminProjects(filtered);
-    
-    // Close dropdown
-    const menu = document.getElementById('adminDropdownMenu');
-    menu.classList.remove('active');
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    const filterDropdown = document.querySelector('.admin-filter-dropdown');
-    if (filterDropdown && !filterDropdown.contains(event.target)) {
-        const menu = document.getElementById('adminDropdownMenu');
-        if (menu) {
-            menu.classList.remove('active');
-        }
-    }
-});
 
 function updateAnalytics() {
     // Projects by subject

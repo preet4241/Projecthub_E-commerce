@@ -1725,25 +1725,16 @@ footer {
     gap: 1rem;
 }
 
-/* Admin Tabs Wrapper */
-.admin-tabs-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    margin: 1.5rem 0 2rem 0;
-    background: white;
-    padding: 0.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
 /* Admin Tabs */
 .admin-tabs {
     display: flex;
     gap: 0.5rem;
-    flex: 1;
+    margin: 1.5rem 0 2rem 0;
     border-bottom: 2px solid #e5e7eb;
+    background: white;
+    padding: 0.5rem;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .tab-btn {
@@ -1768,76 +1759,6 @@ footer {
 .tab-btn:hover {
     color: var(--primary);
     background: #f9fafb;
-}
-
-/* Admin Filter Dropdown */
-.admin-filter-dropdown {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.admin-filter-btn {
-    padding: 0.7rem 1.2rem;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 600;
-    transition: all 0.3s;
-    white-space: nowrap;
-}
-
-.admin-filter-btn:hover {
-    background: #2563eb;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.admin-dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    min-width: 200px;
-    z-index: 1000;
-    margin-top: 0.5rem;
-}
-
-.admin-dropdown-menu.active {
-    display: block;
-}
-
-.admin-dropdown-item {
-    display: block;
-    width: 100%;
-    padding: 0.8rem 1.2rem;
-    background: none;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    color: var(--text);
-    font-size: 0.95rem;
-    transition: all 0.2s;
-}
-
-.admin-dropdown-item:hover {
-    background: var(--light);
-    color: var(--primary);
-}
-
-.admin-dropdown-item:first-child {
-    border-radius: 8px 8px 0 0;
-}
-
-.admin-dropdown-item:last-child {
-    border-radius: 0 0 8px 8px;
 }
 
 .admin-tab {
@@ -2104,12 +2025,6 @@ footer {
         grid-template-columns: 1fr !important;
     }
     
-    /* Admin tabs wrapper - stack on tablet */
-    .admin-tabs-wrapper {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    
     /* Admin tabs - wrap better */
     .admin-tabs {
         flex-wrap: wrap;
@@ -2119,10 +2034,6 @@ footer {
     .tab-btn {
         padding: 0.7rem 1rem;
         font-size: 0.9rem;
-    }
-    
-    .admin-filter-btn {
-        width: 100%;
     }
     
     /* Admin content padding */
@@ -2295,15 +2206,6 @@ footer {
         width: 100%;
         text-align: left;
         padding: 0.7rem 1rem;
-    }
-    
-    /* Admin tabs wrapper mobile */
-    .admin-tabs-wrapper {
-        flex-direction: column;
-    }
-    
-    .admin-filter-btn {
-        width: 100%;
     }
     
     /* Admin projects search */
