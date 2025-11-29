@@ -335,10 +335,13 @@
             <div id="usersTab" class="admin-tab" style="display: none;">
                 <div class="admin-users-section">
                     <div class="users-header">
-                        <h3>Active Users</h3>
-                        <input type="text" id="userSearchInput" placeholder="Search users..." class="admin-search" onkeyup="adminSearchUsers()">
+                        <div>
+                            <h3>Active Users</h3>
+                            <p class="users-count">Total: <span id="totalUsersCount">0</span></p>
+                        </div>
+                        <input type="text" id="userSearchInput" placeholder="Search users by name or email..." class="admin-search" onkeyup="adminSearchUsers()">
                     </div>
-                    <div class="admin-users-list" id="adminUsersList">
+                    <div class="admin-users-grid" id="adminUsersList">
                         <div class="admin-empty-state"><p>No users found</p></div>
                     </div>
                 </div>

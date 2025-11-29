@@ -685,10 +685,16 @@ const sampleUsers = [
     { id: 3, name: 'Amit Patel', email: 'amit@example.com', college: 'Delhi University', purchases: 8, joinDate: '2025-01-10' },
     { id: 4, name: 'Neha Gupta', email: 'neha@example.com', college: 'IIT Bombay', purchases: 2, joinDate: '2025-01-25' },
     { id: 5, name: 'Arjun Verma', email: 'arjun@example.com', college: 'NIT Pune', purchases: 6, joinDate: '2025-01-18' },
+    { id: 6, name: 'Sneha Reddy', email: 'sneha@example.com', college: 'IIT Madras', purchases: 7, joinDate: '2025-01-12' },
+    { id: 7, name: 'Vikram Singh', email: 'vikram@example.com', college: 'BITS Pilani', purchases: 4, joinDate: '2025-01-22' },
+    { id: 8, name: 'Pooja Sharma', email: 'pooja@example.com', college: 'Anna University', purchases: 9, joinDate: '2025-01-08' },
 ];
 
 function displayAdminUsers(users = sampleUsers) {
     const usersList = document.getElementById('adminUsersList');
+    const totalCount = document.getElementById('totalUsersCount');
+    
+    totalCount.textContent = users.length;
     
     if (users.length === 0) {
         usersList.innerHTML = '<div class="admin-empty-state"><p>No users found</p></div>';
@@ -696,21 +702,25 @@ function displayAdminUsers(users = sampleUsers) {
     }
     
     usersList.innerHTML = users.map(user => `
-        <div class="admin-user-card">
-            <div class="user-avatar">👤</div>
-            <div class="user-info">
-                <h4>${user.name}</h4>
-                <p class="user-email">${user.email}</p>
-                <p class="user-college">🏫 ${user.college}</p>
-            </div>
-            <div class="user-stats">
-                <div class="stat">
-                    <span class="stat-value">${user.purchases}</span>
-                    <span class="stat-label">Purchases</span>
+        <div class="admin-user-card-grid">
+            <div class="user-card-header">
+                <div class="user-avatar-small">👤</div>
+                <div class="user-card-title">
+                    <h4>${user.name}</h4>
+                    <p class="user-email-small">${user.email}</p>
                 </div>
-                <div class="stat">
-                    <span class="stat-value">${new Date(user.joinDate).toLocaleDateString()}</span>
-                    <span class="stat-label">Joined</span>
+            </div>
+            <div class="user-card-body">
+                <p class="user-college-small">🏫 ${user.college}</p>
+                <div class="user-card-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon">🛒</span>
+                        <span class="stat-text">${user.purchases}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">📅</span>
+                        <span class="stat-text">${new Date(user.joinDate).toLocaleDateString()}</span>
+                    </div>
                 </div>
             </div>
         </div>
