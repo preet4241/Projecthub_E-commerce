@@ -701,15 +701,9 @@ function displayAdminUsersFull(users = sampleUsers) {
             </div>
             <div class="user-card-body">
                 <p class="user-college-small">🏫 ${user.college}</p>
-                <div class="user-card-stats">
-                    <div class="stat-item">
-                        <span class="stat-icon">🛒</span>
-                        <span class="stat-text">${user.purchases}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-icon">📅</span>
-                        <span class="stat-text">${new Date(user.joinDate).toLocaleDateString()}</span>
-                    </div>
+                <div class="user-card-date">
+                    <span class="date-icon">📅</span>
+                    <span class="date-text">Joined ${new Date(user.joinDate).toLocaleDateString()}</span>
                 </div>
             </div>
         </div>
@@ -744,7 +738,7 @@ function adminFilterProjects() {
 
 // Sample users data
 const sampleUsers = [
-    { id: 1, name: 'Raj Kumar', email: 'raj@example.com', college: 'IIT Delhi', purchases: 5, joinDate: '2025-01-15' },
+    { id: 1, name: 'Aryan Mishra', email: 'aryan@example.com', college: 'IIT Delhi', purchases: 5, joinDate: '2025-01-15' },
     { id: 2, name: 'Priya Singh', email: 'priya@example.com', college: 'NIT Bangalore', purchases: 3, joinDate: '2025-01-20' },
     { id: 3, name: 'Amit Patel', email: 'amit@example.com', college: 'Delhi University', purchases: 8, joinDate: '2025-01-10' },
     { id: 4, name: 'Neha Gupta', email: 'neha@example.com', college: 'IIT Bombay', purchases: 2, joinDate: '2025-01-25' },

@@ -2397,27 +2397,22 @@ footer {
     gap: 0.4rem;
 }
 
-.user-card-stats {
-    display: flex;
-    gap: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.stat-item {
-    flex: 1;
+.user-card-date {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
     font-size: 0.85rem;
 }
 
-.stat-icon {
+.date-icon {
     font-size: 1rem;
 }
 
-.stat-text {
-    color: var(--text);
+.date-text {
+    color: #6b7280;
     font-weight: 600;
 }
 
@@ -2634,15 +2629,22 @@ footer {
     }
 }
 
+@media (max-width: 1024px) {
+    .user-management-container {
+        padding: 1.5rem 1rem;
+    }
+}
+
 @media (max-width: 768px) {
     .user-management-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
+        padding: 1.2rem;
     }
     
     .user-management-header h2 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
     
     .user-header-stats {
@@ -2655,37 +2657,138 @@ footer {
     }
     
     .user-management-container {
-        padding: 1rem 0.5rem;
+        padding: 1rem;
+    }
+    
+    .admin-user-card-grid {
+        padding: 1rem;
+    }
+    
+    .user-avatar-small {
+        width: 45px;
+        height: 45px;
+        font-size: 1.8rem;
+    }
+    
+    .user-card-title h4 {
+        font-size: 0.9rem;
+    }
+    
+    .user-email-small {
+        font-size: 0.75rem;
+    }
+    
+    .user-college-small {
+        font-size: 0.8rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .user-card-date {
+        font-size: 0.8rem;
+        margin-top: 0.8rem;
+        padding-top: 0.8rem;
     }
 }
 
 @media (max-width: 600px) {
     .user-management-header {
-        padding: 1rem;
+        padding: 0.9rem;
+        margin-bottom: 1.5rem;
     }
     
     .back-btn {
-        padding: 0.6rem 1rem;
-        font-size: 0.85rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 0.8rem;
+        width: 100%;
+        text-align: left;
     }
     
     .user-management-header h2 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
+    }
+    
+    .stat-box {
+        padding: 0.8rem;
+    }
+    
+    .stat-label {
+        font-size: 0.7rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .user-search-section {
+        margin-bottom: 1.5rem;
     }
     
     .user-search-input {
         font-size: 0.9rem;
-        padding: 0.8rem;
+        padding: 0.7rem;
+        max-width: 100%;
     }
     
     .user-management-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.8rem;
+        gap: 0.7rem;
+    }
+    
+    .user-management-container {
+        padding: 0.8rem;
+    }
+    
+    .admin-user-card-grid {
+        padding: 0.8rem;
+    }
+    
+    .user-avatar-small {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+    
+    .user-card-title h4 {
+        font-size: 0.8rem;
+    }
+    
+    .user-email-small {
+        font-size: 0.65rem;
+    }
+    
+    .user-college-small {
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .user-card-date {
+        font-size: 0.75rem;
+        margin-top: 0.6rem;
+        padding-top: 0.6rem;
+    }
+    
+    .date-icon {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-management-grid {
+        gap: 0.6rem;
     }
 }
 
 @media (max-width: 380px) {
     .user-management-grid {
         grid-template-columns: 1fr;
+        gap: 0.7rem;
+    }
+    
+    .user-management-header {
+        padding: 0.7rem;
+    }
+    
+    .user-management-header h2 {
+        font-size: 1rem;
     }
 }
