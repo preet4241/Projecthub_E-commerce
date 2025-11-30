@@ -1748,6 +1748,187 @@ function blockWaUser() {
     }
 }
 
+// ===== ADMIN SUPPORT CHAT FUNCTIONS =====
+function openAdminSupportChat() {
+    document.getElementById('waAdminSupportChat').style.display = 'flex';
+    document.getElementById('notificationsChatArea').style.display = 'none';
+    document.getElementById('waActiveChat').style.display = 'none';
+    loadWaAdminMessages();
+    setTimeout(() => {
+        const container = document.getElementById('waAdminMessagesContainer');
+        if (container) container.scrollTop = container.scrollHeight;
+    }, 100);
+}
+
+function closeAdminSupportChat() {
+    document.getElementById('waAdminSupportChat').style.display = 'none';
+    document.getElementById('notificationsChatArea').style.display = 'flex';
+}
+
+function loadWaAdminMessages() {
+    const container = document.getElementById('waAdminMessagesContainer');
+    if (!container) return;
+    
+    if (waAdminMessages.length === 0) {
+        container.innerHTML = `<div style="padding: 2rem; text-align: center; color: #8696a0; font-size: 0.9rem;">No messages yet. Start your conversation!</div>`;
+        return;
+    }
+    
+    container.innerHTML = waAdminMessages.map(msg => {
+        let html = `<div class="wa-message ${msg.type}">`;
+        if (msg.file) {
+            html += createWaFileAttachment(msg.file, msg.type);
+        }
+        if (msg.text) {
+            html += `<div class="wa-message-bubble ${msg.type}"><span>${msg.text}</span><span class="wa-message-time">${msg.time}`;
+            if (msg.type === 'sent') {
+                html += ` <span class="wa-message-status">${msg.status === 'read' ? '✓✓' : '✓'}</span>`;
+            }
+            html += `</span></div>`;
+        }
+        html += `</div>`;
+        return html;
+    }).join('');
+    
+    setTimeout(() => {
+        if (container) container.scrollTop = container.scrollHeight;
+    }, 50);
+}
+
+function showTypingIndicator() {
+    const input = document.getElementById('waMessageInput');
+    if (!input || !input.value.trim()) return;
+    const indicator = document.getElementById('waTypingIndicator');
+    if (indicator) indicator.style.display = 'flex';
+    clearTimeout(typingTimeoutUser);
+    typingTimeoutUser = setTimeout(() => {
+        if (indicator) indicator.style.display = 'none';
+    }, 3000);
+}
+
+function showAdminTypingIndicator() {
+    const input = document.getElementById('waAdminMessageInput');
+    if (!input || !input.value.trim()) return;
+    clearTimeout(typingTimeoutAdmin);
+}
+
+function sendWaAdminMessage() {
+    const input = document.getElementById('waAdminMessageInput');
+    const text = input ? input.value.trim() : '';
+    
+    if (!text && waAdminAttachedFiles.length === 0) return;
+    
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    
+    waAdminAttachedFiles.forEach(file => {
+        waAdminMessages.push({
+            type: 'sent',
+            text: '',
+            time: time,
+            status: 'sent',
+            file: {
+                id: file.id,
+                name: file.name,
+                size: file.size,
+                type: file.type
+            }
+        });
+    });
+    
+    if (text) {
+        waAdminMessages.push({
+            type: 'sent',
+            text: text,
+            time: time,
+            status: 'sent'
+        });
+    }
+    
+    if (input) input.value = '';
+    waAdminAttachedFiles = [];
+    updateWaAdminAttachedPreview();
+    loadWaAdminMessages();
+    
+    const indicator = document.getElementById('waTypingIndicator');
+    if (indicator) indicator.style.display = 'none';
+    
+    setTimeout(() => {
+        const msgs = waAdminMessages;
+        if (msgs.length > 0) {
+            msgs[msgs.length - 1].status = 'delivered';
+            loadWaAdminMessages();
+        }
+    }, 1000);
+    
+    setTimeout(() => {
+        const msgs = waAdminMessages;
+        if (msgs.length > 0 && msgs[msgs.length - 1].type === 'sent') {
+            msgs[msgs.length - 1].status = 'read';
+            loadWaAdminMessages();
+        }
+        waAdminMessages.push({
+            type: 'received',
+            text: 'Thanks for reaching out! Our support team will help you shortly. 😊',
+            time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+            status: 'delivered'
+        });
+        loadWaAdminMessages();
+    }, 2000);
+}
+
+function handleWaAdminMessageKeypress(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendWaAdminMessage();
+    }
+}
+
+function handleWaAdminFileSelect(event) {
+    const files = Array.from(event.target.files);
+    files.forEach(file => {
+        const fileId = 'file_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        waFileStorage[fileId] = file;
+        waAdminAttachedFiles.push({
+            id: fileId,
+            name: file.name,
+            size: file.size,
+            type: file.type
+        });
+    });
+    updateWaAdminAttachedPreview();
+    event.target.value = '';
+}
+
+function updateWaAdminAttachedPreview() {
+    const preview = document.getElementById('waAdminAttachedPreview');
+    if (!preview) return;
+    
+    if (waAdminAttachedFiles.length === 0) {
+        preview.innerHTML = '';
+        return;
+    }
+    
+    preview.innerHTML = waAdminAttachedFiles.map(file => {
+        const icon = getFileIcon(file.type);
+        return `
+            <div class="wa-attached-item">
+                <span class="wa-attached-item-icon">${icon}</span>
+                <div class="wa-attached-item-info">
+                    <div class="wa-attached-item-name">${file.name}</div>
+                    <div class="wa-attached-item-size">${formatFileSize(file.size)}</div>
+                </div>
+                <button class="wa-attached-item-remove" onclick="removeWaAdminAttachedFile('${file.id}')">✕</button>
+            </div>
+        `;
+    }).join('');
+}
+
+function removeWaAdminAttachedFile(fileId) {
+    waAdminAttachedFiles = waAdminAttachedFiles.filter(f => f.id !== fileId);
+    updateWaAdminAttachedPreview();
+}
+
 // Open PDF preview
 function openWaPdfPreview(fileId) {
     const file = waFileStorage[fileId];
