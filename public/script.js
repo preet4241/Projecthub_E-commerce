@@ -1013,16 +1013,61 @@ function loadChatUsers() {
 }
 
 function selectChatUser(element, userId, userName, userEmail, userCollege) {
-    document.querySelectorAll('.chat-user-item').forEach(e => e.classList.remove('active'));
-    if (element) element.classList.add('active');
+    // Open the user chat section
+    openUserChat(userId, userName);
+}
+
+function openUserChat(userId, userName) {
+    document.getElementById('notificationsChatPage').style.display = 'none';
+    document.getElementById('userChatPage').style.display = 'block';
+    document.getElementById('userChatName').textContent = userName;
+    document.body.style.overflow = 'hidden';
     
-    const html = `
-        <h3>👤 ${userName}</h3>
-        <p><strong>Email:</strong> ${userEmail}</p>
-        <p><strong>College:</strong> ${userCollege}</p>
-        <p style="margin-top: 1rem; font-size: 0.9rem; color: #6b7280;">Active user</p>
+    // Load sample messages
+    const messagesHTML = `
+        <div class="chat-message-item other">
+            <div class="chat-message-bubble">Hey, how are you?</div>
+            <div class="chat-message-time">10:30 AM</div>
+        </div>
+        <div class="chat-message-item admin">
+            <div class="chat-message-bubble">Hi! I'm good, thanks for asking</div>
+            <div class="chat-message-time">10:32 AM</div>
+        </div>
+        <div class="chat-message-item other">
+            <div class="chat-message-bubble">Do you need any help with projects?</div>
+            <div class="chat-message-time">10:35 AM</div>
+        </div>
+        <div class="chat-message-item admin">
+            <div class="chat-message-bubble">Yes, I need CSE project help</div>
+            <div class="chat-message-time">10:37 AM</div>
+        </div>
     `;
-    document.getElementById('chatSelectedUserInfo').innerHTML = html;
+    document.getElementById('userChatMessages').innerHTML = messagesHTML;
+    document.getElementById('userMessageInput').focus();
+}
+
+function closeUserChat() {
+    document.getElementById('userChatPage').style.display = 'none';
+    document.getElementById('notificationsChatPage').style.display = 'block';
+    document.body.style.overflow = 'auto';
+}
+
+function sendMessage() {
+    const input = document.getElementById('userMessageInput');
+    const message = input.value.trim();
+    
+    if (message) {
+        const messagesDiv = document.getElementById('userChatMessages');
+        const messageHTML = `
+            <div class="chat-message-item admin">
+                <div class="chat-message-bubble">${message}</div>
+                <div class="chat-message-time">now</div>
+            </div>
+        `;
+        messagesDiv.innerHTML += messageHTML;
+        input.value = '';
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
 }
 
 function loadPendingOrders() {
