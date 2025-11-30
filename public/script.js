@@ -483,17 +483,38 @@ function updateAdminDashboard() {
     const subjects = [...new Set(allProjects.map(p => p.subject))];
     const colleges = [...new Set(allProjects.map(p => p.college))];
     
+    // Update quick stats safely
+    const notificationCountEl = document.getElementById('notificationCount');
+    const orderConfirmCountEl = document.getElementById('orderConfirmCount');
+    const confirmedOrderCountEl = document.getElementById('confirmedOrderCount');
+    const cancelledOrderCountEl = document.getElementById('cancelledOrderCount');
+    
+    if (notificationCountEl) notificationCountEl.textContent = '12';
+    if (orderConfirmCountEl) orderConfirmCountEl.textContent = '8';
+    if (confirmedOrderCountEl) confirmedOrderCountEl.textContent = '45';
+    if (cancelledOrderCountEl) cancelledOrderCountEl.textContent = '3';
+    
     // Update stats - Box 1: Users & Revenue
-    document.getElementById('registeredUsers').textContent = '1,234';
-    document.getElementById('visitors').textContent = '5,678';
-    document.getElementById('todaySales').textContent = '42';
-    document.getElementById('totalRevenue').textContent = '₹' + totalRevenue.toLocaleString();
+    const registeredUsersEl = document.getElementById('registeredUsers');
+    const visitorsEl = document.getElementById('visitors');
+    const todaySalesEl = document.getElementById('todaySales');
+    const totalRevenueEl = document.getElementById('totalRevenue');
+    
+    if (registeredUsersEl) registeredUsersEl.textContent = '1,234';
+    if (visitorsEl) visitorsEl.textContent = '5,678';
+    if (todaySalesEl) todaySalesEl.textContent = '42';
+    if (totalRevenueEl) totalRevenueEl.textContent = '₹' + totalRevenue.toLocaleString();
     
     // Update stats - Box 2: Projects & Classification
-    document.getElementById('totalProjects').textContent = allProjects.length;
-    document.getElementById('projectTypes').textContent = allProjects.length;
-    document.getElementById('totalSubjects').textContent = subjects.length;
-    document.getElementById('totalColleges').textContent = colleges.length;
+    const totalProjectsEl = document.getElementById('totalProjects');
+    const projectTypesEl = document.getElementById('projectTypes');
+    const totalSubjectsEl = document.getElementById('totalSubjects');
+    const totalCollegesEl = document.getElementById('totalColleges');
+    
+    if (totalProjectsEl) totalProjectsEl.textContent = allProjects.length;
+    if (projectTypesEl) projectTypesEl.textContent = allProjects.length;
+    if (totalSubjectsEl) totalSubjectsEl.textContent = subjects.length;
+    if (totalCollegesEl) totalCollegesEl.textContent = colleges.length;
     
     // Populate filter dropdown
     const filterSelect = document.getElementById('adminFilterSubject');
@@ -877,6 +898,18 @@ function deleteProject(projectId) {
             alert('Failed to delete project.');
         });
     }
+}
+
+// Open stat section when card is clicked
+function openStatSection(sectionType) {
+    const messages = {
+        notifications: '🔔 Notifications\n\nYou have 12 new notifications:\n• 5 new user registrations\n• 4 pending orders\n• 3 support messages',
+        orderConfirm: '📦 Order Confirmation\n\n8 orders waiting for confirmation:\n• Order #1234 - ₹299\n• Order #1235 - ₹399\n• Order #1236 - ₹499\n...and 5 more',
+        confirmedOrders: '✅ Confirmed Orders\n\n45 orders confirmed:\n• Total Revenue: ₹18,450\n• Average Order Value: ₹410\n• Most Popular: CSE Projects',
+        cancelledOrders: '❌ Cancelled Orders\n\n3 orders cancelled:\n• Order #1220 - ₹299 (Refunded)\n• Order #1215 - ₹399 (Refunded)\n• Order #1210 - ₹249 (Refunded)'
+    };
+    
+    alert(messages[sectionType] || 'Section coming soon!');
 }
 
 // Close admin login modal on outside click
