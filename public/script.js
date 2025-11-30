@@ -975,120 +975,409 @@ function closeCancelledOrdersChat() {
     document.body.style.overflow = 'auto';
 }
 
-// Load chat users from database
+// WhatsApp-style Chat Variables
+let waAttachedFiles = [];
+let waFileStorage = {};
+let currentWaChatUserId = null;
+let currentWaChatUserName = null;
+let waUserMessages = {};
+let allChatUsers = [];
+
+// Load chat users from database - WhatsApp Style
 function loadChatUsers() {
     const chatUsersList = document.getElementById('chatUsersList');
     if (!chatUsersList) return;
     
-    chatUsersList.innerHTML = '<div class="chat-empty-state">Loading users...</div>';
+    chatUsersList.innerHTML = '<div style="padding: 2rem; text-align: center; color: #8696a0;">Loading...</div>';
     
-    // Show sample users if no real users
-    const users = sampleUsers;
+    // Get all users and sort by last message time
+    allChatUsers = sampleUsers.map((user, index) => {
+        const hasMessages = waUserMessages[`user${user.id}`] && waUserMessages[`user${user.id}`].length > 0;
+        const lastMessage = hasMessages ? waUserMessages[`user${user.id}`][waUserMessages[`user${user.id}`].length - 1] : null;
+        const unreadCount = Math.floor(Math.random() * 5); // Random for demo
+        
+        return {
+            ...user,
+            hasMessages,
+            lastMessage: lastMessage ? lastMessage.text : 'No messages yet',
+            lastTime: lastMessage ? lastMessage.time : '',
+            unreadCount: index < 3 ? unreadCount : 0, // First 3 users have unread
+            sortOrder: hasMessages ? 0 : 1
+        };
+    });
+    
+    // Sort: users with messages first, then by name
+    allChatUsers.sort((a, b) => {
+        if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
+        if (a.unreadCount !== b.unreadCount) return b.unreadCount - a.unreadCount;
+        return a.name.localeCompare(b.name);
+    });
+    
+    renderChatUsersList(allChatUsers);
+    
+    const totalEl = document.getElementById('totalUsersInChat');
+    if (totalEl) totalEl.textContent = allChatUsers.length;
+    
+    const unreadEl = document.getElementById('unreadNotifications');
+    const totalUnread = allChatUsers.reduce((sum, u) => sum + u.unreadCount, 0);
+    if (unreadEl) unreadEl.textContent = totalUnread;
+}
+
+function renderChatUsersList(users) {
+    const chatUsersList = document.getElementById('chatUsersList');
+    if (!chatUsersList) return;
     
     if (users.length === 0) {
-        chatUsersList.innerHTML = '<div class="chat-empty-state">No registered users yet</div>';
-        const totalEl = document.getElementById('totalUsersInChat');
-        if (totalEl) totalEl.textContent = '0';
+        chatUsersList.innerHTML = `
+            <div style="padding: 3rem 1rem; text-align: center; color: #8696a0;">
+                <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">👥</div>
+                <p>No users found</p>
+            </div>
+        `;
         return;
     }
     
-    let html = '';
-    users.forEach((user, index) => {
-        const isActive = index === 0 ? 'active' : '';
+    chatUsersList.innerHTML = users.map((user, index) => {
+        const hasUnread = user.unreadCount > 0;
+        const avatar = user.name.charAt(0).toUpperCase();
+        const preview = user.lastMessage.substring(0, 35) + (user.lastMessage.length > 35 ? '...' : '');
+        
+        return `
+            <div class="wa-chat-item ${hasUnread ? 'has-unread' : ''}" 
+                 onclick="openWaChat('user${user.id}', '${user.name.replace(/'/g, "\\'")}', '${user.email}')"
+                 style="animation: slideInMessage 0.3s ease-out ${index * 0.05}s both;">
+                <div class="wa-chat-avatar">${avatar}</div>
+                <div class="wa-chat-content">
+                    <div class="wa-chat-top-row">
+                        <span class="wa-chat-name">${user.name}</span>
+                        <span class="wa-chat-time">${user.lastTime || ''}</span>
+                    </div>
+                    <div class="wa-chat-bottom-row">
+                        <span class="wa-chat-preview">${preview}</span>
+                        ${hasUnread ? `<span class="wa-unread-count">${user.unreadCount}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Filter chat users
+function filterChatUsers(filter) {
+    // Update active tab
+    document.querySelectorAll('.wa-filter-tab').forEach(tab => tab.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    
+    let filtered = allChatUsers;
+    
+    if (filter === 'unread') {
+        filtered = allChatUsers.filter(u => u.unreadCount > 0);
+    } else if (filter === 'groups') {
+        filtered = []; // No groups yet
+    }
+    
+    renderChatUsersList(filtered);
+}
+
+// Search chat users
+function searchChatUsers() {
+    const query = document.getElementById('chatUserSearch').value.toLowerCase();
+    const filtered = allChatUsers.filter(u => 
+        u.name.toLowerCase().includes(query) || 
+        u.email.toLowerCase().includes(query)
+    );
+    renderChatUsersList(filtered);
+}
+
+// Open WhatsApp-style chat
+function openWaChat(userId, userName, userEmail) {
+    currentWaChatUserId = userId;
+    currentWaChatUserName = userName;
+    
+    // Update chat header
+    document.getElementById('waChatUserName').textContent = userName;
+    document.getElementById('waChatAvatar').textContent = userName.charAt(0).toUpperCase();
+    document.getElementById('waChatUserStatus').textContent = 'online';
+    document.getElementById('waChatUserStatus').classList.add('online');
+    
+    // Initialize messages if not exists
+    if (!waUserMessages[userId]) {
+        waUserMessages[userId] = [
+            { type: 'received', text: 'Hey! I need help with my project.', time: '10:30 AM', status: 'read' },
+            { type: 'sent', text: 'Sure, which project are you looking for?', time: '10:32 AM', status: 'read' },
+            { type: 'received', text: 'I need a CSE final year project on Machine Learning', time: '10:35 AM', status: 'read' }
+        ];
+    }
+    
+    // Load messages
+    loadWaMessages(userId);
+    
+    // Show active chat view
+    document.getElementById('waActiveChat').style.display = 'flex';
+    document.getElementById('notificationsChatArea').style.display = 'none';
+    
+    // Mark as active in list
+    document.querySelectorAll('.wa-chat-item').forEach(item => item.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    
+    // Clear attached files
+    waAttachedFiles = [];
+    updateWaAttachedPreview();
+    
+    // Focus input
+    document.getElementById('waMessageInput').focus();
+    
+    // Scroll to bottom
+    setTimeout(() => {
+        const container = document.getElementById('waMessagesContainer');
+        container.scrollTop = container.scrollHeight;
+    }, 100);
+}
+
+// Load messages for a user
+function loadWaMessages(userId) {
+    const container = document.getElementById('waMessagesContainer');
+    if (!container) return;
+    
+    const messages = waUserMessages[userId] || [];
+    
+    if (messages.length === 0) {
+        container.innerHTML = `
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center; color: #8696a0;">
+                <p>No messages yet. Start the conversation!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Group messages by date
+    let html = `
+        <div class="wa-date-separator">
+            <span>Today</span>
+        </div>
+    `;
+    
+    messages.forEach(msg => {
+        const statusIcon = msg.status === 'read' ? '✓✓' : msg.status === 'delivered' ? '✓✓' : '✓';
+        const statusColor = msg.status === 'read' ? '#53bdeb' : 'rgba(255,255,255,0.6)';
+        
+        let fileHtml = '';
+        if (msg.file) {
+            const fileIcon = getFileIcon(msg.file.type);
+            fileHtml = `
+                <div class="wa-message-file" onclick="downloadWaFile('${msg.file.id}')">
+                    <span class="wa-file-icon">${fileIcon}</span>
+                    <div class="wa-file-info">
+                        <div class="wa-file-name">${msg.file.name}</div>
+                        <div class="wa-file-size">${formatFileSize(msg.file.size)}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
         html += `
-            <div class="chat-user-item ${isActive}" onclick="selectChatUser(this, 'user${user.id}', '${user.name.replace(/'/g, "\\'")}', '${user.email}', '${user.college}')">
-                <div class="chat-user-item-avatar">👤</div>
-                <div class="chat-user-item-content">
-                    <div class="chat-user-item-name">${user.name}</div>
+            <div class="wa-message ${msg.type}">
+                <div class="wa-message-bubble">
+                    ${fileHtml}
+                    ${msg.text ? `<div>${msg.text}</div>` : ''}
+                    <div class="wa-message-time">
+                        <span>${msg.time}</span>
+                        ${msg.type === 'sent' ? `<span class="wa-message-status" style="color: ${statusColor}">${statusIcon}</span>` : ''}
+                    </div>
                 </div>
             </div>
         `;
     });
-    chatUsersList.innerHTML = html;
-    const totalEl = document.getElementById('totalUsersInChat');
-    if (totalEl) totalEl.textContent = users.length;
+    
+    container.innerHTML = html;
 }
 
-function selectChatUser(element, userId, userName, userEmail, userCollege) {
-    // Remove active class from all user items
-    document.querySelectorAll('.chat-user-item').forEach(item => {
-        item.classList.remove('active');
+// Close chat view (mobile)
+function closeChatView() {
+    document.getElementById('waActiveChat').style.display = 'none';
+    document.getElementById('notificationsChatArea').style.display = 'flex';
+    currentWaChatUserId = null;
+    currentWaChatUserName = null;
+}
+
+// Handle file selection
+function handleWaFileSelect(event) {
+    const files = Array.from(event.target.files);
+    
+    files.forEach(file => {
+        const fileId = 'file_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        waFileStorage[fileId] = file;
+        waAttachedFiles.push({
+            id: fileId,
+            name: file.name,
+            size: file.size,
+            type: file.type
+        });
     });
     
-    // Add active class to selected item
-    element.classList.add('active');
-    
-    // Open the user chat section directly
-    openUserChat(userId, userName);
+    updateWaAttachedPreview();
+    event.target.value = '';
 }
 
-let attachedFiles = [];
-let fileStorage = {}; // Store file references with unique IDs
-
-// Store current active user chat
-let currentChatUserId = null;
-let currentChatUserName = null;
-let userMessages = {}; // Store messages per user ID
-
-function openUserChat(userId, userName) {
-    const notifsChatPage = document.getElementById('notificationsChatPage');
-    const userChatPage = document.getElementById('userChatPage');
-    const userChatName = document.getElementById('userChatName');
-    const userChatMessages = document.getElementById('userChatMessages');
-    const userMessageInput = document.getElementById('userMessageInput');
+// Update attached files preview
+function updateWaAttachedPreview() {
+    const preview = document.getElementById('waAttachedPreview');
+    if (!preview) return;
     
-    if (!notifsChatPage || !userChatPage || !userChatName || !userChatMessages || !userMessageInput) {
-        console.error('Chat elements not found');
+    if (waAttachedFiles.length === 0) {
+        preview.innerHTML = '';
         return;
     }
     
-    // Set current active user
-    currentChatUserId = userId;
-    currentChatUserName = userName;
+    preview.innerHTML = waAttachedFiles.map(file => `
+        <div class="wa-attached-item">
+            <span>${getFileIcon(file.type)} ${file.name.substring(0, 15)}${file.name.length > 15 ? '...' : ''}</span>
+            <button class="wa-attached-remove" onclick="removeWaAttachment('${file.id}')">&times;</button>
+        </div>
+    `).join('');
+}
+
+// Remove attachment
+function removeWaAttachment(fileId) {
+    waAttachedFiles = waAttachedFiles.filter(f => f.id !== fileId);
+    delete waFileStorage[fileId];
+    updateWaAttachedPreview();
+}
+
+// Get file icon based on type
+function getFileIcon(type) {
+    if (!type) return '📄';
+    if (type.startsWith('image/')) return '🖼️';
+    if (type.startsWith('video/')) return '🎬';
+    if (type.includes('pdf')) return '📕';
+    if (type.includes('word') || type.includes('doc')) return '📘';
+    if (type.includes('excel') || type.includes('sheet')) return '📗';
+    if (type.includes('zip') || type.includes('rar')) return '📦';
+    return '📄';
+}
+
+// Format file size
+function formatFileSize(bytes) {
+    if (!bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+// Handle enter key in message input
+function handleWaMessageKeypress(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendWaMessage();
+    }
+}
+
+// Send message
+function sendWaMessage() {
+    const input = document.getElementById('waMessageInput');
+    const text = input.value.trim();
     
-    notifsChatPage.style.display = 'none';
-    userChatPage.style.display = 'block';
-    userChatName.textContent = userName;
-    document.body.style.overflow = 'hidden';
-    const footer = document.getElementById('mainFooter');
-    if (footer) footer.style.display = 'none';
+    if (!text && waAttachedFiles.length === 0) return;
+    if (!currentWaChatUserId) return;
     
-    // Initialize messages array for this user if not exists
-    if (!userMessages[userId]) {
-        userMessages[userId] = [
-            { type: 'other', text: 'Hey, how are you?', time: '10:30 AM' },
-            { type: 'admin', text: 'Hi! I\'m good, thanks for asking', time: '10:32 AM' },
-            { type: 'other', text: 'Do you need any help with projects?', time: '10:35 AM' },
-            { type: 'admin', text: 'Yes, I need CSE project help', time: '10:37 AM' }
-        ];
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    
+    // Add message for each attached file
+    waAttachedFiles.forEach(file => {
+        waUserMessages[currentWaChatUserId].push({
+            type: 'sent',
+            text: '',
+            time: time,
+            status: 'sent',
+            file: {
+                id: file.id,
+                name: file.name,
+                size: file.size,
+                type: file.type
+            }
+        });
+    });
+    
+    // Add text message
+    if (text) {
+        waUserMessages[currentWaChatUserId].push({
+            type: 'sent',
+            text: text,
+            time: time,
+            status: 'sent'
+        });
     }
     
-    // Load messages for this specific user
-    loadUserMessages(userId);
+    // Clear input and attachments
+    input.value = '';
+    waAttachedFiles = [];
+    updateWaAttachedPreview();
+    
+    // Reload messages
+    loadWaMessages(currentWaChatUserId);
     
     // Scroll to bottom
+    const container = document.getElementById('waMessagesContainer');
     setTimeout(() => {
-        userChatMessages.scrollTop = userChatMessages.scrollHeight;
+        container.scrollTop = container.scrollHeight;
     }, 100);
     
-    userMessageInput.focus();
-    attachedFiles = [];
-    updateAttachedFilesPreview();
+    // Simulate delivery after 1 second
+    setTimeout(() => {
+        const msgs = waUserMessages[currentWaChatUserId];
+        if (msgs.length > 0) {
+            msgs[msgs.length - 1].status = 'delivered';
+            loadWaMessages(currentWaChatUserId);
+        }
+    }, 1000);
+    
+    // Simulate read after 2 seconds
+    setTimeout(() => {
+        const msgs = waUserMessages[currentWaChatUserId];
+        if (msgs.length > 0) {
+            msgs[msgs.length - 1].status = 'read';
+            loadWaMessages(currentWaChatUserId);
+        }
+    }, 2000);
+}
+
+// Download file
+function downloadWaFile(fileId) {
+    const file = waFileStorage[fileId];
+    if (!file) {
+        alert('File not available');
+        return;
+    }
+    
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = file.name;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Legacy support
+let attachedFiles = [];
+let fileStorage = {};
+let currentChatUserId = null;
+let currentChatUserName = null;
+let userMessages = {};
+
+function selectChatUser(element, userId, userName, userEmail, userCollege) {
+    openWaChat(userId, userName, userEmail);
+}
+
+function openUserChat(userId, userName) {
+    // Redirect to WhatsApp style chat
+    const userEmail = '';
+    openWaChat(userId, userName, userEmail);
 }
 
 function loadUserMessages(userId) {
-    const userChatMessages = document.getElementById('userChatMessages');
-    if (!userChatMessages) return;
-    
-    const messages = userMessages[userId] || [];
-    const messagesHTML = messages.map(msg => `
-        <div class="chat-message-item ${msg.type}">
-            <div class="chat-message-bubble">${msg.text}</div>
-            <div class="chat-message-time">${msg.time}</div>
-        </div>
-    `).join('');
-    
-    userChatMessages.innerHTML = messagesHTML;
+    loadWaMessages(userId);
 }
 
 function closeUserChat() {
@@ -1718,30 +2007,7 @@ async function updateOrderStats() {
     }
 }
 
-// Search functions
-function searchChatUsers() {
-    const query = document.getElementById('chatUserSearch').value.toLowerCase();
-    const filtered = sampleUsers.filter(u =>
-        u.name.toLowerCase().includes(query) ||
-        u.email.toLowerCase().includes(query)
-    );
-    
-    const chatUsersList = document.getElementById('chatUsersList');
-    if (filtered.length === 0) {
-        chatUsersList.innerHTML = '<div class="chat-empty-state"><p>No users found</p></div>';
-        return;
-    }
-    
-    chatUsersList.innerHTML = filtered.map((user, index) => `
-        <div class="chat-user-item" onclick="selectChatUser(this, 'user${user.id}', '${user.name.replace(/'/g, "\\'")}', '${user.email}', '${user.college}')" style="animation-delay: ${index * 0.05}s">
-            <div class="chat-user-item-avatar">👤</div>
-            <div class="chat-user-item-content">
-                <div class="chat-user-item-name">${user.name}</div>
-            </div>
-        </div>
-    `).join('');
-}
-
+// Order search functions
 function searchPendingOrders() {
     const query = document.getElementById('orderSearchInput').value.toLowerCase();
     const filtered = pendingOrdersData.filter(o =>

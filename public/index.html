@@ -387,56 +387,79 @@
         </div>
     </section>
 
-    <!-- Notifications Chat Section -->
+    <!-- Notifications Chat Section - WhatsApp Style -->
     <section id="notificationsChatPage" style="display: none;">
-        <div class="chat-page-container enhanced-section">
-            <div class="chat-header gradient-header">
-                <button class="chat-back-btn" onclick="closeNotificationsChat()">← Back</button>
-                <div class="header-title-area">
-                    <div class="header-icon-badge">🔔</div>
-                    <div>
-                        <h2>Notifications & Messages</h2>
-                        <p class="header-subtitle">Manage user communications</p>
-                    </div>
-                </div>
-                <div class="chat-header-stats">
-                    <div class="stat-badge">
-                        <span class="stat-number" id="totalUsersInChat">0</span>
-                        <span class="stat-label">Users</span>
-                    </div>
-                    <div class="stat-badge">
-                        <span class="stat-number" id="unreadNotifications">0</span>
-                        <span class="stat-label">Unread</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="chat-main-content">
-                <!-- Users List -->
-                <div class="chat-users-sidebar">
-                    <div class="chat-search-box">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" id="chatUserSearch" placeholder="Search users..." onkeyup="searchChatUsers()">
-                    </div>
-                    <div class="sidebar-tabs">
-                        <button class="sidebar-tab active" onclick="switchNotifTab('users')">👥 Users</button>
-                        <button class="sidebar-tab" onclick="switchNotifTab('notifications')">🔔 All Alerts</button>
-                    </div>
-                    <div class="chat-users-list" id="chatUsersList">
-                        <div class="skeleton-loader">
-                            <div class="skeleton-item"></div>
-                            <div class="skeleton-item"></div>
-                            <div class="skeleton-item"></div>
-                        </div>
+        <div class="whatsapp-container">
+            <!-- Left Sidebar - Users List -->
+            <div class="wa-sidebar">
+                <div class="wa-sidebar-header">
+                    <button class="wa-back-btn" onclick="closeNotificationsChat()">←</button>
+                    <h3>Chats</h3>
+                    <div class="wa-header-actions">
+                        <span class="wa-user-count" id="totalUsersInChat">0</span>
+                        <span class="wa-unread-badge" id="unreadNotifications">0</span>
                     </div>
                 </div>
                 
-                <!-- Chat Area -->
-                <div class="chat-area" id="notificationsChatArea">
-                    <div class="chat-empty-state animated">
-                        <div class="empty-icon">💬</div>
-                        <h3>Select a user to view chat</h3>
-                        <p>Choose from the list on the left to start messaging</p>
+                <div class="wa-search-container">
+                    <div class="wa-search-box">
+                        <span class="wa-search-icon">🔍</span>
+                        <input type="text" id="chatUserSearch" placeholder="Search or start new chat" onkeyup="searchChatUsers()">
+                    </div>
+                </div>
+                
+                <div class="wa-filter-tabs">
+                    <button class="wa-filter-tab active" onclick="filterChatUsers('all')">All</button>
+                    <button class="wa-filter-tab" onclick="filterChatUsers('unread')">Unread</button>
+                    <button class="wa-filter-tab" onclick="filterChatUsers('groups')">Groups</button>
+                </div>
+                
+                <div class="wa-chats-list" id="chatUsersList">
+                    <!-- Users will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Right Side - Chat Area -->
+            <div class="wa-chat-area" id="notificationsChatArea">
+                <div class="wa-no-chat-selected">
+                    <div class="wa-no-chat-icon">💬</div>
+                    <h2>ProjectHub Web</h2>
+                    <p>Send and receive messages from users.<br>Select a chat to start messaging.</p>
+                </div>
+            </div>
+            
+            <!-- Active Chat View (hidden by default) -->
+            <div class="wa-active-chat" id="waActiveChat" style="display: none;">
+                <div class="wa-chat-header">
+                    <button class="wa-chat-back-btn" onclick="closeChatView()">←</button>
+                    <div class="wa-chat-user-info">
+                        <div class="wa-chat-avatar" id="waChatAvatar">👤</div>
+                        <div class="wa-chat-user-details">
+                            <h4 id="waChatUserName">User Name</h4>
+                            <span class="wa-online-status" id="waChatUserStatus">online</span>
+                        </div>
+                    </div>
+                    <div class="wa-chat-actions">
+                        <button class="wa-action-btn" title="Video call">📹</button>
+                        <button class="wa-action-btn" title="Voice call">📞</button>
+                        <button class="wa-action-btn" title="More options">⋮</button>
+                    </div>
+                </div>
+                
+                <div class="wa-messages-container" id="waMessagesContainer">
+                    <!-- Messages will appear here -->
+                </div>
+                
+                <div class="wa-input-area">
+                    <div class="wa-attached-preview" id="waAttachedPreview"></div>
+                    <div class="wa-input-row">
+                        <button class="wa-emoji-btn" title="Emoji">😊</button>
+                        <button class="wa-attach-btn" onclick="document.getElementById('waFileInput').click()" title="Attach file">📎</button>
+                        <input type="file" id="waFileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip" style="display:none" onchange="handleWaFileSelect(event)">
+                        <input type="text" id="waMessageInput" class="wa-message-input" placeholder="Type a message" onkeypress="handleWaMessageKeypress(event)">
+                        <button class="wa-send-btn" onclick="sendWaMessage()" title="Send">
+                            <span class="send-icon">➤</span>
+                        </button>
                     </div>
                 </div>
             </div>
