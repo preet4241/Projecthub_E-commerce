@@ -5638,10 +5638,31 @@ body {
 .wa-online-status {
     color: #8696a0;
     font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
 .wa-online-status.online {
     color: #00a884;
+}
+
+.wa-online-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #00a884;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
 }
 
 .wa-chat-actions {

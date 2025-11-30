@@ -986,6 +986,10 @@ let allChatUsers = [];
 // Initialize user read status
 let userReadStatus = {};
 
+// Track user online status
+let userStatus = {};
+let currentOnlineUser = null;
+
 // Load chat users from database - WhatsApp Style
 function loadChatUsers() {
     const chatUsersList = document.getElementById('chatUsersList');
@@ -1115,6 +1119,13 @@ function searchChatUsers() {
 function openWaChat(userId, userName, userEmail) {
     currentWaChatUserId = userId;
     currentWaChatUserName = userName;
+    currentOnlineUser = userId;
+    
+    // Mark user as online
+    userStatus[userId] = {
+        isOnline: true,
+        lastSeen: new Date()
+    };
     
     // Update chat header
     const nameEl = document.getElementById('waChatUserName');
@@ -1124,7 +1135,7 @@ function openWaChat(userId, userName, userEmail) {
     if (nameEl) nameEl.textContent = userName;
     if (avatarEl) avatarEl.textContent = userName.charAt(0).toUpperCase();
     if (statusEl) {
-        statusEl.textContent = 'online';
+        statusEl.innerHTML = '<span class="wa-online-indicator"></span>online';
         statusEl.classList.add('online');
     }
     
@@ -1298,10 +1309,19 @@ function loadWaMessages(userId) {
 
 // Close chat view (mobile)
 function closeChatView() {
+    // Mark user as offline (last seen now)
+    if (currentOnlineUser) {
+        userStatus[currentOnlineUser] = {
+            isOnline: false,
+            lastSeen: new Date()
+        };
+    }
+    
     document.getElementById('waActiveChat').style.display = 'none';
     document.getElementById('notificationsChatArea').style.display = 'flex';
     currentWaChatUserId = null;
     currentWaChatUserName = null;
+    currentOnlineUser = null;
 }
 
 // Handle file selection
