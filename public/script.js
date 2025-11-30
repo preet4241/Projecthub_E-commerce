@@ -902,14 +902,176 @@ function deleteProject(projectId) {
 
 // Open stat section when card is clicked
 function openStatSection(sectionType) {
-    const messages = {
-        notifications: '🔔 Notifications\n\nYou have 12 new notifications:\n• 5 new user registrations\n• 4 pending orders\n• 3 support messages',
-        orderConfirm: '📦 Order Confirmation\n\n8 orders waiting for confirmation:\n• Order #1234 - ₹299\n• Order #1235 - ₹399\n• Order #1236 - ₹499\n...and 5 more',
-        confirmedOrders: '✅ Confirmed Orders\n\n45 orders confirmed:\n• Total Revenue: ₹18,450\n• Average Order Value: ₹410\n• Most Popular: CSE Projects',
-        cancelledOrders: '❌ Cancelled Orders\n\n3 orders cancelled:\n• Order #1220 - ₹299 (Refunded)\n• Order #1215 - ₹399 (Refunded)\n• Order #1210 - ₹249 (Refunded)'
-    };
+    if (sectionType === 'notifications') {
+        openNotificationsChat();
+    } else if (sectionType === 'orderConfirm') {
+        openOrderConfirmChat();
+    } else if (sectionType === 'confirmedOrders') {
+        openConfirmedOrdersChat();
+    } else if (sectionType === 'cancelledOrders') {
+        openCancelledOrdersChat();
+    }
+}
+
+// Notifications Chat Functions
+function openNotificationsChat() {
+    document.getElementById('adminSection').style.display = 'none';
+    document.getElementById('notificationsChatPage').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    loadChatUsers();
+}
+
+function closeNotificationsChat() {
+    document.getElementById('notificationsChatPage').style.display = 'none';
+    document.getElementById('adminSection').style.display = 'flex';
+    document.body.style.overflow = 'auto';
+}
+
+// Order Confirmation Chat Functions
+function openOrderConfirmChat() {
+    document.getElementById('adminSection').style.display = 'none';
+    document.getElementById('orderConfirmChatPage').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    loadPendingOrders();
+}
+
+function closeOrderConfirmChat() {
+    document.getElementById('orderConfirmChatPage').style.display = 'none';
+    document.getElementById('adminSection').style.display = 'flex';
+    document.body.style.overflow = 'auto';
+}
+
+// Confirmed Orders Chat Functions
+function openConfirmedOrdersChat() {
+    document.getElementById('adminSection').style.display = 'none';
+    document.getElementById('confirmedOrdersChatPage').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    loadConfirmedOrders();
+}
+
+function closeConfirmedOrdersChat() {
+    document.getElementById('confirmedOrdersChatPage').style.display = 'none';
+    document.getElementById('adminSection').style.display = 'flex';
+    document.body.style.overflow = 'auto';
+}
+
+// Cancelled Orders Chat Functions
+function openCancelledOrdersChat() {
+    document.getElementById('adminSection').style.display = 'none';
+    document.getElementById('cancelledOrdersChatPage').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    loadCancelledOrders();
+}
+
+function closeCancelledOrdersChat() {
+    document.getElementById('cancelledOrdersChatPage').style.display = 'none';
+    document.getElementById('adminSection').style.display = 'flex';
+    document.body.style.overflow = 'auto';
+}
+
+// Load chat users
+function loadChatUsers() {
+    const chatUsersList = document.getElementById('chatUsersList');
+    chatUsersList.innerHTML = `
+        <div class="chat-user-item active" onclick="selectChatUser(this, 'user1')">
+            <div class="chat-user-item-name">👤 Registered Users</div>
+            <div class="chat-user-item-meta">All Users Active</div>
+        </div>
+        <div class="chat-user-item" onclick="selectChatUser(this, 'msg1')">
+            <div class="chat-user-item-name">💬 Support Messages</div>
+            <div class="chat-user-item-meta">3 unread</div>
+        </div>
+        <div class="chat-user-item" onclick="selectChatUser(this, 'pending1')">
+            <div class="chat-user-item-name">📋 Pending Requests</div>
+            <div class="chat-user-item-meta">4 pending</div>
+        </div>
+    `;
+    document.getElementById('totalUsersInChat').textContent = '500+';
+}
+
+function selectChatUser(element, userId) {
+    document.querySelectorAll('.chat-user-item').forEach(e => e.classList.remove('active'));
+    element.classList.add('active');
     
-    alert(messages[sectionType] || 'Section coming soon!');
+    const messages = {
+        'user1': '<h3>👤 Registered Users</h3><p>Total: 500+ users registered</p>',
+        'msg1': '<h3>💬 Support Messages</h3><p>3 messages waiting for response</p>',
+        'pending1': '<h3>📋 Pending Requests</h3><p>4 requests need attention</p>'
+    };
+    document.getElementById('chatSelectedUserInfo').innerHTML = messages[userId] || '';
+}
+
+function loadPendingOrders() {
+    const ordersList = document.getElementById('ordersList');
+    ordersList.innerHTML = `
+        <div class="chat-user-item active">
+            <div class="chat-user-item-name">📦 Order #1234</div>
+            <div class="chat-user-item-meta">₹299 - Pending</div>
+        </div>
+        <div class="chat-user-item">
+            <div class="chat-user-item-name">📦 Order #1235</div>
+            <div class="chat-user-item-meta">₹399 - Pending</div>
+        </div>
+        <div class="chat-user-item">
+            <div class="chat-user-item-name">📦 Order #1236</div>
+            <div class="chat-user-item-meta">₹499 - Pending</div>
+        </div>
+    `;
+    document.getElementById('totalOrdersPending').textContent = '8';
+}
+
+function loadConfirmedOrders() {
+    const confirmedList = document.getElementById('confirmedOrdersList');
+    confirmedList.innerHTML = `
+        <div class="chat-user-item active">
+            <div class="chat-user-item-name">✅ CSE Projects</div>
+            <div class="chat-user-item-meta">25 orders - ₹10,250</div>
+        </div>
+        <div class="chat-user-item">
+            <div class="chat-user-item-name">✅ ECE Projects</div>
+            <div class="chat-user-item-meta">12 orders - ₹4,800</div>
+        </div>
+        <div class="chat-user-item">
+            <div class="chat-user-item-name">✅ Other Projects</div>
+            <div class="chat-user-item-meta">8 orders - ₹3,400</div>
+        </div>
+    `;
+    document.getElementById('totalConfirmedOrders').textContent = '45';
+}
+
+function loadCancelledOrders() {
+    const cancelledList = document.getElementById('cancelledOrdersList');
+    cancelledList.innerHTML = `
+        <div class="chat-user-item active">
+            <div class="chat-user-item-name">❌ Order #1220</div>
+            <div class="chat-user-item-meta">₹299 - Refunded</div>
+        </div>
+        <div class="chat-user-item">
+            <div class="chat-user-item-name">❌ Order #1215</div>
+            <div class="chat-user-item-meta">₹399 - Refunded</div>
+        </div>
+        <div class="chat-user-item">
+            <div class="chat-user-item-name">❌ Order #1210</div>
+            <div class="chat-user-item-meta">₹249 - Refunded</div>
+        </div>
+    `;
+    document.getElementById('totalCancelledOrders').textContent = '3';
+}
+
+function searchChatUsers() {
+    // Search functionality placeholder
+}
+
+function searchOrders() {
+    // Search functionality placeholder
+}
+
+function searchConfirmedOrders() {
+    // Search functionality placeholder
+}
+
+function searchCancelledOrders() {
+    // Search functionality placeholder
 }
 
 // Close admin login modal on outside click
