@@ -1134,10 +1134,9 @@ function openWaChat(userId, userName, userEmail) {
     
     if (nameEl) nameEl.textContent = userName;
     if (avatarEl) avatarEl.textContent = userName.charAt(0).toUpperCase();
-    if (statusEl) {
-        statusEl.innerHTML = '<span class="wa-online-indicator"></span>online';
-        statusEl.classList.add('online');
-    }
+    
+    // Update status display
+    updateUserStatusDisplay(userId);
     
     // Initialize messages if not exists
     if (!waUserMessages[userId]) {
@@ -1305,6 +1304,41 @@ function loadWaMessages(userId) {
     });
     
     container.innerHTML = html;
+}
+
+// Format last seen time
+function formatLastSeen(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'now';
+    if (diffMins < 60) return diffMins + ' min ago';
+    if (diffHours < 24) return diffHours + ' hour' + (diffHours > 1 ? 's' : '') + ' ago';
+    if (diffDays < 7) return diffDays + ' day' + (diffDays > 1 ? 's' : '') + ' ago';
+    
+    return date.toLocaleDateString();
+}
+
+// Update user status display
+function updateUserStatusDisplay(userId) {
+    const statusEl = document.getElementById('waChatUserStatus');
+    if (!statusEl) return;
+    
+    const status = userStatus[userId];
+    if (status && status.isOnline) {
+        statusEl.innerHTML = '<span class="wa-online-indicator"></span>online';
+        statusEl.classList.add('online');
+    } else if (status) {
+        const lastSeenText = formatLastSeen(status.lastSeen);
+        statusEl.innerHTML = lastSeenText === 'now' ? '<span class="wa-online-indicator"></span>online' : 'last seen ' + lastSeenText;
+        statusEl.classList.remove('online');
+    } else {
+        statusEl.innerHTML = '<span class="wa-online-indicator"></span>online';
+        statusEl.classList.add('online');
+    }
 }
 
 // Close chat view (mobile)
