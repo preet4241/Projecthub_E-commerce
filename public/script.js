@@ -1011,6 +1011,8 @@ function selectChatUser(element, userId, userName, userEmail, userCollege) {
     openUserChat(userId, userName);
 }
 
+let attachedFiles = [];
+
 function openUserChat(userId, userName) {
     document.getElementById('notificationsChatPage').style.display = 'none';
     document.getElementById('userChatPage').style.display = 'block';
@@ -1037,30 +1039,89 @@ function openUserChat(userId, userName) {
         </div>
     `;
     document.getElementById('userChatMessages').innerHTML = messagesHTML;
+    
+    // Scroll to bottom
+    setTimeout(() => {
+        const messagesDiv = document.getElementById('userChatMessages');
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }, 100);
+    
     document.getElementById('userMessageInput').focus();
+    attachedFiles = [];
+    updateAttachedFilesPreview();
 }
 
 function closeUserChat() {
     document.getElementById('userChatPage').style.display = 'none';
     document.getElementById('notificationsChatPage').style.display = 'block';
     document.body.style.overflow = 'auto';
+    attachedFiles = [];
+}
+
+function handleFileSelect(event) {
+    const files = Array.from(event.target.files);
+    attachedFiles = [...attachedFiles, ...files];
+    updateAttachedFilesPreview();
+    event.target.value = '';
+}
+
+function updateAttachedFilesPreview() {
+    const preview = document.getElementById('attachedFilesPreview');
+    
+    if (attachedFiles.length === 0) {
+        preview.innerHTML = '';
+        preview.style.display = 'none';
+        return;
+    }
+    
+    preview.style.display = 'flex';
+    preview.innerHTML = attachedFiles.map((file, index) => `
+        <div class="file-preview-item">
+            📄 ${file.name.length > 20 ? file.name.substring(0, 20) + '...' : file.name}
+            <button class="file-preview-remove" onclick="removeAttachedFile(${index})" title="Remove">✕</button>
+        </div>
+    `).join('');
+}
+
+function removeAttachedFile(index) {
+    attachedFiles.splice(index, 1);
+    updateAttachedFilesPreview();
 }
 
 function sendMessage() {
     const input = document.getElementById('userMessageInput');
     const message = input.value.trim();
     
-    if (message) {
+    if (message || attachedFiles.length > 0) {
         const messagesDiv = document.getElementById('userChatMessages');
+        const currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        
+        let messageContent = '';
+        
+        if (attachedFiles.length > 0) {
+            const filesHTML = attachedFiles.map(file => `📎 ${file.name}`).join('<br>');
+            messageContent += `<div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 0.3rem;">${filesHTML}</div>`;
+        }
+        
+        if (message) {
+            messageContent += message;
+        }
+        
         const messageHTML = `
             <div class="chat-message-item admin">
-                <div class="chat-message-bubble">${message}</div>
-                <div class="chat-message-time">now</div>
+                <div class="chat-message-bubble">${messageContent}</div>
+                <div class="chat-message-time">${currentTime}</div>
             </div>
         `;
         messagesDiv.innerHTML += messageHTML;
         input.value = '';
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        attachedFiles = [];
+        updateAttachedFilesPreview();
+        
+        // Scroll to bottom with smooth animation
+        setTimeout(() => {
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }, 10);
     }
 }
 
