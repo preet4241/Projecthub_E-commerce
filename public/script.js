@@ -1022,6 +1022,11 @@ function selectChatUser(element, userId, userName, userEmail, userCollege) {
 let attachedFiles = [];
 let fileStorage = {}; // Store file references with unique IDs
 
+// Store current active user chat
+let currentChatUserId = null;
+let currentChatUserName = null;
+let userMessages = {}; // Store messages per user ID
+
 function openUserChat(userId, userName) {
     const notifsChatPage = document.getElementById('notificationsChatPage');
     const userChatPage = document.getElementById('userChatPage');
@@ -1034,6 +1039,10 @@ function openUserChat(userId, userName) {
         return;
     }
     
+    // Set current active user
+    currentChatUserId = userId;
+    currentChatUserName = userName;
+    
     notifsChatPage.style.display = 'none';
     userChatPage.style.display = 'block';
     userChatName.textContent = userName;
@@ -1041,26 +1050,18 @@ function openUserChat(userId, userName) {
     const footer = document.getElementById('mainFooter');
     if (footer) footer.style.display = 'none';
     
-    // Load sample messages
-    const messagesHTML = `
-        <div class="chat-message-item other">
-            <div class="chat-message-bubble">Hey, how are you?</div>
-            <div class="chat-message-time">10:30 AM</div>
-        </div>
-        <div class="chat-message-item admin">
-            <div class="chat-message-bubble">Hi! I'm good, thanks for asking</div>
-            <div class="chat-message-time">10:32 AM</div>
-        </div>
-        <div class="chat-message-item other">
-            <div class="chat-message-bubble">Do you need any help with projects?</div>
-            <div class="chat-message-time">10:35 AM</div>
-        </div>
-        <div class="chat-message-item admin">
-            <div class="chat-message-bubble">Yes, I need CSE project help</div>
-            <div class="chat-message-time">10:37 AM</div>
-        </div>
-    `;
-    userChatMessages.innerHTML = messagesHTML;
+    // Initialize messages array for this user if not exists
+    if (!userMessages[userId]) {
+        userMessages[userId] = [
+            { type: 'other', text: 'Hey, how are you?', time: '10:30 AM' },
+            { type: 'admin', text: 'Hi! I\'m good, thanks for asking', time: '10:32 AM' },
+            { type: 'other', text: 'Do you need any help with projects?', time: '10:35 AM' },
+            { type: 'admin', text: 'Yes, I need CSE project help', time: '10:37 AM' }
+        ];
+    }
+    
+    // Load messages for this specific user
+    loadUserMessages(userId);
     
     // Scroll to bottom
     setTimeout(() => {
@@ -1070,6 +1071,21 @@ function openUserChat(userId, userName) {
     userMessageInput.focus();
     attachedFiles = [];
     updateAttachedFilesPreview();
+}
+
+function loadUserMessages(userId) {
+    const userChatMessages = document.getElementById('userChatMessages');
+    if (!userChatMessages) return;
+    
+    const messages = userMessages[userId] || [];
+    const messagesHTML = messages.map(msg => `
+        <div class="chat-message-item ${msg.type}">
+            <div class="chat-message-bubble">${msg.text}</div>
+            <div class="chat-message-time">${msg.time}</div>
+        </div>
+    `).join('');
+    
+    userChatMessages.innerHTML = messagesHTML;
 }
 
 function closeUserChat() {
@@ -1124,6 +1140,12 @@ function sendMessage() {
         return;
     }
     
+    // Check if user is selected
+    if (!currentChatUserId) {
+        alert('Please select a user to send message');
+        return;
+    }
+    
     const message = input.value.trim();
     
     if (message || attachedFiles.length > 0) {
@@ -1144,6 +1166,17 @@ function sendMessage() {
             messageContent += message;
         }
         
+        // Store message in user-specific array
+        if (!userMessages[currentChatUserId]) {
+            userMessages[currentChatUserId] = [];
+        }
+        
+        userMessages[currentChatUserId].push({
+            type: 'admin',
+            text: messageContent,
+            time: currentTime
+        });
+        
         const messageHTML = `
             <div class="chat-message-item admin">
                 <div class="chat-message-bubble">${messageContent}</div>
@@ -1159,6 +1192,8 @@ function sendMessage() {
         setTimeout(() => {
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }, 10);
+        
+        console.log(`Message sent to user ${currentChatUserId} (${currentChatUserName}): ${message}`);
     }
 }
 
