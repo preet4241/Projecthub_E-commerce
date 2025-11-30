@@ -112,7 +112,7 @@ app.get('/api/colleges', async (req, res) => {
 // API Routes - Get all users
 app.get('/api/users', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, name, email, college, created_at FROM users WHERE is_banned = FALSE ORDER BY created_at DESC');
+    const result = await pool.query('SELECT id, first_name, last_name, email, college, created_at FROM users WHERE is_banned = FALSE ORDER BY created_at DESC');
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -123,10 +123,10 @@ app.get('/api/users', async (req, res) => {
 // API Routes - Add new user
 app.post('/api/users', async (req, res) => {
   try {
-    const { name, email, college } = req.body;
+    const { first_name, last_name, email, college } = req.body;
     const result = await pool.query(
-      'INSERT INTO users (name, email, college) VALUES ($1, $2, $3) RETURNING id, name, email, college, created_at',
-      [name, email, college]
+      'INSERT INTO users (first_name, last_name, name, email, college) VALUES ($1, $2, $3, $4, $5) RETURNING id, first_name, last_name, email, college, created_at',
+      [first_name, last_name, `${first_name} ${last_name}`, email, college]
     );
     res.json(result.rows[0]);
   } catch (error) {

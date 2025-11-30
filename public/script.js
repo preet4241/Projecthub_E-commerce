@@ -986,10 +986,14 @@ function loadChatUsers() {
             let html = '';
             users.forEach((user, index) => {
                 const isActive = index === 0 ? 'active' : '';
+                const fullName = `${user.first_name} ${user.last_name}`;
                 html += `
-                    <div class="chat-user-item ${isActive}" onclick="selectChatUser(this, 'user${user.id}', '${user.name.replace(/'/g, "\\'")}', '${user.email}', '${user.college}')">
-                        <div class="chat-user-item-name">👤 ${user.name}</div>
-                        <div class="chat-user-item-meta">${user.email}</div>
+                    <div class="chat-user-item ${isActive}" onclick="selectChatUser(this, 'user${user.id}', '${fullName.replace(/'/g, "\\'")}', '${user.email}', '${user.college}')">
+                        <div class="chat-user-item-avatar">👤</div>
+                        <div class="chat-user-item-content">
+                            <div class="chat-user-item-name">${fullName}</div>
+                            <div class="chat-user-item-meta">${user.email}</div>
+                        </div>
                     </div>
                 `;
             });
@@ -997,7 +1001,9 @@ function loadChatUsers() {
             document.getElementById('totalUsersInChat').textContent = users.length;
             
             if (users.length > 0) {
-                selectChatUser(document.querySelector('.chat-user-item'), 'user' + users[0].id, users[0].name, users[0].email, users[0].college);
+                const firstName = users[0].first_name;
+                const lastName = users[0].last_name;
+                selectChatUser(document.querySelector('.chat-user-item'), 'user' + users[0].id, `${firstName} ${lastName}`, users[0].email, users[0].college);
             }
         })
         .catch(error => {

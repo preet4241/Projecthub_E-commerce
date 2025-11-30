@@ -3155,3 +3155,43 @@ footer {
         font-size: 0.85rem;
     }
 }
+
+/* Chat User Item - Updated Layout */
+.chat-user-item-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.chat-user-item {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.chat-user-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-user-item-name {
+    font-weight: 600;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chat-user-item-meta {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
