@@ -89,6 +89,28 @@ Preferred communication style: Simple, everyday language.
 
 **Future Consideration**: Should implement proper authentication (JWT, sessions, or OAuth) before production deployment
 
+### Admin Dashboard Features
+
+**Admin Sections**: The admin panel (accessed via `@hackerponline` in search) contains 4 main sections:
+
+1. **Notifications/Chat** (WhatsApp-style):
+   - WhatsApp/Telegram-style chat interface with user list sidebar
+   - Users sorted by: new messages first, then by name, no messages at bottom
+   - Message bubbles with sent/received styling and status indicators (sent, delivered, read)
+   - File attachment support with preview and multiple file selection
+   - Filter tabs (All, Unread, Groups) and search functionality
+   - Mobile responsive with collapsible sidebar
+
+2. **Order Confirmation**: Pending orders with approve/reject actions
+3. **Confirmed Orders**: List of approved orders with details
+4. **Cancelled Orders**: History of rejected/cancelled orders
+
+**UI Features**:
+- Gradient headers with icon badges and stats
+- Mobile-responsive layouts with proper breakpoints
+- Smooth animations and transitions
+- Search and filter functionality across all sections
+
 ### File Handling
 
 **File Storage**: Projects table includes `file` field (VARCHAR 255)
