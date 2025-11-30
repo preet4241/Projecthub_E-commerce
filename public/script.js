@@ -1015,6 +1015,33 @@ function loadChatUsers() {
 }
 
 function selectChatUser(element, userId, userName, userEmail, userCollege) {
+    // Remove active class from all user items
+    document.querySelectorAll('.chat-user-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Add active class to selected item
+    element.classList.add('active');
+    
+    // Show chat area
+    const chatArea = document.getElementById('notificationsChatArea');
+    if (chatArea) {
+        chatArea.classList.add('active');
+    }
+    
+    // Update selected user info
+    const userInfoDiv = document.getElementById('notificationsChatUser');
+    const userNameEl = document.getElementById('selectedUserName');
+    const userEmailEl = document.getElementById('selectedUserEmail');
+    const userCollegeEl = document.getElementById('selectedUserCollege');
+    
+    if (userInfoDiv && userNameEl && userEmailEl && userCollegeEl) {
+        userInfoDiv.style.display = 'block';
+        userNameEl.textContent = userName;
+        userEmailEl.textContent = `📧 ${userEmail}`;
+        userCollegeEl.textContent = `🏫 ${userCollege}`;
+    }
+    
     // Open the user chat section
     openUserChat(userId, userName);
 }
