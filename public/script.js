@@ -983,6 +983,9 @@ let currentWaChatUserName = null;
 let waUserMessages = {};
 let allChatUsers = [];
 
+// Initialize user read status
+let userReadStatus = {};
+
 // Load chat users from database - WhatsApp Style
 function loadChatUsers() {
     const chatUsersList = document.getElementById('chatUsersList');
@@ -990,18 +993,37 @@ function loadChatUsers() {
     
     chatUsersList.innerHTML = '<div style="padding: 2rem; text-align: center; color: #8696a0;">Loading...</div>';
     
+    // Initialize read status for all users
+    sampleUsers.forEach(user => {
+        if (!userReadStatus[`user${user.id}`]) {
+            userReadStatus[`user${user.id}`] = {
+                lastReadIndex: -1,
+                unreadCount: 0
+            };
+        }
+    });
+    
     // Get all users and sort by last message time
     allChatUsers = sampleUsers.map((user, index) => {
-        const hasMessages = waUserMessages[`user${user.id}`] && waUserMessages[`user${user.id}`].length > 0;
-        const lastMessage = hasMessages ? waUserMessages[`user${user.id}`][waUserMessages[`user${user.id}`].length - 1] : null;
-        const unreadCount = Math.floor(Math.random() * 5); // Random for demo
+        const userId = `user${user.id}`;
+        const hasMessages = waUserMessages[userId] && waUserMessages[userId].length > 0;
+        const lastMessage = hasMessages ? waUserMessages[userId][waUserMessages[userId].length - 1] : null;
+        
+        // Calculate unread count based on received messages
+        let unreadCount = 0;
+        if (hasMessages && userReadStatus[userId]) {
+            const messages = waUserMessages[userId];
+            const lastReadIndex = userReadStatus[userId].lastReadIndex;
+            unreadCount = messages.slice(lastReadIndex + 1).filter(msg => msg.type === 'received').length;
+            userReadStatus[userId].unreadCount = unreadCount;
+        }
         
         return {
             ...user,
             hasMessages,
-            lastMessage: lastMessage ? lastMessage.text : 'No messages yet',
+            lastMessage: lastMessage ? (lastMessage.text || '📎 Attachment') : 'No messages yet',
             lastTime: lastMessage ? lastMessage.time : '',
-            unreadCount: index < 3 ? unreadCount : 0, // First 3 users have unread
+            unreadCount: unreadCount,
             sortOrder: hasMessages ? 0 : 1
         };
     });
@@ -1095,10 +1117,16 @@ function openWaChat(userId, userName, userEmail) {
     currentWaChatUserName = userName;
     
     // Update chat header
-    document.getElementById('waChatUserName').textContent = userName;
-    document.getElementById('waChatAvatar').textContent = userName.charAt(0).toUpperCase();
-    document.getElementById('waChatUserStatus').textContent = 'online';
-    document.getElementById('waChatUserStatus').classList.add('online');
+    const nameEl = document.getElementById('waChatUserName');
+    const avatarEl = document.getElementById('waChatAvatar');
+    const statusEl = document.getElementById('waChatUserStatus');
+    
+    if (nameEl) nameEl.textContent = userName;
+    if (avatarEl) avatarEl.textContent = userName.charAt(0).toUpperCase();
+    if (statusEl) {
+        statusEl.textContent = 'online';
+        statusEl.classList.add('online');
+    }
     
     // Initialize messages if not exists
     if (!waUserMessages[userId]) {
@@ -1107,6 +1135,13 @@ function openWaChat(userId, userName, userEmail) {
             { type: 'sent', text: 'Sure, which project are you looking for?', time: '10:32 AM', status: 'read' },
             { type: 'received', text: 'I need a CSE final year project on Machine Learning', time: '10:35 AM', status: 'read' }
         ];
+    }
+    
+    // Mark all messages as read
+    if (userReadStatus[userId]) {
+        const messages = waUserMessages[userId];
+        userReadStatus[userId].lastReadIndex = messages.length - 1;
+        userReadStatus[userId].unreadCount = 0;
     }
     
     // Load messages
@@ -1118,19 +1153,25 @@ function openWaChat(userId, userName, userEmail) {
     
     // Mark as active in list
     document.querySelectorAll('.wa-chat-item').forEach(item => item.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+    }
     
     // Clear attached files
     waAttachedFiles = [];
     updateWaAttachedPreview();
     
+    // Refresh user list to update unread count
+    loadChatUsers();
+    
     // Focus input
-    document.getElementById('waMessageInput').focus();
+    const inputEl = document.getElementById('waMessageInput');
+    if (inputEl) inputEl.focus();
     
     // Scroll to bottom
     setTimeout(() => {
         const container = document.getElementById('waMessagesContainer');
-        container.scrollTop = container.scrollHeight;
+        if (container) container.scrollTop = container.scrollHeight;
     }, 100);
 }
 
@@ -1157,7 +1198,7 @@ function loadWaMessages(userId) {
         </div>
     `;
     
-    messages.forEach(msg => {
+    messages.forEach((msg, index) => {
         const statusIcon = msg.status === 'read' ? '✓✓' : msg.status === 'delivered' ? '✓✓' : '✓';
         const statusColor = msg.status === 'read' ? '#53bdeb' : 'rgba(255,255,255,0.6)';
         
@@ -1168,28 +1209,30 @@ function loadWaMessages(userId) {
                 const fileId = msg.file.id;
                 const file = waFileStorage[fileId];
                 if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const imgSrc = e.target.result;
-                        const img = document.createElement('img');
-                        img.src = imgSrc;
-                        img.className = 'wa-message-image';
-                        img.onclick = () => openWaImageModal(imgSrc);
-                        img.style.cursor = 'pointer';
-                    };
-                    reader.readAsDataURL(file);
-                    fileHtml = `<img class="wa-message-image" src="" data-file-id="${fileId}" onclick="openWaImageFromFile('${fileId}')" style="max-width: 200px; border-radius: 8px; cursor: pointer; margin-bottom: 0.4rem;">`;
+                    fileHtml = `<img class="wa-message-image" id="wa-img-${fileId}" src="" data-file-id="${fileId}" onclick="openWaImageFromFile('${fileId}')" style="max-width: 250px; max-height: 300px; border-radius: 8px; cursor: pointer; margin-bottom: 0.4rem; display: block;">`;
+                    
+                    // Load image after rendering
+                    setTimeout(() => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const imgEl = document.getElementById(`wa-img-${fileId}`);
+                            if (imgEl) {
+                                imgEl.src = e.target.result;
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }, 10);
                 } else {
-                    fileHtml = `<div class="wa-message-image-placeholder">📷 Image</div>`;
+                    fileHtml = `<div class="wa-message-image-placeholder" style="padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 0.4rem;">📷 Image</div>`;
                 }
             } else {
                 const fileIcon = getFileIcon(msg.file.type);
                 fileHtml = `
-                    <div class="wa-message-file" onclick="downloadWaFile('${msg.file.id}')">
-                        <span class="wa-file-icon">${fileIcon}</span>
+                    <div class="wa-message-file" onclick="downloadWaFile('${msg.file.id}')" style="cursor: pointer; padding: 0.8rem; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 0.4rem; display: flex; gap: 0.5rem; align-items: center;">
+                        <span class="wa-file-icon" style="font-size: 1.5rem;">${fileIcon}</span>
                         <div class="wa-file-info">
-                            <div class="wa-file-name">${msg.file.name}</div>
-                            <div class="wa-file-size">${formatFileSize(msg.file.size)}</div>
+                            <div class="wa-file-name" style="font-weight: 500;">${msg.file.name}</div>
+                            <div class="wa-file-size" style="font-size: 0.8rem; opacity: 0.7;">${formatFileSize(msg.file.size)}</div>
                         </div>
                     </div>
                 `;
@@ -1297,7 +1340,7 @@ function handleWaMessageKeypress(event) {
 // Send message
 function sendWaMessage() {
     const input = document.getElementById('waMessageInput');
-    const text = input.value.trim();
+    const text = input ? input.value.trim() : '';
     
     if (!text && waAttachedFiles.length === 0) return;
     if (!currentWaChatUserId) return;
@@ -1332,7 +1375,7 @@ function sendWaMessage() {
     }
     
     // Clear input and attachments
-    input.value = '';
+    if (input) input.value = '';
     waAttachedFiles = [];
     updateWaAttachedPreview();
     
@@ -1342,8 +1385,11 @@ function sendWaMessage() {
     // Scroll to bottom
     const container = document.getElementById('waMessagesContainer');
     setTimeout(() => {
-        container.scrollTop = container.scrollHeight;
+        if (container) container.scrollTop = container.scrollHeight;
     }, 100);
+    
+    // Update user list
+    loadChatUsers();
     
     // Simulate delivery after 1 second
     setTimeout(() => {
@@ -1362,6 +1408,63 @@ function sendWaMessage() {
             loadWaMessages(currentWaChatUserId);
         }
     }, 2000);
+    
+    // Simulate user reply after 3-5 seconds
+    setTimeout(() => {
+        simulateUserReply(currentWaChatUserId);
+    }, 3000 + Math.random() * 2000);
+}
+
+// Simulate user reply
+function simulateUserReply(userId) {
+    if (!waUserMessages[userId]) return;
+    
+    const replies = [
+        'Thanks for the quick response!',
+        'That sounds great!',
+        'Can you send me more details?',
+        'Perfect, thank you!',
+        'I appreciate your help.',
+        'Could you clarify that?',
+        'Yes, that works for me.',
+        'Let me check and get back to you.',
+        'Understood, thanks!'
+    ];
+    
+    const randomReply = replies[Math.floor(Math.random() * replies.length)];
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    
+    waUserMessages[userId].push({
+        type: 'received',
+        text: randomReply,
+        time: time,
+        status: 'delivered'
+    });
+    
+    // Update unread count if not viewing this chat
+    if (currentWaChatUserId === userId) {
+        // If viewing, mark as read immediately
+        if (userReadStatus[userId]) {
+            userReadStatus[userId].lastReadIndex = waUserMessages[userId].length - 1;
+            userReadStatus[userId].unreadCount = 0;
+        }
+        loadWaMessages(userId);
+        
+        // Scroll to bottom
+        const container = document.getElementById('waMessagesContainer');
+        setTimeout(() => {
+            if (container) container.scrollTop = container.scrollHeight;
+        }, 100);
+    } else {
+        // If not viewing, increment unread
+        if (userReadStatus[userId]) {
+            userReadStatus[userId].unreadCount++;
+        }
+    }
+    
+    // Refresh user list
+    loadChatUsers();
 }
 
 // Download file
@@ -1421,9 +1524,19 @@ function insertWaEmoji(emoji) {
 function toggleWaChatMenu() {
     const menu = document.getElementById('waChatMenu');
     if (menu) {
-        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        const isVisible = menu.style.display === 'block';
+        menu.style.display = isVisible ? 'none' : 'block';
     }
 }
+
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+    const menu = document.getElementById('waChatMenu');
+    const menuBtn = e.target.closest('.wa-action-btn');
+    if (menu && !menuBtn && !menu.contains(e.target)) {
+        menu.style.display = 'none';
+    }
+});
 
 // Clear chat
 function clearWaChat() {
