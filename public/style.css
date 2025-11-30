@@ -3465,3 +3465,44 @@ footer {
 .chat-back-icon-btn:active {
     transform: scale(0.95);
 }
+
+/* Chat Header Left - Sidebar Style */
+.chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.chat-header-left h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #1f2937;
+}
+
+.chat-back-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    border: none;
+    color: #1f2937;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+
+.chat-back-icon-btn:hover {
+    background: #d1d5db;
+    transform: scale(1.1);
+}
+
+.chat-back-icon-btn:active {
+    transform: scale(0.95);
+}

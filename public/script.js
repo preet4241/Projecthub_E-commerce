@@ -999,12 +999,6 @@ function loadChatUsers() {
             });
             chatUsersList.innerHTML = html;
             document.getElementById('totalUsersInChat').textContent = users.length;
-            
-            if (users.length > 0) {
-                const firstName = users[0].first_name;
-                const lastName = users[0].last_name;
-                selectChatUser(document.querySelector('.chat-user-item'), 'user' + users[0].id, `${firstName} ${lastName}`, users[0].email, users[0].college);
-            }
         })
         .catch(error => {
             console.error('Error loading users:', error);
