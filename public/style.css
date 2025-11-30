@@ -5773,10 +5773,25 @@ body {
 }
 
 .wa-message-image {
-    max-width: 200px;
+    max-width: 250px;
+    max-height: 300px;
     border-radius: 8px;
     cursor: pointer;
     margin-bottom: 0.4rem;
+    object-fit: cover;
+}
+
+.wa-message-video {
+    max-width: 280px;
+    max-height: 350px;
+    border-radius: 8px;
+    margin-bottom: 0.4rem;
+    background: #000;
+    object-fit: cover;
+}
+
+.wa-message-video::-webkit-media-controls {
+    background: rgba(0,0,0,0.5);
 }
 
 .wa-message-image-placeholder {

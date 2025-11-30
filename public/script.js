@@ -1225,6 +1225,28 @@ function loadWaMessages(userId) {
                 } else {
                     fileHtml = `<div class="wa-message-image-placeholder" style="padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 0.4rem;">📷 Image</div>`;
                 }
+            }
+            // Check if it's a video
+            else if (msg.file.type && msg.file.type.startsWith('video/')) {
+                const fileId = msg.file.id;
+                const file = waFileStorage[fileId];
+                if (file) {
+                    fileHtml = `<video class="wa-message-video" id="wa-vid-${fileId}" src="" data-file-id="${fileId}" style="max-width: 280px; max-height: 350px; border-radius: 8px; margin-bottom: 0.4rem; display: block; background: #000;" controls></video>`;
+                    
+                    // Load video after rendering
+                    setTimeout(() => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const vidEl = document.getElementById(`wa-vid-${fileId}`);
+                            if (vidEl) {
+                                vidEl.src = e.target.result;
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }, 10);
+                } else {
+                    fileHtml = `<div class="wa-message-image-placeholder" style="padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 0.4rem;">📹 Video</div>`;
+                }
             } else {
                 // Handle different file types
                 const fileType = msg.file.type || '';
