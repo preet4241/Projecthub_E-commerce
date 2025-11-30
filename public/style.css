@@ -5668,6 +5668,7 @@ body {
 .wa-chat-actions {
     display: flex;
     gap: 0.5rem;
+    position: relative;
 }
 
 .wa-action-btn {
