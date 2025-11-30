@@ -969,36 +969,54 @@ function closeCancelledOrdersChat() {
     document.body.style.overflow = 'auto';
 }
 
-// Load chat users
+// Load chat users from database
 function loadChatUsers() {
     const chatUsersList = document.getElementById('chatUsersList');
-    chatUsersList.innerHTML = `
-        <div class="chat-user-item active" onclick="selectChatUser(this, 'user1')">
-            <div class="chat-user-item-name">👤 Registered Users</div>
-            <div class="chat-user-item-meta">All Users Active</div>
-        </div>
-        <div class="chat-user-item" onclick="selectChatUser(this, 'msg1')">
-            <div class="chat-user-item-name">💬 Support Messages</div>
-            <div class="chat-user-item-meta">3 unread</div>
-        </div>
-        <div class="chat-user-item" onclick="selectChatUser(this, 'pending1')">
-            <div class="chat-user-item-name">📋 Pending Requests</div>
-            <div class="chat-user-item-meta">4 pending</div>
-        </div>
-    `;
-    document.getElementById('totalUsersInChat').textContent = '500+';
+    chatUsersList.innerHTML = '<div class="chat-empty-state">Loading users...</div>';
+    
+    fetch('/api/users')
+        .then(res => res.json())
+        .then(users => {
+            if (users.length === 0) {
+                chatUsersList.innerHTML = '<div class="chat-empty-state">No registered users yet</div>';
+                document.getElementById('totalUsersInChat').textContent = '0';
+                return;
+            }
+            
+            let html = '';
+            users.forEach((user, index) => {
+                const isActive = index === 0 ? 'active' : '';
+                html += `
+                    <div class="chat-user-item ${isActive}" onclick="selectChatUser(this, 'user${user.id}', '${user.name.replace(/'/g, "\\'")}', '${user.email}', '${user.college}')">
+                        <div class="chat-user-item-name">👤 ${user.name}</div>
+                        <div class="chat-user-item-meta">${user.email}</div>
+                    </div>
+                `;
+            });
+            chatUsersList.innerHTML = html;
+            document.getElementById('totalUsersInChat').textContent = users.length;
+            
+            if (users.length > 0) {
+                selectChatUser(document.querySelector('.chat-user-item'), 'user' + users[0].id, users[0].name, users[0].email, users[0].college);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading users:', error);
+            chatUsersList.innerHTML = '<div class="chat-empty-state">Error loading users</div>';
+        });
 }
 
-function selectChatUser(element, userId) {
+function selectChatUser(element, userId, userName, userEmail, userCollege) {
     document.querySelectorAll('.chat-user-item').forEach(e => e.classList.remove('active'));
-    element.classList.add('active');
+    if (element) element.classList.add('active');
     
-    const messages = {
-        'user1': '<h3>👤 Registered Users</h3><p>Total: 500+ users registered</p>',
-        'msg1': '<h3>💬 Support Messages</h3><p>3 messages waiting for response</p>',
-        'pending1': '<h3>📋 Pending Requests</h3><p>4 requests need attention</p>'
-    };
-    document.getElementById('chatSelectedUserInfo').innerHTML = messages[userId] || '';
+    const html = `
+        <h3>👤 ${userName}</h3>
+        <p><strong>Email:</strong> ${userEmail}</p>
+        <p><strong>College:</strong> ${userCollege}</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem; color: #6b7280;">Active user</p>
+    `;
+    document.getElementById('chatSelectedUserInfo').innerHTML = html;
 }
 
 function loadPendingOrders() {

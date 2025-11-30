@@ -31,6 +31,18 @@ async function initDatabase() {
       );
     `);
     
+    // Create users table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100),
+        email VARCHAR(100) UNIQUE,
+        college VARCHAR(100),
+        is_banned BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    
     console.log('✓ Database initialized');
     client.release();
   } catch (error) {
@@ -94,6 +106,32 @@ app.get('/api/colleges', async (req, res) => {
     res.json(result.rows.map(r => r.college));
   } catch (error) {
     res.json([]);
+  }
+});
+
+// API Routes - Get all users
+app.get('/api/users', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, name, email, college, created_at FROM users WHERE is_banned = FALSE ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.json([]);
+  }
+});
+
+// API Routes - Add new user
+app.post('/api/users', async (req, res) => {
+  try {
+    const { name, email, college } = req.body;
+    const result = await pool.query(
+      'INSERT INTO users (name, email, college) VALUES ($1, $2, $3) RETURNING id, name, email, college, created_at',
+      [name, email, college]
+    );
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error adding user:', error);
+    res.status(500).json({ error: 'Failed to add user' });
   }
 });
 
