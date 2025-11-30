@@ -833,6 +833,8 @@ body:has(#adminSection[style*="display: flex"]) header {
     height: 100vh;
     background: white;
     z-index: 150;
+    opacity: 1;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .detail-header {
@@ -1178,6 +1180,8 @@ body:has(#adminSection[style*="display: flex"]) header {
     height: 100vh;
     background: #f5f5f5;
     z-index: 140;
+    opacity: 1;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .cart-page-header {
@@ -3387,6 +3391,18 @@ footer::after {
     flex-direction: column;
     height: 100vh;
     background: #f8f9fa;
+    opacity: 1;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#notificationsChatPage,
+#orderConfirmChatPage,
+#confirmedOrdersChatPage,
+#cancelledOrdersChatPage,
+#userManagementPage,
+#adminSection {
+    opacity: 1;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .chat-header {
@@ -4249,6 +4265,103 @@ footer::after {
 
 .file-link:active {
     transform: scale(0.98);
+}
+
+/* ===== SMOOTH TRANSITIONS FOR ALL SECTIONS ===== */
+
+/* Universal smooth transitions */
+* {
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Smooth section transitions */
+section {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    will-change: opacity, transform;
+}
+
+section[style*="display: none"] {
+    opacity: 0;
+    transform: scale(0.98);
+}
+
+section[style*="display: block"],
+section[style*="display: flex"] {
+    opacity: 1;
+    transform: scale(1);
+    animation: smoothFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes smoothFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.99);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Optimize scrolling performance */
+.wa-messages-container,
+.user-chat-messages,
+.chat-users-list,
+.wa-chats-list {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    will-change: scroll-position;
+}
+
+/* Prevent layout shifts */
+.whatsapp-container,
+.chat-page-container,
+#adminSection,
+#userManagementPage {
+    contain: layout style paint;
+    isolation: isolate;
+}
+
+/* Hardware acceleration for smooth animations */
+.project-card,
+.quick-stat-card,
+.admin-project-card,
+.wa-chat-item,
+.order-card,
+.cart-item,
+.wa-message {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+}
+
+/* Smooth button transitions */
+button,
+.btn,
+a {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, background-color, box-shadow;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 /* ===== SMOOTH ANIMATIONS ===== */

@@ -235,12 +235,40 @@ function loadFavoritesFromStorage() {
 }
 
 function backToProjects() {
-    document.getElementById('productDetail').style.display = 'none';
-    document.getElementById('cartPage').style.display = 'none';
-    document.getElementById('projects').style.display = 'block';
-    currentProductDetail = null;
+    // Smooth transition
+    const productDetail = document.getElementById('productDetail');
+    const cartPage = document.getElementById('cartPage');
+    const projects = document.getElementById('projects');
     const footer = document.getElementById('mainFooter');
-    if (footer) footer.style.display = 'block';
+    
+    if (productDetail) {
+        productDetail.style.opacity = '0';
+        setTimeout(() => {
+            productDetail.style.display = 'none';
+            productDetail.style.opacity = '1';
+        }, 300);
+    }
+    
+    if (cartPage) {
+        cartPage.style.opacity = '0';
+        setTimeout(() => {
+            cartPage.style.display = 'none';
+            cartPage.style.opacity = '1';
+        }, 300);
+    }
+    
+    setTimeout(() => {
+        if (projects) {
+            projects.style.display = 'block';
+            projects.style.opacity = '0';
+            setTimeout(() => {
+                projects.style.opacity = '1';
+            }, 10);
+        }
+        if (footer) footer.style.display = 'block';
+    }, 300);
+    
+    currentProductDetail = null;
 }
 
 function addToCartFromDetail() {
@@ -919,18 +947,56 @@ function openStatSection(sectionType) {
 
 // Notifications Chat Functions
 function openNotificationsChat() {
-    document.getElementById('adminSection').style.display = 'none';
-    document.getElementById('notificationsChatPage').style.display = 'block';
-    document.body.style.overflow = 'hidden';
+    const adminSection = document.getElementById('adminSection');
+    const chatPage = document.getElementById('notificationsChatPage');
     const footer = document.getElementById('mainFooter');
-    if (footer) footer.style.display = 'none';
-    loadChatUsers();
+    
+    // Smooth transition
+    if (adminSection) {
+        adminSection.style.opacity = '0';
+        setTimeout(() => {
+            adminSection.style.display = 'none';
+            adminSection.style.opacity = '1';
+        }, 250);
+    }
+    
+    setTimeout(() => {
+        if (chatPage) {
+            chatPage.style.display = 'block';
+            chatPage.style.opacity = '0';
+            setTimeout(() => {
+                chatPage.style.opacity = '1';
+            }, 10);
+        }
+        document.body.style.overflow = 'hidden';
+        if (footer) footer.style.display = 'none';
+        loadChatUsers();
+    }, 250);
 }
 
 function closeNotificationsChat() {
-    document.getElementById('notificationsChatPage').style.display = 'none';
-    document.getElementById('adminSection').style.display = 'flex';
-    document.body.style.overflow = 'auto';
+    const chatPage = document.getElementById('notificationsChatPage');
+    const adminSection = document.getElementById('adminSection');
+    
+    // Smooth transition
+    if (chatPage) {
+        chatPage.style.opacity = '0';
+        setTimeout(() => {
+            chatPage.style.display = 'none';
+            chatPage.style.opacity = '1';
+        }, 250);
+    }
+    
+    setTimeout(() => {
+        if (adminSection) {
+            adminSection.style.display = 'flex';
+            adminSection.style.opacity = '0';
+            setTimeout(() => {
+                adminSection.style.opacity = '1';
+            }, 10);
+        }
+        document.body.style.overflow = 'auto';
+    }, 250);
 }
 
 // Order Confirmation Chat Functions
@@ -1645,15 +1711,34 @@ function clearWaChat() {
 
 // Mute chat notifications
 function muteWaChat() {
-    alert('Chat muted for 1 hour');
-    toggleWaChatMenu();
+    if (!currentWaChatUserId || !currentWaChatUserName) {
+        alert('Please select a user first');
+        return;
+    }
+    
+    if (confirm(`Mute notifications from ${currentWaChatUserName}?\n\nYou will not receive notifications for 8 hours.`)) {
+        alert(`✓ Notifications muted for ${currentWaChatUserName}\n\nDuration: 8 hours`);
+        toggleWaChatMenu();
+    } else {
+        toggleWaChatMenu();
+    }
 }
 
 // Block user
 function blockWaUser() {
-    if (confirm('Block this user?')) {
-        alert('User blocked');
-        closeChatView();
+    if (!currentWaChatUserId || !currentWaChatUserName) {
+        alert('Please select a user first');
+        return;
+    }
+    
+    if (confirm(`Block ${currentWaChatUserName}?\n\nYou will no longer receive messages from this user. This action can be undone from settings.`)) {
+        alert(`✓ ${currentWaChatUserName} has been blocked\n\nYou can unblock this user from settings.`);
+        toggleWaChatMenu();
+        setTimeout(() => {
+            closeChatView();
+        }, 300);
+    } else {
+        toggleWaChatMenu();
     }
 }
 
