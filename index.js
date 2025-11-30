@@ -4,6 +4,27 @@ const { Pool } = require('pg');
 const app = express();
 const PORT = 5000;
 
+// ===== LOGGING UTILITY =====
+const log = {
+  info: (msg) => console.log(`[INFO] ${new Date().toISOString()} - ${msg}`),
+  error: (msg, err) => console.error(`[ERROR] ${new Date().toISOString()} - ${msg}${err ? ': ' + err.message : ''}`),
+  warn: (msg) => console.warn(`[WARN] ${new Date().toISOString()} - ${msg}`),
+  api: (method, path, status, time) => console.log(`[API] ${new Date().toISOString()} - ${method} ${path} → ${status} (${time}ms)`)
+};
+
+// Request Logging Middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  const originalJson = res.json;
+  
+  res.json = function(data) {
+    const duration = Date.now() - start;
+    log.api(req.method, req.path, res.statusCode, duration);
+    return originalJson.call(this, data);
+  };
+  next();
+});
+
 app.use(express.static('public'));
 app.use(express.json());
 
@@ -103,10 +124,11 @@ async function initDatabase() {
       ADD COLUMN IF NOT EXISTS notes TEXT
     `);
     
-    console.log('✓ Database initialized');
+    log.info('✓ Database initialized successfully');
+    log.info(`Tables created: projects, users, cart_items, orders, order_items, notifications`);
     client.release();
   } catch (error) {
-    console.log('⚠️ Database setup note:', error.message);
+    log.warn('Database setup note: ' + error.message);
     // Continue even if DB connection fails
   }
 }
@@ -114,10 +136,12 @@ async function initDatabase() {
 // API Routes - Get all projects
 app.get('/api/projects', async (req, res) => {
   try {
+    log.info('Fetching all projects...');
     const result = await pool.query('SELECT * FROM projects ORDER BY id');
+    log.info(`✓ Retrieved ${result.rows.length} projects`);
     res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching projects:', error);
+    log.error('Error fetching projects', error);
     res.json([]); // Return empty array if error
   }
 });
@@ -126,13 +150,15 @@ app.get('/api/projects', async (req, res) => {
 app.post('/api/projects', async (req, res) => {
   try {
     const { subject, college, topic, price, file } = req.body;
+    log.info(`Adding new project: ${topic} (${subject}, ${college}) - ₹${price}`);
     const result = await pool.query(
       'INSERT INTO projects (subject, college, topic, price, file, downloads) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [subject, college, topic, price, file || topic.toLowerCase().replace(/\s+/g, '-') + '.zip', 0]
     );
+    log.info(`✓ Project created with ID: ${result.rows[0].id}`);
     res.json(result.rows[0]);
   } catch (error) {
-    console.error('Error adding project:', error);
+    log.error('Error adding project', error);
     res.status(500).json({ error: 'Failed to add project' });
   }
 });
@@ -141,10 +167,12 @@ app.post('/api/projects', async (req, res) => {
 app.delete('/api/projects/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    log.info(`Deleting project ID: ${id}`);
     await pool.query('DELETE FROM projects WHERE id = $1', [id]);
+    log.info(`✓ Project ID ${id} deleted`);
     res.json({ success: true });
   } catch (error) {
-    console.error('Error deleting project:', error);
+    log.error('Error deleting project', error);
     res.status(500).json({ error: 'Failed to delete project' });
   }
 });
@@ -198,15 +226,17 @@ app.post('/api/users', async (req, res) => {
 // Cart Routes
 app.get('/api/cart', async (req, res) => {
   try {
+    log.info('Fetching cart items...');
     const result = await pool.query(`
       SELECT c.id, c.project_id, c.quantity, p.topic, p.price, p.subject, p.college
       FROM cart_items c
       JOIN projects p ON c.project_id = p.id
       ORDER BY c.created_at DESC
     `);
+    log.info(`✓ Retrieved ${result.rows.length} cart items`);
     res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching cart:', error);
+    log.error('Error fetching cart', error);
     res.json([]);
   }
 });
@@ -214,13 +244,15 @@ app.get('/api/cart', async (req, res) => {
 app.post('/api/cart', async (req, res) => {
   try {
     const { project_id, quantity } = req.body;
+    log.info(`Adding to cart - Project ID: ${project_id}, Quantity: ${quantity || 1}`);
     const result = await pool.query(
       'INSERT INTO cart_items (project_id, quantity) VALUES ($1, $2) RETURNING *',
       [project_id, quantity || 1]
     );
+    log.info(`✓ Item added to cart with ID: ${result.rows[0].id}`);
     res.json(result.rows[0]);
   } catch (error) {
-    console.error('Error adding to cart:', error);
+    log.error('Error adding to cart', error);
     res.status(500).json({ error: 'Failed to add to cart' });
   }
 });
@@ -228,10 +260,12 @@ app.post('/api/cart', async (req, res) => {
 app.delete('/api/cart/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    log.info(`Removing cart item ID: ${id}`);
     await pool.query('DELETE FROM cart_items WHERE id = $1', [id]);
+    log.info(`✓ Cart item ID ${id} removed`);
     res.json({ success: true });
   } catch (error) {
-    console.error('Error removing from cart:', error);
+    log.error('Error removing from cart', error);
     res.status(500).json({ error: 'Failed to remove from cart' });
   }
 });
@@ -246,13 +280,17 @@ app.get('/api/orders', async (req, res) => {
     if (status) {
       query += ' WHERE status = $1';
       params.push(status);
+      log.info(`Fetching orders with status: ${status}`);
+    } else {
+      log.info(`Fetching all orders`);
     }
     query += ' ORDER BY created_at DESC';
     
     const result = await pool.query(query, params);
+    log.info(`✓ Retrieved ${result.rows.length} orders`);
     res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching orders:', error);
+    log.error('Error fetching orders', error);
     res.json([]);
   }
 });
@@ -307,6 +345,8 @@ app.get('/api/orders/stats/summary', async (req, res) => {
 app.post('/api/orders', async (req, res) => {
   try {
     const { items, total_amount, customer_name, customer_email, customer_phone, customer_address, notes } = req.body;
+    log.info(`Creating new order - Customer: ${customer_name || 'Guest'}, Amount: ₹${total_amount}, Items: ${items.length}`);
+    
     const orderResult = await pool.query(
       `INSERT INTO orders (total_amount, status, customer_name, customer_email, customer_phone, customer_address, notes) 
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
@@ -328,9 +368,10 @@ app.post('/api/orders', async (req, res) => {
       [`New Order #${orderId}`, `Order placed for ₹${total_amount}`, 'order']
     );
     
+    log.info(`✓ Order #${orderId} created successfully with ${items.length} items`);
     res.json({ success: true, orderId, order: orderResult.rows[0] });
   } catch (error) {
-    console.error('Error creating order:', error);
+    log.error('Error creating order', error);
     res.status(500).json({ error: 'Failed to create order' });
   }
 });
@@ -339,6 +380,8 @@ app.patch('/api/orders/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
+    log.info(`Updating order #${id} status to: ${status}`);
+    
     const result = await pool.query(
       'UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *',
       [status, id]
@@ -351,9 +394,10 @@ app.patch('/api/orders/:id', async (req, res) => {
       [`Order #${id} ${statusText}`, `Order status changed to ${status}`, 'order']
     );
     
+    log.info(`✓ Order #${id} status updated to ${status}`);
     res.json(result.rows[0]);
   } catch (error) {
-    console.error('Error updating order:', error);
+    log.error('Error updating order', error);
     res.status(500).json({ error: 'Failed to update order' });
   }
 });
@@ -407,13 +451,17 @@ app.delete('/api/notifications/:id', async (req, res) => {
 app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+    log.info(`Admin login attempt - Username: ${username}`);
     // Simple auth - in production use proper authentication
     if (username === 'admin' && password === 'admin123') {
+      log.info(`✓ Admin login successful`);
       res.json({ success: true, token: 'admin-token-' + Date.now() });
     } else {
+      log.warn(`⚠️ Failed admin login attempt - Invalid credentials for user: ${username}`);
       res.status(401).json({ error: 'Invalid credentials' });
     }
   } catch (error) {
+    log.error('Login error', error);
     res.status(500).json({ error: 'Login failed' });
   }
 });
@@ -421,7 +469,11 @@ app.post('/api/admin/login', async (req, res) => {
 // Initialize and start server
 initDatabase().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✓ Project Marketplace running at http://0.0.0.0:${PORT}`);
-    console.log('📊 Ready for PostgreSQL database connection');
+    log.info('═══════════════════════════════════════════════════');
+    log.info(`✓ PROJECT MARKETPLACE RUNNING`);
+    log.info(`🌐 Server: http://0.0.0.0:${PORT}`);
+    log.info(`📊 Database: Ready for PostgreSQL connection`);
+    log.info(`🛡️  Admin Login: admin / admin123`);
+    log.info('═══════════════════════════════════════════════════');
   });
 });
