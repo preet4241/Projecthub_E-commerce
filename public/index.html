@@ -389,12 +389,25 @@
 
     <!-- Notifications Chat Section -->
     <section id="notificationsChatPage" style="display: none;">
-        <div class="chat-page-container">
-            <div class="chat-header">
+        <div class="chat-page-container enhanced-section">
+            <div class="chat-header gradient-header">
                 <button class="chat-back-btn" onclick="closeNotificationsChat()">← Back</button>
-                <h2>🔔 Notifications & Messages</h2>
+                <div class="header-title-area">
+                    <div class="header-icon-badge">🔔</div>
+                    <div>
+                        <h2>Notifications & Messages</h2>
+                        <p class="header-subtitle">Manage user communications</p>
+                    </div>
+                </div>
                 <div class="chat-header-stats">
-                    <span id="totalUsersInChat">0</span> Users
+                    <div class="stat-badge">
+                        <span class="stat-number" id="totalUsersInChat">0</span>
+                        <span class="stat-label">Users</span>
+                    </div>
+                    <div class="stat-badge">
+                        <span class="stat-number" id="unreadNotifications">0</span>
+                        <span class="stat-label">Unread</span>
+                    </div>
                 </div>
             </div>
             
@@ -402,17 +415,28 @@
                 <!-- Users List -->
                 <div class="chat-users-sidebar">
                     <div class="chat-search-box">
+                        <span class="search-icon">🔍</span>
                         <input type="text" id="chatUserSearch" placeholder="Search users..." onkeyup="searchChatUsers()">
                     </div>
+                    <div class="sidebar-tabs">
+                        <button class="sidebar-tab active" onclick="switchNotifTab('users')">👥 Users</button>
+                        <button class="sidebar-tab" onclick="switchNotifTab('notifications')">🔔 All Alerts</button>
+                    </div>
                     <div class="chat-users-list" id="chatUsersList">
-                        <div class="chat-empty-state">Loading users...</div>
+                        <div class="skeleton-loader">
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Chat Area -->
                 <div class="chat-area" id="notificationsChatArea">
-                    <div class="chat-empty-state">
-                        Select a user to view chat
+                    <div class="chat-empty-state animated">
+                        <div class="empty-icon">💬</div>
+                        <h3>Select a user to view chat</h3>
+                        <p>Choose from the list on the left to start messaging</p>
                     </div>
                 </div>
             </div>
@@ -421,12 +445,25 @@
 
     <!-- Order Confirmation Chat Section -->
     <section id="orderConfirmChatPage" style="display: none;">
-        <div class="chat-page-container">
-            <div class="chat-header">
+        <div class="chat-page-container enhanced-section">
+            <div class="chat-header gradient-header pending-gradient">
                 <button class="chat-back-btn" onclick="closeOrderConfirmChat()">← Back</button>
-                <h2>📦 Order Confirmation</h2>
+                <div class="header-title-area">
+                    <div class="header-icon-badge pulse-animation">📦</div>
+                    <div>
+                        <h2>Order Confirmation</h2>
+                        <p class="header-subtitle">Review and confirm pending orders</p>
+                    </div>
+                </div>
                 <div class="chat-header-stats">
-                    <span id="totalOrdersPending">0</span> Pending
+                    <div class="stat-badge warning">
+                        <span class="stat-number" id="totalOrdersPending">0</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                    <div class="stat-badge">
+                        <span class="stat-number" id="pendingOrdersValue">₹0</span>
+                        <span class="stat-label">Value</span>
+                    </div>
                 </div>
             </div>
             
@@ -434,17 +471,31 @@
                 <!-- Orders List -->
                 <div class="chat-users-sidebar">
                     <div class="chat-search-box">
-                        <input type="text" id="orderSearchInput" placeholder="Search orders..." onkeyup="searchOrders()">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="orderSearchInput" placeholder="Search orders..." onkeyup="searchPendingOrders()">
+                    </div>
+                    <div class="order-filter-bar">
+                        <button class="filter-chip active" onclick="filterPendingOrders('all')">All</button>
+                        <button class="filter-chip" onclick="filterPendingOrders('today')">Today</button>
+                        <button class="filter-chip" onclick="filterPendingOrders('week')">This Week</button>
                     </div>
                     <div class="chat-users-list" id="ordersList">
-                        <div class="chat-empty-state">Loading orders...</div>
+                        <div class="skeleton-loader">
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Order Details -->
                 <div class="chat-area">
-                    <div class="chat-selected-user" id="orderDetailInfo">
-                        <p>Select an order to confirm</p>
+                    <div class="order-detail-panel" id="orderDetailInfo">
+                        <div class="chat-empty-state animated">
+                            <div class="empty-icon">📋</div>
+                            <h3>Select an order to confirm</h3>
+                            <p>Click on any pending order from the list</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -453,12 +504,25 @@
 
     <!-- Confirmed Orders Chat Section -->
     <section id="confirmedOrdersChatPage" style="display: none;">
-        <div class="chat-page-container">
-            <div class="chat-header">
+        <div class="chat-page-container enhanced-section">
+            <div class="chat-header gradient-header success-gradient">
                 <button class="chat-back-btn" onclick="closeConfirmedOrdersChat()">← Back</button>
-                <h2>✅ Confirmed Orders</h2>
+                <div class="header-title-area">
+                    <div class="header-icon-badge success-icon">✅</div>
+                    <div>
+                        <h2>Confirmed Orders</h2>
+                        <p class="header-subtitle">Successfully confirmed orders</p>
+                    </div>
+                </div>
                 <div class="chat-header-stats">
-                    <span id="totalConfirmedOrders">0</span> Orders
+                    <div class="stat-badge success">
+                        <span class="stat-number" id="totalConfirmedOrders">0</span>
+                        <span class="stat-label">Orders</span>
+                    </div>
+                    <div class="stat-badge">
+                        <span class="stat-number" id="confirmedOrdersRevenue">₹0</span>
+                        <span class="stat-label">Revenue</span>
+                    </div>
                 </div>
             </div>
             
@@ -466,17 +530,31 @@
                 <!-- Confirmed Orders List -->
                 <div class="chat-users-sidebar">
                     <div class="chat-search-box">
-                        <input type="text" id="confirmedSearchInput" placeholder="Search confirmed orders..." onkeyup="searchConfirmedOrders()">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="confirmedSearchInput" placeholder="Search confirmed orders..." onkeyup="searchConfirmedOrdersList()">
+                    </div>
+                    <div class="order-filter-bar">
+                        <button class="filter-chip active" onclick="filterConfirmedOrders('all')">All</button>
+                        <button class="filter-chip" onclick="filterConfirmedOrders('today')">Today</button>
+                        <button class="filter-chip" onclick="filterConfirmedOrders('week')">This Week</button>
                     </div>
                     <div class="chat-users-list" id="confirmedOrdersList">
-                        <div class="chat-empty-state">Loading orders...</div>
+                        <div class="skeleton-loader">
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Order Details -->
                 <div class="chat-area">
-                    <div class="chat-selected-user" id="confirmedOrderDetailInfo">
-                        <p>Select an order to view details</p>
+                    <div class="order-detail-panel" id="confirmedOrderDetailInfo">
+                        <div class="chat-empty-state animated">
+                            <div class="empty-icon success-bg">🎉</div>
+                            <h3>Select an order to view details</h3>
+                            <p>View completed order information and items</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -485,12 +563,25 @@
 
     <!-- Cancelled Orders Chat Section -->
     <section id="cancelledOrdersChatPage" style="display: none;">
-        <div class="chat-page-container">
-            <div class="chat-header">
+        <div class="chat-page-container enhanced-section">
+            <div class="chat-header gradient-header danger-gradient">
                 <button class="chat-back-btn" onclick="closeCancelledOrdersChat()">← Back</button>
-                <h2>❌ Cancelled Orders</h2>
+                <div class="header-title-area">
+                    <div class="header-icon-badge danger-icon">❌</div>
+                    <div>
+                        <h2>Cancelled Orders</h2>
+                        <p class="header-subtitle">Orders that were cancelled</p>
+                    </div>
+                </div>
                 <div class="chat-header-stats">
-                    <span id="totalCancelledOrders">0</span> Cancelled
+                    <div class="stat-badge danger">
+                        <span class="stat-number" id="totalCancelledOrders">0</span>
+                        <span class="stat-label">Cancelled</span>
+                    </div>
+                    <div class="stat-badge">
+                        <span class="stat-number" id="cancelledOrdersLoss">₹0</span>
+                        <span class="stat-label">Lost Value</span>
+                    </div>
                 </div>
             </div>
             
@@ -498,17 +589,31 @@
                 <!-- Cancelled Orders List -->
                 <div class="chat-users-sidebar">
                     <div class="chat-search-box">
-                        <input type="text" id="cancelledSearchInput" placeholder="Search cancelled orders..." onkeyup="searchCancelledOrders()">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="cancelledSearchInput" placeholder="Search cancelled orders..." onkeyup="searchCancelledOrdersList()">
+                    </div>
+                    <div class="order-filter-bar">
+                        <button class="filter-chip active" onclick="filterCancelledOrders('all')">All</button>
+                        <button class="filter-chip" onclick="filterCancelledOrders('today')">Today</button>
+                        <button class="filter-chip" onclick="filterCancelledOrders('week')">This Week</button>
                     </div>
                     <div class="chat-users-list" id="cancelledOrdersList">
-                        <div class="chat-empty-state">Loading orders...</div>
+                        <div class="skeleton-loader">
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Order Details -->
                 <div class="chat-area">
-                    <div class="chat-selected-user" id="cancelledOrderDetailInfo">
-                        <p>Select an order to view details</p>
+                    <div class="order-detail-panel" id="cancelledOrderDetailInfo">
+                        <div class="chat-empty-state animated">
+                            <div class="empty-icon danger-bg">📭</div>
+                            <h3>Select an order to view details</h3>
+                            <p>Review cancelled order information</p>
+                        </div>
                     </div>
                 </div>
             </div>

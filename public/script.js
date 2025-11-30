@@ -1232,77 +1232,607 @@ function openFile(fileId) {
     }
 }
 
-function loadPendingOrders() {
+// Store orders data
+let pendingOrdersData = [];
+let confirmedOrdersData = [];
+let cancelledOrdersData = [];
+let notificationsData = [];
+let selectedOrderId = null;
+
+// Load Pending Orders from API
+async function loadPendingOrders() {
     const ordersList = document.getElementById('ordersList');
-    ordersList.innerHTML = `
-        <div class="chat-user-item active">
-            <div class="chat-user-item-name">📦 Order #1234</div>
-            <div class="chat-user-item-meta">₹299 - Pending</div>
-        </div>
-        <div class="chat-user-item">
-            <div class="chat-user-item-name">📦 Order #1235</div>
-            <div class="chat-user-item-meta">₹399 - Pending</div>
-        </div>
-        <div class="chat-user-item">
-            <div class="chat-user-item-name">📦 Order #1236</div>
-            <div class="chat-user-item-meta">₹499 - Pending</div>
-        </div>
-    `;
-    document.getElementById('totalOrdersPending').textContent = '8';
+    ordersList.innerHTML = '<div class="skeleton-loader"><div class="skeleton-item"></div><div class="skeleton-item"></div><div class="skeleton-item"></div></div>';
+    
+    try {
+        const response = await fetch('/api/orders?status=pending');
+        pendingOrdersData = await response.json();
+        
+        const totalEl = document.getElementById('totalOrdersPending');
+        const valueEl = document.getElementById('pendingOrdersValue');
+        
+        if (totalEl) totalEl.textContent = pendingOrdersData.length;
+        
+        const totalValue = pendingOrdersData.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+        if (valueEl) valueEl.textContent = '₹' + totalValue.toLocaleString();
+        
+        if (pendingOrdersData.length === 0) {
+            ordersList.innerHTML = `
+                <div class="chat-empty-state animated">
+                    <div class="empty-icon">📭</div>
+                    <h3>No pending orders</h3>
+                    <p>All orders have been processed</p>
+                </div>
+            `;
+            return;
+        }
+        
+        ordersList.innerHTML = pendingOrdersData.map((order, index) => `
+            <div class="order-card ${index === 0 ? 'active' : ''}" onclick="selectPendingOrder(${order.id})" style="animation-delay: ${index * 0.1}s">
+                <div class="order-card-header">
+                    <span class="order-id">📦 Order #${order.id}</span>
+                    <span class="order-amount">₹${order.total_amount || 0}</span>
+                </div>
+                <div class="order-card-body">
+                    <div class="order-customer">👤 ${order.customer_name || 'Guest'}</div>
+                    <div class="order-date">📅 ${new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                </div>
+                <span class="status-badge pending">⏳ Pending</span>
+            </div>
+        `).join('');
+        
+    } catch (error) {
+        console.error('Error loading pending orders:', error);
+        ordersList.innerHTML = '<div class="chat-empty-state"><p>Failed to load orders</p></div>';
+    }
 }
 
-function loadConfirmedOrders() {
+// Select and show pending order details
+async function selectPendingOrder(orderId) {
+    selectedOrderId = orderId;
+    
+    // Update active state
+    document.querySelectorAll('#ordersList .order-card').forEach(card => card.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    
+    const detailPanel = document.getElementById('orderDetailInfo');
+    detailPanel.innerHTML = '<div class="skeleton-loader"><div class="skeleton-item"></div><div class="skeleton-item"></div></div>';
+    
+    try {
+        const response = await fetch(`/api/orders/${orderId}`);
+        const order = await response.json();
+        
+        detailPanel.innerHTML = `
+            <div class="order-detail-view">
+                <div class="order-detail-header">
+                    <h3 class="order-detail-title">Order #${order.id}</h3>
+                    <span class="status-badge pending">⏳ Pending</span>
+                </div>
+                
+                <div class="order-detail-section">
+                    <h4>Customer Information</h4>
+                    <div class="customer-info-card">
+                        <div class="customer-info-row"><span>👤</span> ${order.customer_name || 'Guest'}</div>
+                        <div class="customer-info-row"><span>📧</span> ${order.customer_email || 'No email'}</div>
+                        <div class="customer-info-row"><span>📱</span> ${order.customer_phone || 'No phone'}</div>
+                        <div class="customer-info-row"><span>📍</span> ${order.customer_address || 'No address'}</div>
+                    </div>
+                </div>
+                
+                <div class="order-detail-section">
+                    <h4>Order Items</h4>
+                    <div class="order-items-list">
+                        ${order.items && order.items.length > 0 ? order.items.map(item => `
+                            <div class="order-item-row">
+                                <div class="order-item-info">
+                                    <h5>${item.topic || 'Project'}</h5>
+                                    <p>${item.subject || ''} ${item.college ? '• ' + item.college : ''}</p>
+                                </div>
+                                <span class="order-item-price">₹${item.price || 0}</span>
+                            </div>
+                        `).join('') : '<p>No items in order</p>'}
+                    </div>
+                </div>
+                
+                <div class="order-total-summary">
+                    <div class="total-row"><span>Subtotal</span><span>₹${order.total_amount || 0}</span></div>
+                    <div class="total-row"><span>Delivery</span><span>Free</span></div>
+                    <div class="total-row final"><span>Total</span><span class="total-amount">₹${order.total_amount || 0}</span></div>
+                </div>
+                
+                <div class="order-actions">
+                    <button class="action-btn confirm" onclick="confirmOrder(${order.id})">✅ Confirm Order</button>
+                    <button class="action-btn cancel" onclick="cancelOrder(${order.id})">❌ Cancel Order</button>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error loading order details:', error);
+        detailPanel.innerHTML = '<p>Failed to load order details</p>';
+    }
+}
+
+// Confirm order
+async function confirmOrder(orderId) {
+    if (!confirm('Confirm this order?')) return;
+    
+    try {
+        await fetch(`/api/orders/${orderId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'confirmed' })
+        });
+        
+        alert('Order confirmed successfully!');
+        loadPendingOrders();
+        updateOrderStats();
+        
+        // Reset detail panel
+        document.getElementById('orderDetailInfo').innerHTML = `
+            <div class="chat-empty-state animated">
+                <div class="empty-icon">📋</div>
+                <h3>Select an order to confirm</h3>
+                <p>Click on any pending order from the list</p>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error confirming order:', error);
+        alert('Failed to confirm order');
+    }
+}
+
+// Cancel order
+async function cancelOrder(orderId) {
+    if (!confirm('Are you sure you want to cancel this order?')) return;
+    
+    try {
+        await fetch(`/api/orders/${orderId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'cancelled' })
+        });
+        
+        alert('Order cancelled!');
+        loadPendingOrders();
+        updateOrderStats();
+        
+        // Reset detail panel
+        document.getElementById('orderDetailInfo').innerHTML = `
+            <div class="chat-empty-state animated">
+                <div class="empty-icon">📋</div>
+                <h3>Select an order to confirm</h3>
+                <p>Click on any pending order from the list</p>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error cancelling order:', error);
+        alert('Failed to cancel order');
+    }
+}
+
+// Load Confirmed Orders from API
+async function loadConfirmedOrders() {
     const confirmedList = document.getElementById('confirmedOrdersList');
-    confirmedList.innerHTML = `
-        <div class="chat-user-item active">
-            <div class="chat-user-item-name">✅ CSE Projects</div>
-            <div class="chat-user-item-meta">25 orders - ₹10,250</div>
-        </div>
-        <div class="chat-user-item">
-            <div class="chat-user-item-name">✅ ECE Projects</div>
-            <div class="chat-user-item-meta">12 orders - ₹4,800</div>
-        </div>
-        <div class="chat-user-item">
-            <div class="chat-user-item-name">✅ Other Projects</div>
-            <div class="chat-user-item-meta">8 orders - ₹3,400</div>
-        </div>
-    `;
-    document.getElementById('totalConfirmedOrders').textContent = '45';
+    confirmedList.innerHTML = '<div class="skeleton-loader"><div class="skeleton-item"></div><div class="skeleton-item"></div><div class="skeleton-item"></div></div>';
+    
+    try {
+        const response = await fetch('/api/orders?status=confirmed');
+        confirmedOrdersData = await response.json();
+        
+        const totalEl = document.getElementById('totalConfirmedOrders');
+        const revenueEl = document.getElementById('confirmedOrdersRevenue');
+        
+        if (totalEl) totalEl.textContent = confirmedOrdersData.length;
+        
+        const totalRevenue = confirmedOrdersData.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+        if (revenueEl) revenueEl.textContent = '₹' + totalRevenue.toLocaleString();
+        
+        if (confirmedOrdersData.length === 0) {
+            confirmedList.innerHTML = `
+                <div class="chat-empty-state animated">
+                    <div class="empty-icon success-bg">🎉</div>
+                    <h3>No confirmed orders yet</h3>
+                    <p>Confirm pending orders to see them here</p>
+                </div>
+            `;
+            return;
+        }
+        
+        confirmedList.innerHTML = confirmedOrdersData.map((order, index) => `
+            <div class="order-card ${index === 0 ? 'active' : ''}" onclick="selectConfirmedOrder(${order.id})" style="animation-delay: ${index * 0.1}s">
+                <div class="order-card-header">
+                    <span class="order-id">✅ Order #${order.id}</span>
+                    <span class="order-amount">₹${order.total_amount || 0}</span>
+                </div>
+                <div class="order-card-body">
+                    <div class="order-customer">👤 ${order.customer_name || 'Guest'}</div>
+                    <div class="order-date">📅 ${new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                </div>
+                <span class="status-badge confirmed">✓ Confirmed</span>
+            </div>
+        `).join('');
+        
+    } catch (error) {
+        console.error('Error loading confirmed orders:', error);
+        confirmedList.innerHTML = '<div class="chat-empty-state"><p>Failed to load orders</p></div>';
+    }
 }
 
-function loadCancelledOrders() {
+// Select confirmed order
+async function selectConfirmedOrder(orderId) {
+    document.querySelectorAll('#confirmedOrdersList .order-card').forEach(card => card.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    
+    const detailPanel = document.getElementById('confirmedOrderDetailInfo');
+    detailPanel.innerHTML = '<div class="skeleton-loader"><div class="skeleton-item"></div><div class="skeleton-item"></div></div>';
+    
+    try {
+        const response = await fetch(`/api/orders/${orderId}`);
+        const order = await response.json();
+        
+        detailPanel.innerHTML = `
+            <div class="order-detail-view">
+                <div class="order-detail-header">
+                    <h3 class="order-detail-title">Order #${order.id}</h3>
+                    <span class="status-badge confirmed">✓ Confirmed</span>
+                </div>
+                
+                <div class="order-detail-section">
+                    <h4>Customer Information</h4>
+                    <div class="customer-info-card">
+                        <div class="customer-info-row"><span>👤</span> ${order.customer_name || 'Guest'}</div>
+                        <div class="customer-info-row"><span>📧</span> ${order.customer_email || 'No email'}</div>
+                        <div class="customer-info-row"><span>📱</span> ${order.customer_phone || 'No phone'}</div>
+                        <div class="customer-info-row"><span>📍</span> ${order.customer_address || 'No address'}</div>
+                    </div>
+                </div>
+                
+                <div class="order-detail-section">
+                    <h4>Order Items</h4>
+                    <div class="order-items-list">
+                        ${order.items && order.items.length > 0 ? order.items.map(item => `
+                            <div class="order-item-row">
+                                <div class="order-item-info">
+                                    <h5>${item.topic || 'Project'}</h5>
+                                    <p>${item.subject || ''} ${item.college ? '• ' + item.college : ''}</p>
+                                </div>
+                                <span class="order-item-price">₹${item.price || 0}</span>
+                            </div>
+                        `).join('') : '<p>No items in order</p>'}
+                    </div>
+                </div>
+                
+                <div class="order-total-summary">
+                    <div class="total-row"><span>Subtotal</span><span>₹${order.total_amount || 0}</span></div>
+                    <div class="total-row"><span>Delivery</span><span>Free</span></div>
+                    <div class="total-row final"><span>Total</span><span class="total-amount">₹${order.total_amount || 0}</span></div>
+                </div>
+                
+                <div class="order-detail-section">
+                    <p style="color: #10b981; font-weight: 600; text-align: center;">🎉 Order completed on ${new Date(order.updated_at).toLocaleDateString('en-IN')}</p>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error loading order details:', error);
+        detailPanel.innerHTML = '<p>Failed to load order details</p>';
+    }
+}
+
+// Load Cancelled Orders from API
+async function loadCancelledOrders() {
     const cancelledList = document.getElementById('cancelledOrdersList');
-    cancelledList.innerHTML = `
-        <div class="chat-user-item active">
-            <div class="chat-user-item-name">❌ Order #1220</div>
-            <div class="chat-user-item-meta">₹299 - Refunded</div>
-        </div>
-        <div class="chat-user-item">
-            <div class="chat-user-item-name">❌ Order #1215</div>
-            <div class="chat-user-item-meta">₹399 - Refunded</div>
-        </div>
-        <div class="chat-user-item">
-            <div class="chat-user-item-name">❌ Order #1210</div>
-            <div class="chat-user-item-meta">₹249 - Refunded</div>
-        </div>
-    `;
-    document.getElementById('totalCancelledOrders').textContent = '3';
+    cancelledList.innerHTML = '<div class="skeleton-loader"><div class="skeleton-item"></div><div class="skeleton-item"></div><div class="skeleton-item"></div></div>';
+    
+    try {
+        const response = await fetch('/api/orders?status=cancelled');
+        cancelledOrdersData = await response.json();
+        
+        const totalEl = document.getElementById('totalCancelledOrders');
+        const lossEl = document.getElementById('cancelledOrdersLoss');
+        
+        if (totalEl) totalEl.textContent = cancelledOrdersData.length;
+        
+        const totalLoss = cancelledOrdersData.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+        if (lossEl) lossEl.textContent = '₹' + totalLoss.toLocaleString();
+        
+        if (cancelledOrdersData.length === 0) {
+            cancelledList.innerHTML = `
+                <div class="chat-empty-state animated">
+                    <div class="empty-icon danger-bg">📭</div>
+                    <h3>No cancelled orders</h3>
+                    <p>No orders have been cancelled</p>
+                </div>
+            `;
+            return;
+        }
+        
+        cancelledList.innerHTML = cancelledOrdersData.map((order, index) => `
+            <div class="order-card ${index === 0 ? 'active' : ''}" onclick="selectCancelledOrder(${order.id})" style="animation-delay: ${index * 0.1}s">
+                <div class="order-card-header">
+                    <span class="order-id">❌ Order #${order.id}</span>
+                    <span class="order-amount" style="color: #dc2626;">₹${order.total_amount || 0}</span>
+                </div>
+                <div class="order-card-body">
+                    <div class="order-customer">👤 ${order.customer_name || 'Guest'}</div>
+                    <div class="order-date">📅 ${new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                </div>
+                <span class="status-badge cancelled">✗ Cancelled</span>
+            </div>
+        `).join('');
+        
+    } catch (error) {
+        console.error('Error loading cancelled orders:', error);
+        cancelledList.innerHTML = '<div class="chat-empty-state"><p>Failed to load orders</p></div>';
+    }
 }
 
+// Select cancelled order
+async function selectCancelledOrder(orderId) {
+    document.querySelectorAll('#cancelledOrdersList .order-card').forEach(card => card.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    
+    const detailPanel = document.getElementById('cancelledOrderDetailInfo');
+    detailPanel.innerHTML = '<div class="skeleton-loader"><div class="skeleton-item"></div><div class="skeleton-item"></div></div>';
+    
+    try {
+        const response = await fetch(`/api/orders/${orderId}`);
+        const order = await response.json();
+        
+        detailPanel.innerHTML = `
+            <div class="order-detail-view">
+                <div class="order-detail-header">
+                    <h3 class="order-detail-title">Order #${order.id}</h3>
+                    <span class="status-badge cancelled">✗ Cancelled</span>
+                </div>
+                
+                <div class="order-detail-section">
+                    <h4>Customer Information</h4>
+                    <div class="customer-info-card">
+                        <div class="customer-info-row"><span>👤</span> ${order.customer_name || 'Guest'}</div>
+                        <div class="customer-info-row"><span>📧</span> ${order.customer_email || 'No email'}</div>
+                        <div class="customer-info-row"><span>📱</span> ${order.customer_phone || 'No phone'}</div>
+                        <div class="customer-info-row"><span>📍</span> ${order.customer_address || 'No address'}</div>
+                    </div>
+                </div>
+                
+                <div class="order-detail-section">
+                    <h4>Order Items</h4>
+                    <div class="order-items-list">
+                        ${order.items && order.items.length > 0 ? order.items.map(item => `
+                            <div class="order-item-row">
+                                <div class="order-item-info">
+                                    <h5>${item.topic || 'Project'}</h5>
+                                    <p>${item.subject || ''} ${item.college ? '• ' + item.college : ''}</p>
+                                </div>
+                                <span class="order-item-price" style="color: #dc2626; text-decoration: line-through;">₹${item.price || 0}</span>
+                            </div>
+                        `).join('') : '<p>No items in order</p>'}
+                    </div>
+                </div>
+                
+                <div class="order-total-summary" style="background: #fef2f2;">
+                    <div class="total-row"><span>Original Amount</span><span style="text-decoration: line-through;">₹${order.total_amount || 0}</span></div>
+                    <div class="total-row final"><span>Lost Revenue</span><span class="total-amount" style="color: #dc2626;">₹${order.total_amount || 0}</span></div>
+                </div>
+                
+                <div class="order-detail-section">
+                    <p style="color: #dc2626; font-weight: 600; text-align: center;">❌ Order cancelled on ${new Date(order.updated_at).toLocaleDateString('en-IN')}</p>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error loading order details:', error);
+        detailPanel.innerHTML = '<p>Failed to load order details</p>';
+    }
+}
+
+// Load Notifications
+async function loadNotifications() {
+    try {
+        const response = await fetch('/api/notifications');
+        notificationsData = await response.json();
+        
+        const unreadCount = notificationsData.filter(n => !n.is_read).length;
+        const unreadEl = document.getElementById('unreadNotifications');
+        if (unreadEl) unreadEl.textContent = unreadCount;
+        
+        // Update dashboard counts
+        const notifCountEl = document.getElementById('notificationCount');
+        if (notifCountEl) notifCountEl.textContent = notificationsData.length;
+        
+    } catch (error) {
+        console.error('Error loading notifications:', error);
+    }
+}
+
+// Switch notification tab
+function switchNotifTab(tab) {
+    const tabs = document.querySelectorAll('.sidebar-tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    
+    const chatUsersList = document.getElementById('chatUsersList');
+    
+    if (tab === 'notifications') {
+        displayNotificationsList();
+    } else {
+        loadChatUsers();
+    }
+}
+
+// Display notifications in list
+function displayNotificationsList() {
+    const listEl = document.getElementById('chatUsersList');
+    
+    if (notificationsData.length === 0) {
+        listEl.innerHTML = `
+            <div class="chat-empty-state animated">
+                <div class="empty-icon">🔔</div>
+                <h3>No notifications</h3>
+                <p>You're all caught up!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    listEl.innerHTML = notificationsData.map((notif, index) => `
+        <div class="notification-item ${notif.is_read ? '' : 'unread'}" onclick="markNotificationRead(${notif.id})" style="animation-delay: ${index * 0.05}s">
+            <div class="notification-icon">${notif.type === 'order' ? '📦' : '🔔'}</div>
+            <div class="notification-content">
+                <div class="notification-title">${notif.title}</div>
+                <div class="notification-message">${notif.message}</div>
+                <div class="notification-time">${new Date(notif.created_at).toLocaleString('en-IN')}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Mark notification as read
+async function markNotificationRead(notifId) {
+    try {
+        await fetch(`/api/notifications/${notifId}/read`, { method: 'PATCH' });
+        loadNotifications();
+        displayNotificationsList();
+    } catch (error) {
+        console.error('Error marking notification as read:', error);
+    }
+}
+
+// Update order stats in admin dashboard
+async function updateOrderStats() {
+    try {
+        const response = await fetch('/api/orders/stats/summary');
+        const stats = await response.json();
+        
+        const pendingEl = document.getElementById('orderConfirmCount');
+        const confirmedEl = document.getElementById('confirmedOrderCount');
+        const cancelledEl = document.getElementById('cancelledOrderCount');
+        
+        if (pendingEl) pendingEl.textContent = stats.pending;
+        if (confirmedEl) confirmedEl.textContent = stats.confirmed;
+        if (cancelledEl) cancelledEl.textContent = stats.cancelled;
+        
+    } catch (error) {
+        console.error('Error updating order stats:', error);
+    }
+}
+
+// Search functions
 function searchChatUsers() {
-    // Search functionality placeholder
+    const query = document.getElementById('chatUserSearch').value.toLowerCase();
+    const filtered = sampleUsers.filter(u =>
+        u.name.toLowerCase().includes(query) ||
+        u.email.toLowerCase().includes(query)
+    );
+    
+    const chatUsersList = document.getElementById('chatUsersList');
+    if (filtered.length === 0) {
+        chatUsersList.innerHTML = '<div class="chat-empty-state"><p>No users found</p></div>';
+        return;
+    }
+    
+    chatUsersList.innerHTML = filtered.map((user, index) => `
+        <div class="chat-user-item" onclick="selectChatUser(this, 'user${user.id}', '${user.name.replace(/'/g, "\\'")}', '${user.email}', '${user.college}')" style="animation-delay: ${index * 0.05}s">
+            <div class="chat-user-item-avatar">👤</div>
+            <div class="chat-user-item-content">
+                <div class="chat-user-item-name">${user.name}</div>
+            </div>
+        </div>
+    `).join('');
 }
 
-function searchOrders() {
-    // Search functionality placeholder
+function searchPendingOrders() {
+    const query = document.getElementById('orderSearchInput').value.toLowerCase();
+    const filtered = pendingOrdersData.filter(o =>
+        (o.customer_name || '').toLowerCase().includes(query) ||
+        o.id.toString().includes(query)
+    );
+    displayFilteredOrders(filtered, 'ordersList', 'pending');
 }
 
-function searchConfirmedOrders() {
-    // Search functionality placeholder
+function searchConfirmedOrdersList() {
+    const query = document.getElementById('confirmedSearchInput').value.toLowerCase();
+    const filtered = confirmedOrdersData.filter(o =>
+        (o.customer_name || '').toLowerCase().includes(query) ||
+        o.id.toString().includes(query)
+    );
+    displayFilteredOrders(filtered, 'confirmedOrdersList', 'confirmed');
 }
 
-function searchCancelledOrders() {
-    // Search functionality placeholder
+function searchCancelledOrdersList() {
+    const query = document.getElementById('cancelledSearchInput').value.toLowerCase();
+    const filtered = cancelledOrdersData.filter(o =>
+        (o.customer_name || '').toLowerCase().includes(query) ||
+        o.id.toString().includes(query)
+    );
+    displayFilteredOrders(filtered, 'cancelledOrdersList', 'cancelled');
+}
+
+function displayFilteredOrders(orders, listId, status) {
+    const listEl = document.getElementById(listId);
+    
+    if (orders.length === 0) {
+        listEl.innerHTML = '<div class="chat-empty-state"><p>No orders found</p></div>';
+        return;
+    }
+    
+    const icon = status === 'pending' ? '📦' : status === 'confirmed' ? '✅' : '❌';
+    const badgeClass = status;
+    const badgeText = status === 'pending' ? '⏳ Pending' : status === 'confirmed' ? '✓ Confirmed' : '✗ Cancelled';
+    
+    listEl.innerHTML = orders.map((order, index) => `
+        <div class="order-card" onclick="select${status.charAt(0).toUpperCase() + status.slice(1)}Order(${order.id})" style="animation-delay: ${index * 0.1}s">
+            <div class="order-card-header">
+                <span class="order-id">${icon} Order #${order.id}</span>
+                <span class="order-amount">₹${order.total_amount || 0}</span>
+            </div>
+            <div class="order-card-body">
+                <div class="order-customer">👤 ${order.customer_name || 'Guest'}</div>
+                <div class="order-date">📅 ${new Date(order.created_at).toLocaleDateString('en-IN')}</div>
+            </div>
+            <span class="status-badge ${badgeClass}">${badgeText}</span>
+        </div>
+    `).join('');
+}
+
+// Filter orders by time
+function filterPendingOrders(filter) {
+    updateFilterChips(event.currentTarget);
+    filterOrdersByTime(pendingOrdersData, filter, 'ordersList', 'pending');
+}
+
+function filterConfirmedOrders(filter) {
+    updateFilterChips(event.currentTarget);
+    filterOrdersByTime(confirmedOrdersData, filter, 'confirmedOrdersList', 'confirmed');
+}
+
+function filterCancelledOrders(filter) {
+    updateFilterChips(event.currentTarget);
+    filterOrdersByTime(cancelledOrdersData, filter, 'cancelledOrdersList', 'cancelled');
+}
+
+function updateFilterChips(activeChip) {
+    const chips = activeChip.parentElement.querySelectorAll('.filter-chip');
+    chips.forEach(c => c.classList.remove('active'));
+    activeChip.classList.add('active');
+}
+
+function filterOrdersByTime(orders, filter, listId, status) {
+    const now = new Date();
+    let filtered = orders;
+    
+    if (filter === 'today') {
+        filtered = orders.filter(o => {
+            const orderDate = new Date(o.created_at);
+            return orderDate.toDateString() === now.toDateString();
+        });
+    } else if (filter === 'week') {
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        filtered = orders.filter(o => new Date(o.created_at) >= weekAgo);
+    }
+    
+    displayFilteredOrders(filtered, listId, status);
 }
 
 // Close admin login modal on outside click

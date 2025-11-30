@@ -80,6 +80,29 @@ async function initDatabase() {
       );
     `);
     
+    // Create notifications table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER,
+        title VARCHAR(255) NOT NULL,
+        message TEXT,
+        type VARCHAR(50) DEFAULT 'info',
+        is_read BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    
+    // Add customer info columns to orders if not exists
+    await client.query(`
+      ALTER TABLE orders 
+      ADD COLUMN IF NOT EXISTS customer_name VARCHAR(100),
+      ADD COLUMN IF NOT EXISTS customer_email VARCHAR(100),
+      ADD COLUMN IF NOT EXISTS customer_phone VARCHAR(20),
+      ADD COLUMN IF NOT EXISTS customer_address TEXT,
+      ADD COLUMN IF NOT EXISTS notes TEXT
+    `);
+    
     console.log('✓ Database initialized');
     client.release();
   } catch (error) {
@@ -213,10 +236,20 @@ app.delete('/api/cart/:id', async (req, res) => {
   }
 });
 
-// Orders Routes
+// Orders Routes - Get orders with optional status filter
 app.get('/api/orders', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
+    const { status } = req.query;
+    let query = 'SELECT * FROM orders';
+    let params = [];
+    
+    if (status) {
+      query += ' WHERE status = $1';
+      params.push(status);
+    }
+    query += ' ORDER BY created_at DESC';
+    
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -224,12 +257,60 @@ app.get('/api/orders', async (req, res) => {
   }
 });
 
+// Get order with items details
+app.get('/api/orders/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const orderResult = await pool.query('SELECT * FROM orders WHERE id = $1', [id]);
+    
+    if (orderResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    
+    const itemsResult = await pool.query(`
+      SELECT oi.*, p.topic, p.subject, p.college 
+      FROM order_items oi
+      JOIN projects p ON oi.project_id = p.id
+      WHERE oi.order_id = $1
+    `, [id]);
+    
+    res.json({
+      ...orderResult.rows[0],
+      items: itemsResult.rows
+    });
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    res.status(500).json({ error: 'Failed to fetch order' });
+  }
+});
+
+// Get order statistics
+app.get('/api/orders/stats/summary', async (req, res) => {
+  try {
+    const pending = await pool.query("SELECT COUNT(*) FROM orders WHERE status = 'pending'");
+    const confirmed = await pool.query("SELECT COUNT(*) FROM orders WHERE status = 'confirmed'");
+    const cancelled = await pool.query("SELECT COUNT(*) FROM orders WHERE status = 'cancelled'");
+    const totalRevenue = await pool.query("SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status = 'confirmed'");
+    
+    res.json({
+      pending: parseInt(pending.rows[0].count),
+      confirmed: parseInt(confirmed.rows[0].count),
+      cancelled: parseInt(cancelled.rows[0].count),
+      totalRevenue: parseInt(totalRevenue.rows[0].total)
+    });
+  } catch (error) {
+    console.error('Error fetching order stats:', error);
+    res.json({ pending: 0, confirmed: 0, cancelled: 0, totalRevenue: 0 });
+  }
+});
+
 app.post('/api/orders', async (req, res) => {
   try {
-    const { items, total_amount } = req.body;
+    const { items, total_amount, customer_name, customer_email, customer_phone, customer_address, notes } = req.body;
     const orderResult = await pool.query(
-      'INSERT INTO orders (total_amount, status) VALUES ($1, $2) RETURNING *',
-      [total_amount, 'pending']
+      `INSERT INTO orders (total_amount, status, customer_name, customer_email, customer_phone, customer_address, notes) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [total_amount, 'pending', customer_name || 'Guest', customer_email || '', customer_phone || '', customer_address || '', notes || '']
     );
     const orderId = orderResult.rows[0].id;
     
@@ -240,6 +321,12 @@ app.post('/api/orders', async (req, res) => {
         [orderId, item.project_id, item.quantity, item.price]
       );
     }
+    
+    // Create notification for new order
+    await pool.query(
+      'INSERT INTO notifications (title, message, type) VALUES ($1, $2, $3)',
+      [`New Order #${orderId}`, `Order placed for ₹${total_amount}`, 'order']
+    );
     
     res.json({ success: true, orderId, order: orderResult.rows[0] });
   } catch (error) {
@@ -256,10 +343,63 @@ app.patch('/api/orders/:id', async (req, res) => {
       'UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *',
       [status, id]
     );
+    
+    // Create notification for status change
+    const statusText = status === 'confirmed' ? 'confirmed' : status === 'cancelled' ? 'cancelled' : 'updated';
+    await pool.query(
+      'INSERT INTO notifications (title, message, type) VALUES ($1, $2, $3)',
+      [`Order #${id} ${statusText}`, `Order status changed to ${status}`, 'order']
+    );
+    
     res.json(result.rows[0]);
   } catch (error) {
     console.error('Error updating order:', error);
     res.status(500).json({ error: 'Failed to update order' });
+  }
+});
+
+// Notifications Routes
+app.get('/api/notifications', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM notifications ORDER BY created_at DESC LIMIT 50');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.json([]);
+  }
+});
+
+app.post('/api/notifications', async (req, res) => {
+  try {
+    const { title, message, type } = req.body;
+    const result = await pool.query(
+      'INSERT INTO notifications (title, message, type) VALUES ($1, $2, $3) RETURNING *',
+      [title, message, type || 'info']
+    );
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating notification:', error);
+    res.status(500).json({ error: 'Failed to create notification' });
+  }
+});
+
+app.patch('/api/notifications/:id/read', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query('UPDATE notifications SET is_read = TRUE WHERE id = $1', [id]);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to mark notification as read' });
+  }
+});
+
+app.delete('/api/notifications/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query('DELETE FROM notifications WHERE id = $1', [id]);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete notification' });
   }
 });
 
