@@ -5772,6 +5772,118 @@ body {
     font-size: 0.75rem;
 }
 
+.wa-message-image {
+    max-width: 200px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 0.4rem;
+}
+
+.wa-message-image-placeholder {
+    background: rgba(255,255,255,0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+}
+
+/* Image Modal */
+.wa-image-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.wa-image-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+}
+
+.wa-image-modal-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wa-image-modal-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.wa-image-modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wa-image-modal-close:hover {
+    color: #aebac1;
+}
+
+/* Chat Menu */
+.wa-chat-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #202c33;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.wa-menu-item {
+    display: block;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: none;
+    background: transparent;
+    color: #e9edef;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.wa-menu-item:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.wa-menu-item:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.wa-menu-item:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
 /* Input Area */
 .wa-input-area {
     background: #202c33;

@@ -444,7 +444,7 @@
                 <div class="wa-input-area">
                     <div class="wa-attached-preview" id="waAttachedPreview"></div>
                     <div class="wa-input-row">
-                        <button class="wa-emoji-btn" title="Emoji">😊</button>
+                        <button class="wa-emoji-btn" title="Emoji" onclick="insertWaEmoji('😊')">😊</button>
                         <button class="wa-attach-btn" onclick="document.getElementById('waFileInput').click()" title="Attach file">📎</button>
                         <input type="file" id="waFileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip" style="display:none" onchange="handleWaFileSelect(event)">
                         <input type="text" id="waMessageInput" class="wa-message-input" placeholder="Type a message" onkeypress="handleWaMessageKeypress(event)">
@@ -453,6 +453,15 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Image Viewer Modal -->
+        <div class="wa-image-modal" id="waImageModal" style="display: none;">
+            <div class="wa-image-modal-overlay" onclick="closeWaImageModal()"></div>
+            <div class="wa-image-modal-content">
+                <button class="wa-image-modal-close" onclick="closeWaImageModal()">✕</button>
+                <img id="waImageModalImg" src="" alt="Image">
             </div>
         </div>
     </section>

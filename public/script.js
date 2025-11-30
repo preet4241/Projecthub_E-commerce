@@ -1163,16 +1163,37 @@ function loadWaMessages(userId) {
         
         let fileHtml = '';
         if (msg.file) {
-            const fileIcon = getFileIcon(msg.file.type);
-            fileHtml = `
-                <div class="wa-message-file" onclick="downloadWaFile('${msg.file.id}')">
-                    <span class="wa-file-icon">${fileIcon}</span>
-                    <div class="wa-file-info">
-                        <div class="wa-file-name">${msg.file.name}</div>
-                        <div class="wa-file-size">${formatFileSize(msg.file.size)}</div>
+            // Check if it's an image
+            if (msg.file.type && msg.file.type.startsWith('image/')) {
+                const fileId = msg.file.id;
+                const file = waFileStorage[fileId];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imgSrc = e.target.result;
+                        const img = document.createElement('img');
+                        img.src = imgSrc;
+                        img.className = 'wa-message-image';
+                        img.onclick = () => openWaImageModal(imgSrc);
+                        img.style.cursor = 'pointer';
+                    };
+                    reader.readAsDataURL(file);
+                    fileHtml = `<img class="wa-message-image" src="" data-file-id="${fileId}" onclick="openWaImageFromFile('${fileId}')" style="max-width: 200px; border-radius: 8px; cursor: pointer; margin-bottom: 0.4rem;">`;
+                } else {
+                    fileHtml = `<div class="wa-message-image-placeholder">📷 Image</div>`;
+                }
+            } else {
+                const fileIcon = getFileIcon(msg.file.type);
+                fileHtml = `
+                    <div class="wa-message-file" onclick="downloadWaFile('${msg.file.id}')">
+                        <span class="wa-file-icon">${fileIcon}</span>
+                        <div class="wa-file-info">
+                            <div class="wa-file-name">${msg.file.name}</div>
+                            <div class="wa-file-size">${formatFileSize(msg.file.size)}</div>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
         }
         
         html += `
@@ -1357,6 +1378,76 @@ function downloadWaFile(fileId) {
     a.download = file.name;
     a.click();
     URL.revokeObjectURL(url);
+}
+
+// Open image modal from file
+function openWaImageFromFile(fileId) {
+    const file = waFileStorage[fileId];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        openWaImageModal(e.target.result);
+    };
+    reader.readAsDataURL(file);
+}
+
+// Open image modal
+function openWaImageModal(imgSrc) {
+    const modal = document.getElementById('waImageModal');
+    const img = document.getElementById('waImageModalImg');
+    if (modal && img) {
+        img.src = imgSrc;
+        modal.style.display = 'flex';
+    }
+}
+
+// Close image modal
+function closeWaImageModal() {
+    const modal = document.getElementById('waImageModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Insert emoji into message input
+function insertWaEmoji(emoji) {
+    const input = document.getElementById('waMessageInput');
+    input.value += emoji;
+    input.focus();
+}
+
+// Toggle chat menu
+function toggleWaChatMenu() {
+    const menu = document.getElementById('waChatMenu');
+    if (menu) {
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Clear chat
+function clearWaChat() {
+    if (confirm('Clear all messages with this user?')) {
+        if (currentWaChatUserId && waUserMessages[currentWaChatUserId]) {
+            waUserMessages[currentWaChatUserId] = [];
+            loadWaMessages(currentWaChatUserId);
+            toggleWaChatMenu();
+        }
+    }
+}
+
+// Mute chat notifications
+function muteWaChat() {
+    alert('Chat muted for 1 hour');
+    toggleWaChatMenu();
+}
+
+// Block user
+function blockWaUser() {
+    if (confirm('Block this user?')) {
+        alert('User blocked');
+        closeChatView();
+    }
 }
 
 // Legacy support
