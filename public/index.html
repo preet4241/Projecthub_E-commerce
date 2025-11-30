@@ -22,7 +22,7 @@
                     <li><a href="#" class="nav-link">Home</a></li>
                     <li><a href="#projects" class="nav-link">Projects</a></li>
                     <li><a href="#" class="nav-link">About</a></li>
-                    <li><a href="#" class="nav-link">Contact</a></li>
+                    <li><a href="#" class="nav-link" onclick="openAdminSupportChat()">Contact Support</a></li>
                 </ul>
                 <button class="search-btn" id="searchBtn">🔍 Search</button>
                 <div class="cart-icon" id="cartIcon">
@@ -416,6 +416,31 @@
                 </div>
             </div>
             
+            <!-- Admin Support Chat View (hidden by default) -->
+            <div class="wa-admin-support-chat" id="waAdminSupportChat" style="display: none;">
+                <div class="wa-chat-header">
+                    <button class="wa-chat-back-btn" onclick="closeAdminSupportChat()">←</button>
+                    <div class="wa-chat-user-info">
+                        <div class="wa-chat-avatar">👨‍💼</div>
+                        <div class="wa-chat-user-details">
+                            <h4>ProjectHub Support</h4>
+                            <span class="wa-online-status online"><span class="wa-online-indicator"></span>online</span>
+                        </div>
+                    </div>
+                    <div class="wa-chat-actions"></div>
+                </div>
+                <div class="wa-messages-container" id="waAdminMessagesContainer"></div>
+                <div class="wa-input-area">
+                    <div class="wa-attached-preview" id="waAdminAttachedPreview"></div>
+                    <div class="wa-input-row">
+                        <button class="wa-attach-btn" onclick="document.getElementById('waAdminFileInput').click()" title="Attach file">📎</button>
+                        <input type="file" id="waAdminFileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip" style="display:none" onchange="handleWaAdminFileSelect(event)">
+                        <input type="text" id="waAdminMessageInput" class="wa-message-input" placeholder="Type a message" onkeypress="handleWaAdminMessageKeypress(event)" oninput="showAdminTypingIndicator()">
+                        <button class="wa-send-btn" onclick="sendWaAdminMessage()" title="Send"><span class="send-icon">➤</span></button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Active Chat View (hidden by default) -->
             <div class="wa-active-chat" id="waActiveChat" style="display: none;">
                 <div class="wa-chat-header">
@@ -437,6 +462,9 @@
                     </div>
                 </div>
                 
+                <div class="wa-typing-indicator" id="waTypingIndicator" style="display: none; padding: 0.5rem 1rem;">
+                    <span style="color: #8696a0; font-size: 0.9rem;">typing<span class="typing-dots"></span></span>
+                </div>
                 <div class="wa-messages-container" id="waMessagesContainer">
                     <!-- Messages will appear here -->
                 </div>
@@ -446,7 +474,7 @@
                     <div class="wa-input-row">
                         <button class="wa-attach-btn" onclick="document.getElementById('waFileInput').click()" title="Attach file">📎</button>
                         <input type="file" id="waFileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip" style="display:none" onchange="handleWaFileSelect(event)">
-                        <input type="text" id="waMessageInput" class="wa-message-input" placeholder="Type a message" onkeypress="handleWaMessageKeypress(event)">
+                        <input type="text" id="waMessageInput" class="wa-message-input" placeholder="Type a message" onkeypress="handleWaMessageKeypress(event)" oninput="showTypingIndicator()">
                         <button class="wa-send-btn" onclick="sendWaMessage()" title="Send">
                             <span class="send-icon">➤</span>
                         </button>

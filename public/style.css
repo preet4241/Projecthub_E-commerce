@@ -6178,6 +6178,19 @@ body {
     background: rgba(255,255,255,0.3);
 }
 
+/* Typing Indicator Animation */
+.typing-dots::after {
+    content: '';
+    animation: typingDots 1.4s infinite;
+}
+
+@keyframes typingDots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+}
+
 /* Chat Menu */
 .wa-chat-menu {
     position: absolute;
