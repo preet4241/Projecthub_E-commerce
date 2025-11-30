@@ -529,13 +529,13 @@
             </div>
             
             <div class="user-chat-input-area">
-                <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" onchange="handleFileSelect(event)">
-                <button class="file-attach-btn" onclick="document.getElementById('fileInput').click()" title="Attach files">📎</button>
-                <div class="user-input-wrapper">
-                    <div id="attachedFilesPreview" class="attached-files-preview"></div>
-                    <input type="text" id="userMessageInput" placeholder="Type message..." class="user-message-input">
+                <div id="attachedFilesPreview" class="attached-files-preview"></div>
+                <div class="chat-input-container">
+                    <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" onchange="handleFileSelect(event)">
+                    <input type="text" id="userMessageInput" placeholder="Message..." class="user-message-input">
+                    <button class="file-attach-btn" onclick="document.getElementById('fileInput').click()" title="Attach files">📎</button>
+                    <button class="user-send-btn" onclick="sendMessage()">Send</button>
                 </div>
-                <button class="user-send-btn" onclick="sendMessage()">Send</button>
             </div>
         </div>
     </section>

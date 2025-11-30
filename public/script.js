@@ -1079,6 +1079,8 @@ function closeUserChat() {
     if (userChatPage) userChatPage.style.display = 'none';
     if (notifsChatPage) notifsChatPage.style.display = 'block';
     document.body.style.overflow = 'auto';
+    const footer = document.getElementById('mainFooter');
+    if (footer) footer.style.display = 'block';
     attachedFiles = [];
 }
 
