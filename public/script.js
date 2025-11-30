@@ -1,6 +1,7 @@
 let cart = [];
 let allProjects = [];
 let favorites = [];
+let isBanFilterActive = false;
 
 // Mobile menu toggle
 document.addEventListener('DOMContentLoaded', () => {
@@ -682,8 +683,11 @@ function closeUserManagementPage() {
 function displayAdminUsersFull(users = sampleUsers) {
     const usersList = document.getElementById('adminUsersListFull');
     const totalDisplay = document.getElementById('totalUsersDisplay');
+    const bannedDisplay = document.getElementById('bannedUsersDisplay');
     
-    totalDisplay.textContent = users.length;
+    totalDisplay.textContent = sampleUsers.length;
+    const bannedCount = sampleUsers.filter(u => u.banned).length;
+    bannedDisplay.textContent = bannedCount;
     
     if (users.length === 0) {
         usersList.innerHTML = '<div class="admin-empty-state"><p>No users found</p></div>';
@@ -710,13 +714,35 @@ function displayAdminUsersFull(users = sampleUsers) {
     `).join('');
 }
 
+function toggleBanFilter() {
+    isBanFilterActive = !isBanFilterActive;
+    
+    const banBox = document.getElementById('banAccountBox');
+    if (isBanFilterActive) {
+        banBox.style.opacity = '0.7';
+        banBox.style.transform = 'scale(0.95)';
+        const bannedUsers = sampleUsers.filter(u => u.banned);
+        displayAdminUsersFull(bannedUsers);
+    } else {
+        banBox.style.opacity = '1';
+        banBox.style.transform = 'scale(1)';
+        displayAdminUsersFull(sampleUsers);
+    }
+}
+
 function adminSearchUsersFull() {
     const query = document.getElementById('userSearchInputFull').value.toLowerCase();
-    const filtered = sampleUsers.filter(u =>
+    let filtered = sampleUsers.filter(u =>
         u.name.toLowerCase().includes(query) ||
         u.email.toLowerCase().includes(query) ||
         u.college.toLowerCase().includes(query)
     );
+    
+    // Apply ban filter if active
+    if (isBanFilterActive) {
+        filtered = filtered.filter(u => u.banned);
+    }
+    
     displayAdminUsersFull(filtered);
 }
 
@@ -738,14 +764,14 @@ function adminFilterProjects() {
 
 // Sample users data
 const sampleUsers = [
-    { id: 1, name: 'Aryan Mishra', email: 'aryan@example.com', college: 'IIT Delhi', purchases: 5, joinDate: '2025-01-15' },
-    { id: 2, name: 'Priya Singh', email: 'priya@example.com', college: 'NIT Bangalore', purchases: 3, joinDate: '2025-01-20' },
-    { id: 3, name: 'Amit Patel', email: 'amit@example.com', college: 'Delhi University', purchases: 8, joinDate: '2025-01-10' },
-    { id: 4, name: 'Neha Gupta', email: 'neha@example.com', college: 'IIT Bombay', purchases: 2, joinDate: '2025-01-25' },
-    { id: 5, name: 'Arjun Verma', email: 'arjun@example.com', college: 'NIT Pune', purchases: 6, joinDate: '2025-01-18' },
-    { id: 6, name: 'Sneha Reddy', email: 'sneha@example.com', college: 'IIT Madras', purchases: 7, joinDate: '2025-01-12' },
-    { id: 7, name: 'Vikram Singh', email: 'vikram@example.com', college: 'BITS Pilani', purchases: 4, joinDate: '2025-01-22' },
-    { id: 8, name: 'Pooja Sharma', email: 'pooja@example.com', college: 'Anna University', purchases: 9, joinDate: '2025-01-08' },
+    { id: 1, name: 'Aryan Mishra', email: 'aryan@example.com', college: 'IIT Delhi', purchases: 5, joinDate: '2025-01-15', banned: false },
+    { id: 2, name: 'Priya Singh', email: 'priya@example.com', college: 'NIT Bangalore', purchases: 3, joinDate: '2025-01-20', banned: true },
+    { id: 3, name: 'Amit Patel', email: 'amit@example.com', college: 'Delhi University', purchases: 8, joinDate: '2025-01-10', banned: false },
+    { id: 4, name: 'Neha Gupta', email: 'neha@example.com', college: 'IIT Bombay', purchases: 2, joinDate: '2025-01-25', banned: true },
+    { id: 5, name: 'Arjun Verma', email: 'arjun@example.com', college: 'NIT Pune', purchases: 6, joinDate: '2025-01-18', banned: false },
+    { id: 6, name: 'Sneha Reddy', email: 'sneha@example.com', college: 'IIT Madras', purchases: 7, joinDate: '2025-01-12', banned: false },
+    { id: 7, name: 'Vikram Singh', email: 'vikram@example.com', college: 'BITS Pilani', purchases: 4, joinDate: '2025-01-22', banned: true },
+    { id: 8, name: 'Pooja Sharma', email: 'pooja@example.com', college: 'Anna University', purchases: 9, joinDate: '2025-01-08', banned: false },
 ];
 
 function displayAdminUsers(users = sampleUsers) {
