@@ -5847,6 +5847,187 @@ body {
     color: #aebac1;
 }
 
+/* PDF Modal */
+.wa-pdf-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.wa-pdf-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+}
+
+.wa-pdf-modal-content {
+    position: relative;
+    background: #202c33;
+    border-radius: 8px;
+    width: 90vw;
+    height: 90vh;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.wa-pdf-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background: #111b21;
+}
+
+.wa-pdf-modal-header h3 {
+    color: #e9edef;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.wa-pdf-modal-close {
+    background: none;
+    border: none;
+    color: #aebac1;
+    font-size: 1.2rem;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+}
+
+.wa-pdf-modal-close:hover {
+    color: #e9edef;
+}
+
+.wa-pdf-viewer {
+    flex: 1;
+    border: none;
+    background: white;
+}
+
+.wa-pdf-download-btn {
+    padding: 0.8rem 1.5rem;
+    background: #00a884;
+    color: white;
+    border: none;
+    border-radius: 0 0 8px 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.wa-pdf-download-btn:hover {
+    background: #008f72;
+}
+
+/* Text File Modal */
+.wa-text-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.wa-text-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+}
+
+.wa-text-modal-content {
+    position: relative;
+    background: #202c33;
+    border-radius: 8px;
+    width: 90vw;
+    height: 90vh;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.wa-text-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background: #111b21;
+}
+
+.wa-text-modal-header h3 {
+    color: #e9edef;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.wa-text-modal-close {
+    background: none;
+    border: none;
+    color: #aebac1;
+    font-size: 1.2rem;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+}
+
+.wa-text-modal-close:hover {
+    color: #e9edef;
+}
+
+.wa-text-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background: #111b21;
+    color: #e9edef;
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.wa-text-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.wa-text-content::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+}
+
+.wa-text-content::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+}
+
+.wa-text-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.3);
+}
+
 /* Chat Menu */
 .wa-chat-menu {
     position: absolute;

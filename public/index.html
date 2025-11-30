@@ -464,6 +464,31 @@
                 <img id="waImageModalImg" src="" alt="Image">
             </div>
         </div>
+        
+        <!-- PDF Viewer Modal -->
+        <div class="wa-pdf-modal" id="waPdfModal" style="display: none;">
+            <div class="wa-pdf-modal-overlay" onclick="closeWaPdfModal()"></div>
+            <div class="wa-pdf-modal-content">
+                <div class="wa-pdf-modal-header">
+                    <h3>PDF Preview</h3>
+                    <button class="wa-pdf-modal-close" onclick="closeWaPdfModal()">✕</button>
+                </div>
+                <iframe id="waPdfViewer" class="wa-pdf-viewer" src=""></iframe>
+                <button class="wa-pdf-download-btn" onclick="downloadCurrentPdf()">Download PDF</button>
+            </div>
+        </div>
+        
+        <!-- Text File Preview Modal -->
+        <div class="wa-text-modal" id="waTextModal" style="display: none;">
+            <div class="wa-text-modal-overlay" onclick="closeWaTextModal()"></div>
+            <div class="wa-text-modal-content">
+                <div class="wa-text-modal-header">
+                    <h3>File Preview</h3>
+                    <button class="wa-text-modal-close" onclick="closeWaTextModal()">✕</button>
+                </div>
+                <pre id="waTextContent" class="wa-text-content"></pre>
+            </div>
+        </div>
     </section>
 
     <!-- Order Confirmation Chat Section -->

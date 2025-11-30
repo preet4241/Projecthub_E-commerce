@@ -1226,13 +1226,31 @@ function loadWaMessages(userId) {
                     fileHtml = `<div class="wa-message-image-placeholder" style="padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 0.4rem;">📷 Image</div>`;
                 }
             } else {
-                const fileIcon = getFileIcon(msg.file.type);
+                // Handle different file types
+                const fileType = msg.file.type || '';
+                const fileName = msg.file.name || '';
+                const fileIcon = getFileIcon(fileType);
+                let clickAction = `downloadWaFile('${msg.file.id}')`;
+                let actionText = 'Click to download';
+                
+                // PDF files - can preview
+                if (fileType.includes('pdf') || fileName.endsWith('.pdf')) {
+                    clickAction = `openWaPdfPreview('${msg.file.id}')`;
+                    actionText = 'Click to preview';
+                }
+                // Text files - can preview
+                else if (fileType.includes('text') || fileName.endsWith('.txt') || fileName.endsWith('.log')) {
+                    clickAction = `openWaTextPreview('${msg.file.id}')`;
+                    actionText = 'Click to preview';
+                }
+                
                 fileHtml = `
-                    <div class="wa-message-file" onclick="downloadWaFile('${msg.file.id}')" style="cursor: pointer; padding: 0.8rem; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 0.4rem; display: flex; gap: 0.5rem; align-items: center;">
+                    <div class="wa-message-file" onclick="${clickAction}" style="cursor: pointer; padding: 0.8rem; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 0.4rem; display: flex; gap: 0.5rem; align-items: center; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
                         <span class="wa-file-icon" style="font-size: 1.5rem;">${fileIcon}</span>
                         <div class="wa-file-info">
                             <div class="wa-file-name" style="font-weight: 500;">${msg.file.name}</div>
                             <div class="wa-file-size" style="font-size: 0.8rem; opacity: 0.7;">${formatFileSize(msg.file.size)}</div>
+                            <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.2rem;">${actionText}</div>
                         </div>
                     </div>
                 `;
@@ -1560,6 +1578,77 @@ function blockWaUser() {
     if (confirm('Block this user?')) {
         alert('User blocked');
         closeChatView();
+    }
+}
+
+// Open PDF preview
+function openWaPdfPreview(fileId) {
+    const file = waFileStorage[fileId];
+    if (!file) {
+        alert('File not available');
+        return;
+    }
+    
+    const url = URL.createObjectURL(file);
+    const modal = document.getElementById('waPdfModal');
+    const pdfViewer = document.getElementById('waPdfViewer');
+    
+    if (modal && pdfViewer) {
+        pdfViewer.src = url;
+        modal.style.display = 'flex';
+    } else {
+        // Fallback to download if modal not available
+        downloadWaFile(fileId);
+    }
+}
+
+// Close PDF modal
+function closeWaPdfModal() {
+    const modal = document.getElementById('waPdfModal');
+    const pdfViewer = document.getElementById('waPdfViewer');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    if (pdfViewer) {
+        pdfViewer.src = '';
+    }
+}
+
+// Open text file preview
+function openWaTextPreview(fileId) {
+    const file = waFileStorage[fileId];
+    if (!file) {
+        alert('File not available');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const text = e.target.result;
+        const modal = document.getElementById('waTextModal');
+        const textContent = document.getElementById('waTextContent');
+        
+        if (modal && textContent) {
+            textContent.textContent = text;
+            textContent.style.maxHeight = '500px';
+            textContent.style.overflowY = 'auto';
+            modal.style.display = 'flex';
+        } else {
+            // Fallback to download
+            downloadWaFile(fileId);
+        }
+    };
+    reader.readAsText(file).catch(() => {
+        alert('Cannot preview this file. Downloading instead...');
+        downloadWaFile(fileId);
+    });
+}
+
+// Close text modal
+function closeWaTextModal() {
+    const modal = document.getElementById('waTextModal');
+    if (modal) {
+        modal.style.display = 'none';
     }
 }
 
