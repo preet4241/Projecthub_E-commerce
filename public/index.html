@@ -387,6 +387,137 @@
         </div>
     </section>
 
+    <!-- Notifications Chat Section -->
+    <section id="notificationsChatPage" style="display: none;">
+        <div class="chat-page-container">
+            <div class="chat-header">
+                <button class="chat-back-btn" onclick="closeNotificationsChat()">← Back</button>
+                <h2>🔔 Notifications & Messages</h2>
+                <div class="chat-header-stats">
+                    <span id="totalUsersInChat">0</span> Users
+                </div>
+            </div>
+            
+            <div class="chat-main-content">
+                <!-- Users List -->
+                <div class="chat-users-sidebar">
+                    <div class="chat-search-box">
+                        <input type="text" id="chatUserSearch" placeholder="Search users..." onkeyup="searchChatUsers()">
+                    </div>
+                    <div class="chat-users-list" id="chatUsersList">
+                        <div class="chat-empty-state">Loading users...</div>
+                    </div>
+                </div>
+                
+                <!-- Chat Area -->
+                <div class="chat-area">
+                    <div class="chat-selected-user" id="chatSelectedUserInfo">
+                        <p>Select a user to view details</p>
+                    </div>
+                    <div class="chat-messages" id="chatMessagesArea">
+                        <!-- Messages will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Order Confirmation Chat Section -->
+    <section id="orderConfirmChatPage" style="display: none;">
+        <div class="chat-page-container">
+            <div class="chat-header">
+                <button class="chat-back-btn" onclick="closeOrderConfirmChat()">← Back</button>
+                <h2>📦 Order Confirmation</h2>
+                <div class="chat-header-stats">
+                    <span id="totalOrdersPending">0</span> Pending
+                </div>
+            </div>
+            
+            <div class="chat-main-content">
+                <!-- Orders List -->
+                <div class="chat-users-sidebar">
+                    <div class="chat-search-box">
+                        <input type="text" id="orderSearchInput" placeholder="Search orders..." onkeyup="searchOrders()">
+                    </div>
+                    <div class="chat-users-list" id="ordersList">
+                        <div class="chat-empty-state">Loading orders...</div>
+                    </div>
+                </div>
+                
+                <!-- Order Details -->
+                <div class="chat-area">
+                    <div class="chat-selected-user" id="orderDetailInfo">
+                        <p>Select an order to confirm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Confirmed Orders Chat Section -->
+    <section id="confirmedOrdersChatPage" style="display: none;">
+        <div class="chat-page-container">
+            <div class="chat-header">
+                <button class="chat-back-btn" onclick="closeConfirmedOrdersChat()">← Back</button>
+                <h2>✅ Confirmed Orders</h2>
+                <div class="chat-header-stats">
+                    <span id="totalConfirmedOrders">0</span> Orders
+                </div>
+            </div>
+            
+            <div class="chat-main-content">
+                <!-- Confirmed Orders List -->
+                <div class="chat-users-sidebar">
+                    <div class="chat-search-box">
+                        <input type="text" id="confirmedSearchInput" placeholder="Search confirmed orders..." onkeyup="searchConfirmedOrders()">
+                    </div>
+                    <div class="chat-users-list" id="confirmedOrdersList">
+                        <div class="chat-empty-state">Loading orders...</div>
+                    </div>
+                </div>
+                
+                <!-- Order Details -->
+                <div class="chat-area">
+                    <div class="chat-selected-user" id="confirmedOrderDetailInfo">
+                        <p>Select an order to view details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cancelled Orders Chat Section -->
+    <section id="cancelledOrdersChatPage" style="display: none;">
+        <div class="chat-page-container">
+            <div class="chat-header">
+                <button class="chat-back-btn" onclick="closeCancelledOrdersChat()">← Back</button>
+                <h2>❌ Cancelled Orders</h2>
+                <div class="chat-header-stats">
+                    <span id="totalCancelledOrders">0</span> Cancelled
+                </div>
+            </div>
+            
+            <div class="chat-main-content">
+                <!-- Cancelled Orders List -->
+                <div class="chat-users-sidebar">
+                    <div class="chat-search-box">
+                        <input type="text" id="cancelledSearchInput" placeholder="Search cancelled orders..." onkeyup="searchCancelledOrders()">
+                    </div>
+                    <div class="chat-users-list" id="cancelledOrdersList">
+                        <div class="chat-empty-state">Loading orders...</div>
+                    </div>
+                </div>
+                
+                <!-- Order Details -->
+                <div class="chat-area">
+                    <div class="chat-selected-user" id="cancelledOrderDetailInfo">
+                        <p>Select an order to view details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- User Management Full Page -->
     <section id="userManagementPage" style="display: none;">
         <div class="user-management-container">
