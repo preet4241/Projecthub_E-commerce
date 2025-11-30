@@ -3444,3 +3444,85 @@ footer {
 .chat-back-icon-btn:active {
     transform: scale(0.95);
 }
+
+/* File Attachment Styles */
+#fileInput {
+    display: none;
+}
+
+.file-attach-btn {
+    padding: 0.8rem;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-attach-btn:hover {
+    background: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.file-attach-btn:active {
+    transform: scale(0.95);
+}
+
+.user-input-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.attached-files-preview {
+    display: none;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.file-preview-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #e3f2fd;
+    padding: 0.5rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    color: #1976d2;
+    max-width: 100%;
+}
+
+.file-preview-remove {
+    background: none;
+    border: none;
+    color: #1976d2;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.file-preview-remove:hover {
+    color: #d32f2f;
+    transform: scale(1.2);
+}
+
+@media (max-width: 600px) {
+    .file-preview-item {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
