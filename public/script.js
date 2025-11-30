@@ -706,9 +706,9 @@ function displayAdminUsersFull(users = sampleUsers) {
     const totalDisplay = document.getElementById('totalUsersDisplay');
     const bannedDisplay = document.getElementById('bannedUsersDisplay');
     
-    totalDisplay.textContent = sampleUsers.length;
+    if (totalDisplay) totalDisplay.textContent = sampleUsers.length;
     const bannedCount = sampleUsers.filter(u => u.banned).length;
-    bannedDisplay.textContent = bannedCount;
+    if (bannedDisplay) bannedDisplay.textContent = bannedCount;
     
     if (users.length === 0) {
         usersList.innerHTML = '<div class="admin-empty-state"><p>No users found</p></div>';
@@ -979,7 +979,8 @@ function loadChatUsers() {
         .then(users => {
             if (users.length === 0) {
                 chatUsersList.innerHTML = '<div class="chat-empty-state">No registered users yet</div>';
-                document.getElementById('totalUsersInChat').textContent = '0';
+                const totalEl = document.getElementById('totalUsersInChat');
+                if (totalEl) totalEl.textContent = '0';
                 return;
             }
             
@@ -998,7 +999,8 @@ function loadChatUsers() {
                 `;
             });
             chatUsersList.innerHTML = html;
-            document.getElementById('totalUsersInChat').textContent = users.length;
+            const totalEl = document.getElementById('totalUsersInChat');
+            if (totalEl) totalEl.textContent = users.length;
         })
         .catch(error => {
             console.error('Error loading users:', error);
@@ -1014,9 +1016,20 @@ function selectChatUser(element, userId, userName, userEmail, userCollege) {
 let attachedFiles = [];
 
 function openUserChat(userId, userName) {
-    document.getElementById('notificationsChatPage').style.display = 'none';
-    document.getElementById('userChatPage').style.display = 'block';
-    document.getElementById('userChatName').textContent = userName;
+    const notifsChatPage = document.getElementById('notificationsChatPage');
+    const userChatPage = document.getElementById('userChatPage');
+    const userChatName = document.getElementById('userChatName');
+    const userChatMessages = document.getElementById('userChatMessages');
+    const userMessageInput = document.getElementById('userMessageInput');
+    
+    if (!notifsChatPage || !userChatPage || !userChatName || !userChatMessages || !userMessageInput) {
+        console.error('Chat elements not found');
+        return;
+    }
+    
+    notifsChatPage.style.display = 'none';
+    userChatPage.style.display = 'block';
+    userChatName.textContent = userName;
     document.body.style.overflow = 'hidden';
     
     // Load sample messages
@@ -1038,22 +1051,24 @@ function openUserChat(userId, userName) {
             <div class="chat-message-time">10:37 AM</div>
         </div>
     `;
-    document.getElementById('userChatMessages').innerHTML = messagesHTML;
+    userChatMessages.innerHTML = messagesHTML;
     
     // Scroll to bottom
     setTimeout(() => {
-        const messagesDiv = document.getElementById('userChatMessages');
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        userChatMessages.scrollTop = userChatMessages.scrollHeight;
     }, 100);
     
-    document.getElementById('userMessageInput').focus();
+    userMessageInput.focus();
     attachedFiles = [];
     updateAttachedFilesPreview();
 }
 
 function closeUserChat() {
-    document.getElementById('userChatPage').style.display = 'none';
-    document.getElementById('notificationsChatPage').style.display = 'block';
+    const userChatPage = document.getElementById('userChatPage');
+    const notifsChatPage = document.getElementById('notificationsChatPage');
+    
+    if (userChatPage) userChatPage.style.display = 'none';
+    if (notifsChatPage) notifsChatPage.style.display = 'block';
     document.body.style.overflow = 'auto';
     attachedFiles = [];
 }
@@ -1067,6 +1082,7 @@ function handleFileSelect(event) {
 
 function updateAttachedFilesPreview() {
     const preview = document.getElementById('attachedFilesPreview');
+    if (!preview) return;
     
     if (attachedFiles.length === 0) {
         preview.innerHTML = '';
@@ -1090,10 +1106,16 @@ function removeAttachedFile(index) {
 
 function sendMessage() {
     const input = document.getElementById('userMessageInput');
+    const messagesDiv = document.getElementById('userChatMessages');
+    
+    if (!input || !messagesDiv) {
+        console.error('Message elements not found');
+        return;
+    }
+    
     const message = input.value.trim();
     
     if (message || attachedFiles.length > 0) {
-        const messagesDiv = document.getElementById('userChatMessages');
         const currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         
         let messageContent = '';
