@@ -3526,3 +3526,26 @@ footer {
         padding: 0.4rem 0.6rem;
     }
 }
+
+/* File Link Styles */
+.file-link {
+    color: #3b82f6;
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 1px dotted #3b82f6;
+    transition: all 0.2s;
+    display: inline-block;
+    padding: 2px 0;
+}
+
+.file-link:hover {
+    color: #1f2937;
+    background: #dbeafe;
+    border-bottom-color: #1f2937;
+    border-radius: 3px;
+    padding: 2px 4px;
+}
+
+.file-link:active {
+    transform: scale(0.98);
+}

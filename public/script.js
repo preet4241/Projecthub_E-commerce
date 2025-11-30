@@ -1014,6 +1014,7 @@ function selectChatUser(element, userId, userName, userEmail, userCollege) {
 }
 
 let attachedFiles = [];
+let fileStorage = {}; // Store file references with unique IDs
 
 function openUserChat(userId, userName) {
     const notifsChatPage = document.getElementById('notificationsChatPage');
@@ -1121,7 +1122,11 @@ function sendMessage() {
         let messageContent = '';
         
         if (attachedFiles.length > 0) {
-            const filesHTML = attachedFiles.map(file => `📎 ${file.name}`).join('<br>');
+            const filesHTML = attachedFiles.map(file => {
+                const fileId = 'file_' + Math.random().toString(36).substr(2, 9);
+                fileStorage[fileId] = file;
+                return `<span class="file-link" onclick="openFile('${fileId}')" title="Click to open/download">📎 ${file.name}</span>`;
+            }).join('<br>');
             messageContent += `<div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 0.3rem;">${filesHTML}</div>`;
         }
         
@@ -1144,6 +1149,38 @@ function sendMessage() {
         setTimeout(() => {
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }, 10);
+    }
+}
+
+function openFile(fileId) {
+    const file = fileStorage[fileId];
+    if (!file) {
+        alert('File not found');
+        return;
+    }
+    
+    // Create blob URL and trigger download/open
+    const blobUrl = URL.createObjectURL(file);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = file.name;
+    
+    // For images and PDFs, try to open in new window first
+    const imageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const pdfType = 'application/pdf';
+    
+    if (imageTypes.includes(file.type) || file.type === pdfType) {
+        // Open in new window
+        window.open(blobUrl, '_blank');
+        // Also set up download as fallback
+        setTimeout(() => {
+            link.click();
+            URL.revokeObjectURL(blobUrl);
+        }, 1000);
+    } else {
+        // For other files, just download
+        link.click();
+        URL.revokeObjectURL(blobUrl);
     }
 }
 
