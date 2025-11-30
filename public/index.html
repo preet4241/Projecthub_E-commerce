@@ -388,10 +388,6 @@
                 <div class="wa-sidebar-header">
                     <button class="wa-back-btn" onclick="closeNotificationsChat()">←</button>
                     <h3>Chats</h3>
-                    <div class="wa-header-actions">
-                        <span class="wa-user-count" id="totalUsersInChat">0</span>
-                        <span class="wa-unread-badge" id="unreadNotifications">0</span>
-                    </div>
                 </div>
                 
                 <div class="wa-search-container">
@@ -404,7 +400,6 @@
                 <div class="wa-filter-tabs">
                     <button class="wa-filter-tab active" onclick="filterChatUsers('all')">All</button>
                     <button class="wa-filter-tab" onclick="filterChatUsers('unread')">Unread</button>
-                    <button class="wa-filter-tab" onclick="filterChatUsers('groups')">Groups</button>
                 </div>
                 
                 <div class="wa-chats-list" id="chatUsersList">
@@ -433,9 +428,12 @@
                         </div>
                     </div>
                     <div class="wa-chat-actions">
-                        <button class="wa-action-btn" title="Video call">📹</button>
-                        <button class="wa-action-btn" title="Voice call">📞</button>
-                        <button class="wa-action-btn" title="More options">⋮</button>
+                        <button class="wa-action-btn" title="More options" onclick="toggleWaChatMenu()">⋮</button>
+                        <div class="wa-chat-menu" id="waChatMenu" style="display: none;">
+                            <button onclick="clearWaChat()" class="wa-menu-item">Clear Chat</button>
+                            <button onclick="muteWaChat()" class="wa-menu-item">Mute Notifications</button>
+                            <button onclick="blockWaUser()" class="wa-menu-item">Block User</button>
+                        </div>
                     </div>
                 </div>
                 
