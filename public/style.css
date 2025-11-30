@@ -56,6 +56,9 @@ header {
         transform: translateY(-100%);
         opacity: 0;
     }
+    50% {
+        transform: translateY(10px);
+    }
     to {
         transform: translateY(0);
         opacity: 1;
@@ -211,6 +214,7 @@ body:has(#adminSection[style*="display: flex"]) header {
 .search-btn:hover {
     background: rgba(255,255,255,0.15);
     border-color: rgba(255,255,255,0.9);
+    animation: pulse 1.5s ease-in-out infinite;
 }
 
 .search-btn:active {
@@ -244,8 +248,9 @@ body:has(#adminSection[style*="display: flex"]) header {
 }
 
 .cart-icon:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(5deg);
     filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+    animation: wiggle 0.5s ease-in-out;
 }
 
 .cart-icon:active {
@@ -305,6 +310,8 @@ body:has(#adminSection[style*="display: flex"]) header {
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
     color: white;
     padding: 3rem 1.5rem;
     text-align: center;
@@ -331,12 +338,7 @@ body:has(#adminSection[style*="display: flex"]) header {
 .hero-content {
     position: relative;
     z-index: 1;
-    animation: heroFloat 3s ease-in-out infinite;
-}
-
-@keyframes heroFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+    animation: float 4s ease-in-out infinite;
 }
 
 .hero-content h1 {
@@ -405,6 +407,7 @@ body:has(#adminSection[style*="display: flex"]) header {
 .btn-primary {
     background: var(--primary);
     color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-primary:active {
@@ -414,8 +417,9 @@ body:has(#adminSection[style*="display: flex"]) header {
 
 .btn-primary:hover {
     background: var(--secondary);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    animation: glow 1.5s ease-in-out infinite;
 }
 
 .btn-secondary {
@@ -547,11 +551,29 @@ body:has(#adminSection[style*="display: flex"]) header {
 @keyframes dropdownSlide {
     from {
         opacity: 0;
-        transform: translateY(-10px) scale(0.95);
+        transform: translateY(-20px) scale(0.9);
     }
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+    }
+}
+
+/* Bounce In Animation */
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
     }
 }
 
@@ -684,9 +706,14 @@ body:has(#adminSection[style*="display: flex"]) header {
 }
 
 .project-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 12px 28px rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.5);
+    animation: glow 2s ease-in-out infinite;
+}
+
+.project-card:hover .card-image img {
+    transform: scale(1.15) rotate(2deg);
 }
 
 @keyframes fadeInUp {
@@ -1044,11 +1071,14 @@ body:has(#adminSection[style*="display: flex"]) header {
 
 @keyframes scaleIn {
     from {
-        transform: scale(0.9);
+        transform: scale(0.7) rotate(-5deg);
         opacity: 0;
     }
+    50% {
+        transform: scale(1.05) rotate(2deg);
+    }
     to {
-        transform: scale(1);
+        transform: scale(1) rotate(0deg);
         opacity: 1;
     }
 }
@@ -2035,8 +2065,9 @@ footer::after {
 }
 
 .quick-stat-card:hover .stat-icon {
-    transform: rotate(10deg) scale(1.1);
+    transform: rotate(360deg) scale(1.2);
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .quick-stat-card .stat-content {
@@ -2901,10 +2932,11 @@ footer::after {
 }
 
 .admin-user-card-grid:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    transform: translateY(-4px);
-    background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
+    transform: translateY(-8px) scale(1.02);
+    background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
     border-color: var(--primary);
+    animation: glow 2s ease-in-out infinite;
 }
 
 .user-card-header {
@@ -3629,7 +3661,7 @@ footer::after {
     display: flex;
     flex-direction: column;
     margin-bottom: 0.5rem;
-    animation: fadeIn 0.3s ease;
+    animation: slideInMessage 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 @keyframes fadeIn {
@@ -3640,6 +3672,17 @@ footer::after {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes slideInMessage {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
 
@@ -4210,6 +4253,29 @@ footer::after {
 
 /* ===== SMOOTH ANIMATIONS ===== */
 
+/* Floating Animation for Hero Section */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* Gradient Animation */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 /* Project Cards Animations */
 @keyframes fadeInUp {
     from {
@@ -4273,6 +4339,30 @@ footer::after {
 @keyframes shimmer {
     0% { background-position: -1000px 0; }
     100% { background-position: 1000px 0; }
+}
+
+/* Glow Animation */
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(59, 130, 246, 0.5), 0 0 10px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.5);
+    }
+}
+
+/* Shake Animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Wiggle Animation */
+@keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-3deg); }
+    75% { transform: rotate(3deg); }
 }
 
 /* Apply animations to project grid items */
@@ -4376,8 +4466,9 @@ button {
 }
 
 .suggestion-item:hover {
-    background: #f0f0f0;
-    transform: translateX(5px);
+    background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 100%);
+    transform: translateX(10px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
 /* Cart Items Animation */
