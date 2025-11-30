@@ -1056,6 +1056,12 @@ let userReadStatus = {};
 let userStatus = {};
 let currentOnlineUser = null;
 
+// Admin Support Chat Storage
+let waAdminMessages = [];
+let waAdminAttachedFiles = [];
+let typingTimeoutUser = null;
+let typingTimeoutAdmin = null;
+
 // Load chat users from database - WhatsApp Style
 function loadChatUsers() {
     const chatUsersList = document.getElementById('chatUsersList');
