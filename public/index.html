@@ -252,33 +252,66 @@
         
         <!-- Admin Quick Stats Section -->
         <div class="admin-quick-stats">
-            <div class="quick-stat-card">
+            <div class="quick-stat-card" onclick="openAdminDetailSection('notifications')" style="cursor: pointer;">
                 <div class="stat-icon">🔔</div>
                 <div class="stat-content">
                     <h4>Notifications</h4>
                     <p id="notificationCount">12</p>
                 </div>
             </div>
-            <div class="quick-stat-card">
+            <div class="quick-stat-card" onclick="openAdminDetailSection('orders')" style="cursor: pointer;">
                 <div class="stat-icon">📦</div>
                 <div class="stat-content">
                     <h4>Order Confirmation</h4>
                     <p id="orderConfirmCount">8</p>
                 </div>
             </div>
-            <div class="quick-stat-card">
+            <div class="quick-stat-card" onclick="openAdminDetailSection('confirmed')" style="cursor: pointer;">
                 <div class="stat-icon">✅</div>
                 <div class="stat-content">
                     <h4>Confirmed Orders</h4>
                     <p id="confirmedOrderCount">45</p>
                 </div>
             </div>
-            <div class="quick-stat-card">
+            <div class="quick-stat-card" onclick="openAdminDetailSection('cancelled')" style="cursor: pointer;">
                 <div class="stat-icon">❌</div>
                 <div class="stat-content">
                     <h4>Cancelled Orders</h4>
                     <p id="cancelledOrderCount">3</p>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Admin Detail Sections -->
+        <div id="notificationsDetail" class="admin-detail-section" style="display: none;">
+            <button class="back-admin-btn" onclick="closeAdminDetailSection()">← Back</button>
+            <h2>🔔 Notifications</h2>
+            <div class="detail-content">
+                <p>You have 12 new notifications</p>
+            </div>
+        </div>
+        
+        <div id="ordersDetail" class="admin-detail-section" style="display: none;">
+            <button class="back-admin-btn" onclick="closeAdminDetailSection()">← Back</button>
+            <h2>📦 Order Confirmation</h2>
+            <div class="detail-content">
+                <p>8 orders awaiting confirmation</p>
+            </div>
+        </div>
+        
+        <div id="confirmedDetail" class="admin-detail-section" style="display: none;">
+            <button class="back-admin-btn" onclick="closeAdminDetailSection()">← Back</button>
+            <h2>✅ Confirmed Orders</h2>
+            <div class="detail-content">
+                <p>Total 45 confirmed orders</p>
+            </div>
+        </div>
+        
+        <div id="cancelledDetail" class="admin-detail-section" style="display: none;">
+            <button class="back-admin-btn" onclick="closeAdminDetailSection()">← Back</button>
+            <h2>❌ Cancelled Orders</h2>
+            <div class="detail-content">
+                <p>Total 3 cancelled orders</p>
             </div>
         </div>
         
