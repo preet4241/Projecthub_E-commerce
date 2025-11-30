@@ -35,6 +35,17 @@ header {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
+/* Hide header on all chat and admin pages */
+body:has(#userChatPage[style*="display: block"]) header,
+body:has(#notificationsChatPage[style*="display: block"]) header,
+body:has(#orderConfirmChatPage[style*="display: block"]) header,
+body:has(#confirmedOrdersChatPage[style*="display: block"]) header,
+body:has(#cancelledOrdersChatPage[style*="display: block"]) header,
+body:has(#userManagementPage[style*="display: block"]) header,
+body:has(#adminSection[style*="display: flex"]) header {
+    display: none !important;
+}
+
 .navbar {
     padding: 0.3rem 1rem;
 }
@@ -1271,6 +1282,17 @@ footer {
     padding: 1.5rem 1rem;
     margin-top: 2rem;
     font-size: 0.9rem;
+}
+
+/* Hide footer on chat pages */
+#notificationsChatPage ~ footer,
+#orderConfirmChatPage ~ footer,
+#confirmedOrdersChatPage ~ footer,
+#cancelledOrdersChatPage ~ footer,
+#userChatPage ~ footer,
+#userManagementPage ~ footer,
+#adminSection ~ footer {
+    display: none !important;
 }
 
 /* Responsive - Tablet */
@@ -3208,7 +3230,7 @@ footer {
 
 .user-chat-messages {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: auto !important;
     overflow-x: hidden;
     padding: 1.5rem;
     display: flex;
@@ -3216,6 +3238,7 @@ footer {
     gap: 1rem;
     background: #f8f9fa;
     min-height: 0;
+    max-height: calc(100vh - 200px);
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 }

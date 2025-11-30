@@ -239,6 +239,8 @@ function backToProjects() {
     document.getElementById('cartPage').style.display = 'none';
     document.getElementById('projects').style.display = 'block';
     currentProductDetail = null;
+    const footer = document.getElementById('mainFooter');
+    if (footer) footer.style.display = 'block';
 }
 
 function addToCartFromDetail() {
@@ -465,6 +467,8 @@ function adminLogout() {
     isAdminLoggedIn = false;
     document.getElementById('adminSection').style.display = 'none';
     document.getElementById('projects').style.display = 'block';
+    const footer = document.getElementById('mainFooter');
+    if (footer) footer.style.display = 'block';
     window.scrollTo(0, 0);
 }
 
@@ -918,6 +922,8 @@ function openNotificationsChat() {
     document.getElementById('adminSection').style.display = 'none';
     document.getElementById('notificationsChatPage').style.display = 'block';
     document.body.style.overflow = 'hidden';
+    const footer = document.getElementById('mainFooter');
+    if (footer) footer.style.display = 'none';
     loadChatUsers();
 }
 
@@ -1032,6 +1038,8 @@ function openUserChat(userId, userName) {
     userChatPage.style.display = 'block';
     userChatName.textContent = userName;
     document.body.style.overflow = 'hidden';
+    const footer = document.getElementById('mainFooter');
+    if (footer) footer.style.display = 'none';
     
     // Load sample messages
     const messagesHTML = `
