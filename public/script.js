@@ -978,40 +978,35 @@ function closeCancelledOrdersChat() {
 // Load chat users from database
 function loadChatUsers() {
     const chatUsersList = document.getElementById('chatUsersList');
+    if (!chatUsersList) return;
+    
     chatUsersList.innerHTML = '<div class="chat-empty-state">Loading users...</div>';
     
-    fetch('/api/users')
-        .then(res => res.json())
-        .then(users => {
-            if (users.length === 0) {
-                chatUsersList.innerHTML = '<div class="chat-empty-state">No registered users yet</div>';
-                const totalEl = document.getElementById('totalUsersInChat');
-                if (totalEl) totalEl.textContent = '0';
-                return;
-            }
-            
-            let html = '';
-            users.forEach((user, index) => {
-                const isActive = index === 0 ? 'active' : '';
-                const fullName = `${user.first_name} ${user.last_name}`;
-                html += `
-                    <div class="chat-user-item ${isActive}" onclick="selectChatUser(this, 'user${user.id}', '${fullName.replace(/'/g, "\\'")}', '${user.email}', '${user.college}')">
-                        <div class="chat-user-item-avatar">👤</div>
-                        <div class="chat-user-item-content">
-                            <div class="chat-user-item-name">${fullName}</div>
-                            <div class="chat-user-item-meta">${user.email}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            chatUsersList.innerHTML = html;
-            const totalEl = document.getElementById('totalUsersInChat');
-            if (totalEl) totalEl.textContent = users.length;
-        })
-        .catch(error => {
-            console.error('Error loading users:', error);
-            chatUsersList.innerHTML = '<div class="chat-empty-state">Error loading users</div>';
-        });
+    // Show sample users if no real users
+    const users = sampleUsers;
+    
+    if (users.length === 0) {
+        chatUsersList.innerHTML = '<div class="chat-empty-state">No registered users yet</div>';
+        const totalEl = document.getElementById('totalUsersInChat');
+        if (totalEl) totalEl.textContent = '0';
+        return;
+    }
+    
+    let html = '';
+    users.forEach((user, index) => {
+        const isActive = index === 0 ? 'active' : '';
+        html += `
+            <div class="chat-user-item ${isActive}" onclick="selectChatUser(this, 'user${user.id}', '${user.name.replace(/'/g, "\\'")}', '${user.email}', '${user.college}')">
+                <div class="chat-user-item-avatar">👤</div>
+                <div class="chat-user-item-content">
+                    <div class="chat-user-item-name">${user.name}</div>
+                </div>
+            </div>
+        `;
+    });
+    chatUsersList.innerHTML = html;
+    const totalEl = document.getElementById('totalUsersInChat');
+    if (totalEl) totalEl.textContent = users.length;
 }
 
 function selectChatUser(element, userId, userName, userEmail, userCollege) {
@@ -1023,26 +1018,7 @@ function selectChatUser(element, userId, userName, userEmail, userCollege) {
     // Add active class to selected item
     element.classList.add('active');
     
-    // Show chat area
-    const chatArea = document.getElementById('notificationsChatArea');
-    if (chatArea) {
-        chatArea.classList.add('active');
-    }
-    
-    // Update selected user info
-    const userInfoDiv = document.getElementById('notificationsChatUser');
-    const userNameEl = document.getElementById('selectedUserName');
-    const userEmailEl = document.getElementById('selectedUserEmail');
-    const userCollegeEl = document.getElementById('selectedUserCollege');
-    
-    if (userInfoDiv && userNameEl && userEmailEl && userCollegeEl) {
-        userInfoDiv.style.display = 'block';
-        userNameEl.textContent = userName;
-        userEmailEl.textContent = `📧 ${userEmail}`;
-        userCollegeEl.textContent = `🏫 ${userCollege}`;
-    }
-    
-    // Open the user chat section
+    // Open the user chat section directly
     openUserChat(userId, userName);
 }
 

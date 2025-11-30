@@ -3215,11 +3215,7 @@ footer {
 }
 
 .chat-user-item-meta {
-    font-size: 0.8rem;
-    opacity: 0.6;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: none;
 }
 
 /* User Chat Page Scrolling Fix */
