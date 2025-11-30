@@ -1588,6 +1588,73 @@ footer {
     padding: 2rem;
 }
 
+/* Admin Action Buttons */
+.admin-action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.admin-action-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.admin-action-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.action-icon {
+    font-size: 2.5rem;
+}
+
+@media (max-width: 768px) {
+    .admin-action-buttons {
+        gap: 2rem;
+        padding: 1.5rem;
+    }
+    
+    .admin-action-btn {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .action-icon {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-action-buttons {
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+    
+    .admin-action-btn {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .action-icon {
+        font-size: 1.5rem;
+    }
+}
+
 .admin-header {
     display: flex;
     justify-content: space-between;
