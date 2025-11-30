@@ -250,20 +250,36 @@
             <button class="admin-logout-btn" onclick="adminLogout()">Logout</button>
         </div>
         
-        <!-- Admin Action Buttons -->
-        <div class="admin-action-buttons">
-            <button class="admin-action-btn" title="Notifications">
-                <span class="action-icon">🔔</span>
-            </button>
-            <button class="admin-action-btn" title="Order Confirmation">
-                <span class="action-icon">📦</span>
-            </button>
-            <button class="admin-action-btn" title="Total Confirmed Orders">
-                <span class="action-icon">✅</span>
-            </button>
-            <button class="admin-action-btn" title="Cancelled Orders">
-                <span class="action-icon">❌</span>
-            </button>
+        <!-- Admin Quick Stats Section -->
+        <div class="admin-quick-stats">
+            <div class="quick-stat-card">
+                <div class="stat-icon">🔔</div>
+                <div class="stat-content">
+                    <h4>Notifications</h4>
+                    <p id="notificationCount">12</p>
+                </div>
+            </div>
+            <div class="quick-stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <h4>Order Confirmation</h4>
+                    <p id="orderConfirmCount">8</p>
+                </div>
+            </div>
+            <div class="quick-stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <h4>Confirmed Orders</h4>
+                    <p id="confirmedOrderCount">45</p>
+                </div>
+            </div>
+            <div class="quick-stat-card">
+                <div class="stat-icon">❌</div>
+                <div class="stat-content">
+                    <h4>Cancelled Orders</h4>
+                    <p id="cancelledOrderCount">3</p>
+                </div>
+            </div>
         </div>
         
         <div class="admin-content">
