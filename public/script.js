@@ -940,6 +940,33 @@ function updateAnalytics() {
     // Analytics tab removed - replaced with User Management
 }
 
+function addNewCollege(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('newCollegeName').value;
+    const city = document.getElementById('newCollegeCity').value;
+    const state = document.getElementById('newCollegeState').value;
+    const type = document.getElementById('newCollegeType').value;
+    const website = document.getElementById('newCollegeWebsite').value;
+    
+    const newCollege = {
+        name,
+        city,
+        state,
+        type,
+        website: website || null
+    };
+    
+    // Store in localStorage for now (can be enhanced with backend API)
+    let colleges = JSON.parse(localStorage.getItem('colleges') || '[]');
+    newCollege.id = colleges.length + 1;
+    colleges.push(newCollege);
+    localStorage.setItem('colleges', JSON.stringify(colleges));
+    
+    event.target.reset();
+    alert(`✓ College "${name}" added successfully!`);
+}
+
 function addNewProject(event) {
     event.preventDefault();
     
@@ -947,13 +974,17 @@ function addNewProject(event) {
     const subject = document.getElementById('newProjectSubject').value;
     const college = document.getElementById('newProjectCollege').value;
     const price = parseInt(document.getElementById('newProjectPrice').value);
+    const pages = document.getElementById('newProjectPages').value;
+    const description = document.getElementById('newProjectDescription').value;
     
     const newProject = {
         subject,
         college,
         topic,
         price,
-        file: topic.toLowerCase().replace(/\s+/g, '-') + '.zip'
+        file: topic.toLowerCase().replace(/\s+/g, '-') + '.zip',
+        pages: pages || null,
+        description: description || null
     };
     
     // Send to server

@@ -355,30 +355,174 @@
                 <button class="tab-btn" onclick="switchAdminTab('addproject')">➕ Add Project</button>
             </div>
 
-            <!-- Add College Tab (Blank for now) -->
+            <!-- Add College Tab -->
             <div id="addcollegeTab" class="admin-tab" style="display: none;">
-                <div class="blank-section-placeholder">
-                    <div class="placeholder-icon">🏫</div>
-                    <h3>Add College</h3>
-                    <p>College management interface coming soon...</p>
+                <div class="add-section-container">
+                    <div class="add-section-header">
+                        <div class="header-icon-large">🏫</div>
+                        <h2>Add New College</h2>
+                        <p class="header-description">Register a new college to the platform</p>
+                    </div>
+                    
+                    <div class="add-section-content">
+                        <div class="form-illustration">
+                            <div class="illustration-circle">
+                                <div class="floating-icon">📚</div>
+                                <div class="floating-icon delay-1">🎓</div>
+                                <div class="floating-icon delay-2">🏛️</div>
+                            </div>
+                        </div>
+                        
+                        <form class="modern-form" onsubmit="addNewCollege(event)">
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="newCollegeName">
+                                        <span class="label-icon">🏫</span>
+                                        College Name
+                                    </label>
+                                    <input type="text" id="newCollegeName" placeholder="Enter college name" required>
+                                </div>
+                                
+                                <div class="form-field">
+                                    <label for="newCollegeCity">
+                                        <span class="label-icon">📍</span>
+                                        City
+                                    </label>
+                                    <input type="text" id="newCollegeCity" placeholder="Enter city" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="newCollegeState">
+                                        <span class="label-icon">🗺️</span>
+                                        State
+                                    </label>
+                                    <input type="text" id="newCollegeState" placeholder="Enter state" required>
+                                </div>
+                                
+                                <div class="form-field">
+                                    <label for="newCollegeType">
+                                        <span class="label-icon">🎯</span>
+                                        Type
+                                    </label>
+                                    <select id="newCollegeType" required>
+                                        <option value="">Select type</option>
+                                        <option value="Engineering">Engineering</option>
+                                        <option value="Medical">Medical</option>
+                                        <option value="Arts & Science">Arts & Science</option>
+                                        <option value="Management">Management</option>
+                                        <option value="Law">Law</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-field">
+                                <label for="newCollegeWebsite">
+                                    <span class="label-icon">🌐</span>
+                                    Website (Optional)
+                                </label>
+                                <input type="url" id="newCollegeWebsite" placeholder="https://example.com">
+                            </div>
+                            
+                            <button type="submit" class="modern-submit-btn">
+                                <span class="btn-icon">✨</span>
+                                Add College
+                                <span class="btn-arrow">→</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
             <!-- Add Project Tab -->
             <div id="addprojectTab" class="admin-tab" style="display: none;">
-                <form class="add-project-form" onsubmit="addNewProject(event)">
-                    <input type="text" placeholder="Project Topic" id="newProjectTopic" required>
-                    <select id="newProjectSubject" required>
-                        <option value="">Select Subject</option>
-                        <option value="CSE">CSE</option>
-                        <option value="ECE">ECE</option>
-                        <option value="Mechanical">Mechanical</option>
-                        <option value="Civil">Civil</option>
-                    </select>
-                    <input type="text" placeholder="College Name" id="newProjectCollege" required>
-                    <input type="number" placeholder="Price (₹)" id="newProjectPrice" required min="1">
-                    <button type="submit" class="add-project-btn">Add Project</button>
-                </form>
+                <div class="add-section-container">
+                    <div class="add-section-header">
+                        <div class="header-icon-large">📚</div>
+                        <h2>Add New Project</h2>
+                        <p class="header-description">Upload a new academic project to the marketplace</p>
+                    </div>
+                    
+                    <div class="add-section-content">
+                        <div class="form-illustration">
+                            <div class="illustration-circle">
+                                <div class="floating-icon">💡</div>
+                                <div class="floating-icon delay-1">📊</div>
+                                <div class="floating-icon delay-2">🔬</div>
+                            </div>
+                        </div>
+                        
+                        <form class="modern-form" onsubmit="addNewProject(event)">
+                            <div class="form-field">
+                                <label for="newProjectTopic">
+                                    <span class="label-icon">📝</span>
+                                    Project Topic
+                                </label>
+                                <input type="text" id="newProjectTopic" placeholder="Enter project topic" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="newProjectSubject">
+                                        <span class="label-icon">📖</span>
+                                        Subject
+                                    </label>
+                                    <select id="newProjectSubject" required>
+                                        <option value="">Select subject</option>
+                                        <option value="CSE">Computer Science</option>
+                                        <option value="ECE">Electronics</option>
+                                        <option value="Mechanical">Mechanical</option>
+                                        <option value="Civil">Civil</option>
+                                        <option value="IT">Information Technology</option>
+                                        <option value="EEE">Electrical</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-field">
+                                    <label for="newProjectCollege">
+                                        <span class="label-icon">🏫</span>
+                                        College
+                                    </label>
+                                    <input type="text" id="newProjectCollege" placeholder="College name" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="newProjectPrice">
+                                        <span class="label-icon">💰</span>
+                                        Price (₹)
+                                    </label>
+                                    <input type="number" id="newProjectPrice" placeholder="Enter price" required min="1">
+                                </div>
+                                
+                                <div class="form-field">
+                                    <label for="newProjectPages">
+                                        <span class="label-icon">📄</span>
+                                        Pages
+                                    </label>
+                                    <input type="number" id="newProjectPages" placeholder="Number of pages" min="1">
+                                </div>
+                            </div>
+                            
+                            <div class="form-field">
+                                <label for="newProjectDescription">
+                                    <span class="label-icon">📋</span>
+                                    Description (Optional)
+                                </label>
+                                <textarea id="newProjectDescription" placeholder="Brief description of the project" rows="3"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="modern-submit-btn">
+                                <span class="btn-icon">✨</span>
+                                Add Project
+                                <span class="btn-arrow">→</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
