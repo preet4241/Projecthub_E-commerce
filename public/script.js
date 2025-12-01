@@ -794,6 +794,46 @@ function closeUserManagementPage() {
     window.scrollTo(0, 0);
 }
 
+function openAddCollegePage() {
+    // Hide admin section
+    document.getElementById('adminSection').style.display = 'none';
+    
+    // Show add college page
+    document.getElementById('addCollegePage').style.display = 'block';
+    
+    window.scrollTo(0, 0);
+}
+
+function closeAddCollegePage() {
+    // Hide add college page
+    document.getElementById('addCollegePage').style.display = 'none';
+    
+    // Show admin section
+    document.getElementById('adminSection').style.display = 'flex';
+    
+    window.scrollTo(0, 0);
+}
+
+function openAddProjectPage() {
+    // Hide admin section
+    document.getElementById('adminSection').style.display = 'none';
+    
+    // Show add project page
+    document.getElementById('addProjectPage').style.display = 'block';
+    
+    window.scrollTo(0, 0);
+}
+
+function closeAddProjectPage() {
+    // Hide add project page
+    document.getElementById('addProjectPage').style.display = 'none';
+    
+    // Show admin section
+    document.getElementById('adminSection').style.display = 'flex';
+    
+    window.scrollTo(0, 0);
+}
+
 function displayAdminUsersFull(users = sampleUsers) {
     const usersList = document.getElementById('adminUsersListFull');
     const totalDisplay = document.getElementById('totalUsersDisplay');
