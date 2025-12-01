@@ -158,3 +158,43 @@ Preferred communication style: Simple, everyday language.
 - LocalStorage/SessionStorage: Likely used for cart persistence (not visible in provided snippets)
 - Fetch API: For AJAX requests to backend API
 - DOM APIs: Extensive manipulation for dynamic UI updates
+- EventSource API: For Server-Sent Events (SSE) real-time updates
+
+### Real-Time Data Updates (SSE)
+
+**Technology**: Server-Sent Events (SSE)
+
+**Implementation**:
+- **Backend Endpoint**: `/api/events` - SSE endpoint for broadcasting real-time updates
+- **Client Connection**: EventSource API with automatic reconnection (exponential backoff)
+- **Heartbeat**: 30-second heartbeat to keep connections alive
+
+**Event Types**:
+1. `connected` - Client successfully connected with unique client ID
+2. `heartbeat` - Keep-alive ping every 30 seconds
+3. `project_added` - New project added to database
+4. `project_deleted` - Project removed from database
+5. `order_created` - New order placed
+6. `order_updated` - Order status changed
+7. `stats_update` - Dashboard statistics updated
+
+**Features**:
+- Auto-reconnect with exponential backoff (max 5 attempts)
+- Toast notifications for real-time events
+- Automatic admin dashboard refresh when visible
+- 30-second auto-refresh for stats
+
+**Benefits**:
+- No page refresh required for data updates
+- Real-time synchronization across all connected clients
+- Efficient one-way communication (server to client)
+
+## Recent Changes
+
+**December 2025**:
+- Migrated to PostgreSQL database with Replit integration
+- Implemented Server-Sent Events (SSE) for real-time data updates
+- Added `/api/stats` endpoint for fetching dashboard statistics from database
+- Updated admin dashboard to fetch real stats instead of dummy values
+- Added toast notifications for real-time updates
+- Implemented auto-reconnect for SSE with exponential backoff

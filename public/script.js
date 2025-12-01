@@ -63,6 +63,7 @@ function handleSSEMessage(data) {
                 allProjects.unshift(data.data);
                 displayProjects(allProjects);
                 updateAdminDashboardIfVisible();
+                fetchAndUpdateDashboardStats();
                 showToast('New project added: ' + data.data.topic);
             }
             break;
@@ -73,6 +74,7 @@ function handleSSEMessage(data) {
             allProjects = allProjects.filter(p => p.id !== deletedId);
             displayProjects(allProjects);
             updateAdminDashboardIfVisible();
+            fetchAndUpdateDashboardStats();
             break;
             
         case 'order_created':
