@@ -391,6 +391,23 @@
                 <h2>📋 Manage Projects</h2>
             </div>
             
+            <!-- Stats Boxes -->
+            <div class="projects-stats-container">
+                <div class="projects-stat-box">
+                    <div class="stat-title">📚 Projects by Subject</div>
+                    <div class="stat-content" id="projectsBySubject">
+                        <p style="color: #9ca3af; font-size: 0.9rem;">Loading...</p>
+                    </div>
+                </div>
+                
+                <div class="projects-stat-box">
+                    <div class="stat-title">📊 Total Projects</div>
+                    <div class="stat-content">
+                        <div class="total-count" id="totalProjectsCount">0</div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="admin-projects-header">
                 <input type="text" id="adminSearchInput" placeholder="Search projects..." class="admin-search" onkeyup="adminSearchProjects()">
                 <select id="adminFilterSubject" class="admin-filter" onchange="adminFilterProjects()">

@@ -719,8 +719,46 @@ function openManageProjectsPage() {
     
     // Load and display projects
     displayAdminProjects();
+    displayProjectStats();
     
     window.scrollTo(0, 0);
+}
+
+function displayProjectStats() {
+    // Calculate stats
+    const projectsBySubject = {};
+    let totalProjects = 0;
+    
+    if (allProjects && allProjects.length > 0) {
+        allProjects.forEach(project => {
+            const subject = project.subject || 'Unknown';
+            projectsBySubject[subject] = (projectsBySubject[subject] || 0) + 1;
+            totalProjects++;
+        });
+    }
+    
+    // Display total count
+    const totalCountEl = document.getElementById('totalProjectsCount');
+    if (totalCountEl) {
+        totalCountEl.textContent = totalProjects;
+    }
+    
+    // Display projects by subject
+    const bySubjectEl = document.getElementById('projectsBySubject');
+    if (bySubjectEl) {
+        if (totalProjects === 0) {
+            bySubjectEl.innerHTML = '<p style="color: #9ca3af; font-size: 0.9rem;">No projects yet</p>';
+        } else {
+            bySubjectEl.innerHTML = Object.entries(projectsBySubject)
+                .map(([subject, count]) => `
+                    <p>
+                        <span>${subject}</span>
+                        <span>${count}</span>
+                    </p>
+                `)
+                .join('');
+        }
+    }
 }
 
 function closeManageProjectsPage() {
