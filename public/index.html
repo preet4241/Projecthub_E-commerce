@@ -91,24 +91,20 @@
                 <div class="detail-specs">
                     <h3>Product Details</h3>
                     <div class="spec-row">
-                        <span class="spec-label">Format:</span>
-                        <span class="spec-value">Printed & Bound</span>
+                        <span class="spec-label">Subject:</span>
+                        <span class="spec-value" id="detailSpecSubject">-</span>
                     </div>
                     <div class="spec-row">
                         <span class="spec-label">Pages:</span>
-                        <span class="spec-value">40-60 pages</span>
-                    </div>
-                    <div class="spec-row">
-                        <span class="spec-label">Delivery:</span>
-                        <span class="spec-value">3-5 Working Days</span>
+                        <span class="spec-value" id="detailSpecPages">-</span>
                     </div>
                     <div class="spec-row">
                         <span class="spec-label">Package Includes:</span>
-                        <span class="spec-value">Report + Code + Docs</span>
+                        <span class="spec-value" id="detailSpecPackage">-</span>
                     </div>
                     <div class="spec-row">
-                        <span class="spec-label">Condition:</span>
-                        <span class="spec-value">Brand New</span>
+                        <span class="spec-label">Delivery:</span>
+                        <span class="spec-value">Digital Download</span>
                     </div>
                     <div class="spec-row">
                         <span class="spec-label">Stock Status:</span>
@@ -414,52 +410,75 @@
         <div class="add-project-container">
             <div class="add-project-header">
                 <button class="back-btn" onclick="closeAddProjectPage()">← Back to Dashboard</button>
-                <h2>➕ Add Project</h2>
+                <h2>➕ Add New Project</h2>
             </div>
             
             <div class="add-section-content">
-                <form class="modern-form" onsubmit="addNewProject(event)">
+                <form class="modern-form" onsubmit="addNewProject(event)" enctype="multipart/form-data">
+                    <!-- Primary Photo Upload -->
                     <div class="form-field">
-                        <label for="newProjectTopic">Project Topic</label>
+                        <label for="projectPrimaryPhoto">📷 Primary Project Photo (Required)</label>
+                        <input type="file" id="projectPrimaryPhoto" accept="image/*" required class="file-input">
+                        <div class="photo-preview" id="primaryPhotoPreview"></div>
+                    </div>
+                    
+                    <!-- Other Photos Upload -->
+                    <div class="form-field">
+                        <label for="projectOtherPhotos">🖼️ Other Photos (Optional - Multiple)</label>
+                        <input type="file" id="projectOtherPhotos" accept="image/*" multiple class="file-input">
+                        <div class="photos-preview-grid" id="otherPhotosPreview"></div>
+                    </div>
+                    
+                    <!-- Project Topic -->
+                    <div class="form-field">
+                        <label for="newProjectTopic">📝 Project Topic</label>
                         <input type="text" id="newProjectTopic" placeholder="Enter project topic" required>
                     </div>
                     
-                    <div class="form-row">
-                        <div class="form-field">
-                            <label for="newProjectSubject">Subject</label>
-                            <select id="newProjectSubject" required>
-                                <option value="">Select subject</option>
-                                <option value="CSE">Computer Science</option>
-                                <option value="ECE">Electronics</option>
-                                <option value="Mechanical">Mechanical</option>
-                                <option value="Civil">Civil</option>
-                                <option value="IT">Information Technology</option>
-                                <option value="EEE">Electrical</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label for="newProjectCollege">College</label>
-                            <input type="text" id="newProjectCollege" placeholder="College name" required>
-                        </div>
+                    <!-- Subject -->
+                    <div class="form-field">
+                        <label for="newProjectSubject">📚 Subject</label>
+                        <select id="newProjectSubject" required>
+                            <option value="">Select subject</option>
+                            <option value="CSE">Computer Science</option>
+                            <option value="ECE">Electronics</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Civil">Civil</option>
+                            <option value="IT">Information Technology</option>
+                            <option value="EEE">Electrical</option>
+                        </select>
                     </div>
                     
                     <div class="form-row">
+                        <!-- Price -->
                         <div class="form-field">
-                            <label for="newProjectPrice">Price (₹)</label>
+                            <label for="newProjectPrice">💰 Price (₹)</label>
                             <input type="number" id="newProjectPrice" placeholder="Enter price" required min="1">
                         </div>
+                        <!-- Pages -->
                         <div class="form-field">
-                            <label for="newProjectPages">Pages</label>
+                            <label for="newProjectPages">📄 Pages</label>
                             <input type="number" id="newProjectPages" placeholder="Number of pages" min="1">
                         </div>
                     </div>
                     
+                    <!-- Description -->
                     <div class="form-field">
-                        <label for="newProjectDescription">Description (Optional)</label>
-                        <textarea id="newProjectDescription" placeholder="Brief description of the project" rows="3"></textarea>
+                        <label for="newProjectDescription">📋 Description</label>
+                        <textarea id="newProjectDescription" placeholder="Brief description of the project" rows="3" required></textarea>
                     </div>
                     
-                    <button type="submit" class="modern-submit-btn">Add Project</button>
+                    <!-- Package Includes -->
+                    <div class="form-field">
+                        <label for="newProjectPackage">📦 Package Includes</label>
+                        <textarea id="newProjectPackage" placeholder="e.g., Source Code, Documentation, PPT, Report PDF, etc." rows="2" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="modern-submit-btn">
+                        <span class="btn-icon">✓</span>
+                        Add Project
+                        <span class="btn-arrow">→</span>
+                    </button>
                 </form>
             </div>
         </div>

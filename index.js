@@ -48,6 +48,9 @@ async function initDatabase() {
         price INTEGER NOT NULL,
         file VARCHAR(255),
         downloads INTEGER DEFAULT 0,
+        pages INTEGER,
+        description TEXT,
+        packageIncludes TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
@@ -149,11 +152,11 @@ app.get('/api/projects', async (req, res) => {
 // API Routes - Add new project
 app.post('/api/projects', async (req, res) => {
   try {
-    const { subject, college, topic, price, file } = req.body;
-    log.info(`Adding new project: ${topic} (${subject}, ${college}) - ₹${price}`);
+    const { subject, college, topic, price, file, pages, description, packageIncludes } = req.body;
+    log.info(`Adding new project: ${topic} (${subject}) - ₹${price}`);
     const result = await pool.query(
-      'INSERT INTO projects (subject, college, topic, price, file, downloads) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [subject, college, topic, price, file || topic.toLowerCase().replace(/\s+/g, '-') + '.zip', 0]
+      'INSERT INTO projects (subject, college, topic, price, file, downloads, pages, description, packageIncludes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+      [subject, college || 'General', topic, price, file || topic.toLowerCase().replace(/\s+/g, '-') + '.zip', 0, pages || null, description || null, packageIncludes || null]
     );
     log.info(`✓ Project created with ID: ${result.rows[0].id}`);
     res.json(result.rows[0]);

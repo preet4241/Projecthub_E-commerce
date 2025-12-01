@@ -189,8 +189,24 @@ function viewProductDetail(project) {
     document.getElementById('detailImage').src = `https://via.placeholder.com/500x600?text=${encodeURIComponent(project.topic)}`;
     document.getElementById('detailName').textContent = project.topic;
     document.getElementById('detailSubject').textContent = project.subject;
-    document.getElementById('detailCollege').textContent = project.college;
+    document.getElementById('detailCollege').textContent = project.college || 'General';
     document.getElementById('detailPrice').textContent = `₹${project.price}`;
+    
+    // Update description with real data
+    const descEl = document.getElementById('detailDesc');
+    if (descEl) {
+        descEl.textContent = project.description || 'Complete project with documentation and source code.';
+    }
+    
+    // Update spec details
+    const specSubject = document.getElementById('detailSpecSubject');
+    const specPages = document.getElementById('detailSpecPages');
+    const specPackage = document.getElementById('detailSpecPackage');
+    
+    if (specSubject) specSubject.textContent = project.subject;
+    if (specPages) specPages.textContent = project.pages ? `${project.pages} pages` : 'As per project';
+    if (specPackage) specPackage.textContent = project.packageincludes || project.packageIncludes || 'Source Code + Documentation';
+    
     updateFavoriteButton();
     window.scrollTo(0, 0);
 }
@@ -1007,24 +1023,63 @@ function addNewCollege(event) {
     alert(`✓ College "${name}" added successfully!`);
 }
 
+// Photo Preview Handlers
+document.addEventListener('DOMContentLoaded', () => {
+    const primaryPhoto = document.getElementById('projectPrimaryPhoto');
+    const otherPhotos = document.getElementById('projectOtherPhotos');
+    
+    if (primaryPhoto) {
+        primaryPhoto.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('primaryPhotoPreview').innerHTML = 
+                        `<img src="${event.target.result}" alt="Primary Photo">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    if (otherPhotos) {
+        otherPhotos.addEventListener('change', function(e) {
+            const files = e.target.files;
+            const previewContainer = document.getElementById('otherPhotosPreview');
+            previewContainer.innerHTML = '';
+            
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+});
+
 function addNewProject(event) {
     event.preventDefault();
     
     const topic = document.getElementById('newProjectTopic').value;
     const subject = document.getElementById('newProjectSubject').value;
-    const college = document.getElementById('newProjectCollege').value;
     const price = parseInt(document.getElementById('newProjectPrice').value);
     const pages = document.getElementById('newProjectPages').value;
     const description = document.getElementById('newProjectDescription').value;
+    const packageIncludes = document.getElementById('newProjectPackage').value;
     
     const newProject = {
         subject,
-        college,
+        college: 'General',
         topic,
         price,
         file: topic.toLowerCase().replace(/\s+/g, '-') + '.zip',
         pages: pages || null,
-        description: description || null
+        description: description || null,
+        packageIncludes: packageIncludes || null
     };
     
     // Send to server
@@ -1037,14 +1092,25 @@ function addNewProject(event) {
     .then(project => {
         allProjects.push(project);
         event.target.reset();
+        document.getElementById('primaryPhotoPreview').innerHTML = '';
+        document.getElementById('otherPhotosPreview').innerHTML = '';
+        
         alert(`✓ Project "${topic}" added successfully!`);
-        updateAdminDashboard();
-        switchAdminTab('projects');
-        fetchProjects();
+        
+        // Immediate update on homepage
+        displayProjects(allProjects);
+        
+        // Update admin dashboard if open
+        if (document.getElementById('adminSection').style.display === 'flex') {
+            updateAdminDashboard();
+        }
+        
+        // Close add project page and go back to dashboard
+        closeAddProjectPage();
     })
     .catch(error => {
         console.error('Error adding project:', error);
-        alert('Failed to add project. Ensure database is connected.');
+        alert('Failed to add project. Please try again.');
     });
 }
 

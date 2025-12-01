@@ -2687,6 +2687,55 @@ footer::after {
     gap: 1.5rem;
 }
 
+/* Photo Upload Styles */
+.file-input {
+    padding: 0.8rem;
+    border: 2px dashed #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+}
+
+.file-input:hover {
+    border-color: var(--primary);
+    background: #f0f9ff;
+}
+
+.file-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.photo-preview {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.photo-preview img {
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.photos-preview-grid {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.photos-preview-grid img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
