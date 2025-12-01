@@ -3191,66 +3191,72 @@ footer::after {
 
 /* Projects Stats Container */
 .projects-stats-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    display: flex;
+    gap: 1rem;
     margin-bottom: 2rem;
+    flex-wrap: nowrap;
 }
 
 .projects-stat-box {
     background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
+    padding: 0.9rem;
+    border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border-left: 4px solid var(--primary);
+    flex: 1;
+    min-width: 0;
 }
 
 .stat-title {
-    font-size: 0.95rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: #6b7280;
-    margin-bottom: 1rem;
+    margin-bottom: 0.6rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stat-content {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.4rem;
 }
 
 .stat-content p {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     color: #4b5563;
     display: flex;
     justify-content: space-between;
+    gap: 0.5rem;
 }
 
 .stat-content p span:first-child {
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stat-content p span:last-child {
     background: #f0f9ff;
     color: var(--primary);
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .total-count {
-    font-size: 3rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--primary);
 }
 
 @media (max-width: 768px) {
-    .projects-stats-container {
-        grid-template-columns: 1fr;
-    }
-    
     .manage-projects-header {
         flex-direction: column;
         align-items: flex-start;
