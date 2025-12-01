@@ -3,6 +3,9 @@ const db = require('./database');
 const app = express();
 const PORT = 5000;
 
+// Store connected SSE clients for real-time updates
+let sseClients = [];
+
 // ===== LOGGING UTILITY =====
 const log = {
   info: (msg) => console.log(`[INFO] ${new Date().toISOString()} - ${msg}`),
@@ -27,6 +30,73 @@ app.use((req, res, next) => {
 app.use(express.static('public'));
 app.use(express.json());
 
+// SSE endpoint for real-time updates
+app.get('/api/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.flushHeaders();
+  
+  const clientId = Date.now();
+  const newClient = { id: clientId, res };
+  sseClients.push(newClient);
+  
+  log.info(`SSE Client connected: ${clientId} (Total: ${sseClients.length})`);
+  
+  // Send initial connection confirmation
+  res.write(`data: ${JSON.stringify({ type: 'connected', clientId })}\n\n`);
+  
+  // Send heartbeat every 30 seconds
+  const heartbeat = setInterval(() => {
+    res.write(`data: ${JSON.stringify({ type: 'heartbeat', time: new Date().toISOString() })}\n\n`);
+  }, 30000);
+  
+  req.on('close', () => {
+    clearInterval(heartbeat);
+    sseClients = sseClients.filter(client => client.id !== clientId);
+    log.info(`SSE Client disconnected: ${clientId} (Total: ${sseClients.length})`);
+  });
+});
+
+// Broadcast updates to all connected SSE clients
+function broadcastUpdate(eventType, data) {
+  const message = JSON.stringify({ type: eventType, data, timestamp: new Date().toISOString() });
+  sseClients.forEach(client => {
+    client.res.write(`data: ${message}\n\n`);
+  });
+  log.info(`Broadcast: ${eventType} to ${sseClients.length} clients`);
+}
+
+// API endpoint to get all stats for dashboard
+app.get('/api/stats', async (req, res) => {
+  try {
+    const [projects, users, orderStats, notifications] = await Promise.all([
+      db.getAllProjects(),
+      db.getAllUsers(),
+      db.getOrderStats(),
+      db.getAllNotifications()
+    ]);
+    
+    const subjects = [...new Set(projects.map(p => p.subject))];
+    const colleges = [...new Set(projects.map(p => p.college).filter(c => c))];
+    
+    res.json({
+      totalProjects: projects.length,
+      totalUsers: users.length,
+      totalSubjects: subjects.length,
+      totalColleges: colleges.length,
+      orderStats: orderStats,
+      unreadNotifications: notifications.filter(n => !n.is_read).length,
+      subjects: subjects,
+      colleges: colleges
+    });
+  } catch (error) {
+    log.error('Error fetching stats', error);
+    res.json({});
+  }
+});
+
 // API Routes - Get all projects
 app.get('/api/projects', async (req, res) => {
   try {
@@ -47,6 +117,10 @@ app.post('/api/projects', async (req, res) => {
     log.info(`Adding new project: ${topic} (${subject}) - ₹${price}`);
     const project = await db.createProject({ subject, college, topic, price, file, pages, description, packageincludes, primary_photo, other_photos });
     log.info(`✓ Project created with ID: ${project.id}`);
+    
+    // Broadcast new project to all connected clients
+    broadcastUpdate('project_added', project);
+    
     res.json(project);
   } catch (error) {
     log.error('Error adding project', error);
@@ -61,6 +135,10 @@ app.delete('/api/projects/:id', async (req, res) => {
     log.info(`Deleting project ID: ${id}`);
     await db.deleteProject(id);
     log.info(`✓ Project ID ${id} deleted`);
+    
+    // Broadcast project deletion to all connected clients
+    broadcastUpdate('project_deleted', { id: parseInt(id) });
+    
     res.json({ success: true });
   } catch (error) {
     log.error('Error deleting project', error);
@@ -197,6 +275,10 @@ app.post('/api/orders', async (req, res) => {
     log.info(`Creating new order - Customer: ${customer_name || 'Guest'}, Amount: ₹${total_amount}, Items: ${items.length}`);
     const result = await db.createOrder({ items, total_amount, customer_name, customer_email, customer_phone, customer_address, notes });
     log.info(`✓ Order #${result.orderId} created successfully with ${items.length} items`);
+    
+    // Broadcast new order to all connected clients
+    broadcastUpdate('order_created', result.order);
+    
     res.json({ success: true, orderId: result.orderId, order: result.order });
   } catch (error) {
     log.error('Error creating order', error);
@@ -211,6 +293,10 @@ app.patch('/api/orders/:id', async (req, res) => {
     log.info(`Updating order #${id} status to: ${status}`);
     const order = await db.updateOrderStatus(id, status);
     log.info(`✓ Order #${id} status updated to ${status}`);
+    
+    // Broadcast order status update to all connected clients
+    broadcastUpdate('order_updated', order);
+    
     res.json(order);
   } catch (error) {
     log.error('Error updating order', error);
