@@ -72,6 +72,7 @@ body:has(#orderConfirmChatPage[style*="display: block"]) header,
 body:has(#confirmedOrdersChatPage[style*="display: block"]) header,
 body:has(#cancelledOrdersChatPage[style*="display: block"]) header,
 body:has(#userManagementPage[style*="display: block"]) header,
+body:has(#manageProjectsPage[style*="display: block"]) header,
 body:has(#adminSection[style*="display: flex"]) header {
     display: none !important;
 }
@@ -3151,6 +3152,42 @@ footer::after {
     .admin-users-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Manage Projects Full Page */
+#manageProjectsPage {
+    background: #f8fafc;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.manage-projects-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 2rem 1rem;
+}
+
+.manage-projects-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.manage-projects-header h2 {
+    margin: 0;
+    flex: 1;
+    color: var(--text);
+    font-size: 1.8rem;
 }
 
 /* User Management Full Page */

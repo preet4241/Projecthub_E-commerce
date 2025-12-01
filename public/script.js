@@ -710,6 +710,29 @@ function switchAdminTab(tabName) {
     event.target.classList.add('active');
 }
 
+function openManageProjectsPage() {
+    // Hide admin section
+    document.getElementById('adminSection').style.display = 'none';
+    
+    // Show manage projects page
+    document.getElementById('manageProjectsPage').style.display = 'block';
+    
+    // Load and display projects
+    displayAdminProjects();
+    
+    window.scrollTo(0, 0);
+}
+
+function closeManageProjectsPage() {
+    // Hide manage projects page
+    document.getElementById('manageProjectsPage').style.display = 'none';
+    
+    // Show admin section
+    document.getElementById('adminSection').style.display = 'flex';
+    
+    window.scrollTo(0, 0);
+}
+
 function openUserManagementPage() {
     // Hide admin section
     document.getElementById('adminSection').style.display = 'none';

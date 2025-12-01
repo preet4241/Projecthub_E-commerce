@@ -345,7 +345,7 @@
             <!-- Tab Navigation - 3 Rows -->
             <div class="admin-tabs">
                 <!-- Row 1 -->
-                <button class="tab-btn active" onclick="switchAdminTab('projects')">📋 Manage Projects</button>
+                <button class="tab-btn active" onclick="openManageProjectsPage()">📋 Manage Projects</button>
                 
                 <!-- Row 2 -->
                 <button class="tab-btn" onclick="openUserManagementPage()">👥 User Management</button>
@@ -354,18 +354,6 @@
                 <button class="tab-btn" onclick="switchAdminTab('addcollege')">🏫 Add College</button>
                 <button class="tab-btn" onclick="switchAdminTab('addproject')">➕ Add Project</button>
             </div>
-
-            <!-- Projects Tab -->
-            <div id="projectsTab" class="admin-tab active">
-                <div class="admin-projects-header">
-                    <input type="text" id="adminSearchInput" placeholder="Search projects..." class="admin-search" onkeyup="adminSearchProjects()">
-                    <select id="adminFilterSubject" class="admin-filter" onchange="adminFilterProjects()">
-                        <option value="">All Subjects</option>
-                    </select>
-                </div>
-                <div id="adminProjectsList" class="admin-projects-list"></div>
-            </div>
-
 
             <!-- Add College Tab (Blank for now) -->
             <div id="addcollegeTab" class="admin-tab" style="display: none;">
@@ -392,6 +380,25 @@
                     <button type="submit" class="add-project-btn">Add Project</button>
                 </form>
             </div>
+        </div>
+    </section>
+
+    <!-- Manage Projects Full Page -->
+    <section id="manageProjectsPage" style="display: none;">
+        <div class="manage-projects-container">
+            <div class="manage-projects-header">
+                <button class="back-btn" onclick="closeManageProjectsPage()">← Back to Dashboard</button>
+                <h2>📋 Manage Projects</h2>
+            </div>
+            
+            <div class="admin-projects-header">
+                <input type="text" id="adminSearchInput" placeholder="Search projects..." class="admin-search" onkeyup="adminSearchProjects()">
+                <select id="adminFilterSubject" class="admin-filter" onchange="adminFilterProjects()">
+                    <option value="">All Subjects</option>
+                </select>
+            </div>
+            
+            <div id="adminProjectsList" class="admin-projects-list"></div>
         </div>
     </section>
 
