@@ -3,8 +3,223 @@ let allProjects = [];
 let favorites = [];
 let isBanFilterActive = false;
 
+// Real-time SSE connection
+let eventSource = null;
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 5;
+
+// Initialize SSE connection for real-time updates
+function initSSE() {
+    if (eventSource) {
+        eventSource.close();
+    }
+    
+    eventSource = new EventSource('/api/events');
+    
+    eventSource.onopen = () => {
+        console.log('[SSE] Connected for real-time updates');
+        reconnectAttempts = 0;
+    };
+    
+    eventSource.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            handleSSEMessage(data);
+        } catch (error) {
+            console.error('[SSE] Error parsing message:', error);
+        }
+    };
+    
+    eventSource.onerror = (error) => {
+        console.error('[SSE] Connection error:', error);
+        eventSource.close();
+        
+        // Reconnect with exponential backoff
+        if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+            const delay = Math.pow(2, reconnectAttempts) * 1000;
+            reconnectAttempts++;
+            console.log(`[SSE] Reconnecting in ${delay/1000}s (attempt ${reconnectAttempts})`);
+            setTimeout(initSSE, delay);
+        }
+    };
+}
+
+// Handle incoming SSE messages
+function handleSSEMessage(data) {
+    console.log('[SSE] Received:', data.type);
+    
+    switch (data.type) {
+        case 'connected':
+            console.log('[SSE] Client ID:', data.clientId);
+            break;
+            
+        case 'heartbeat':
+            // Heartbeat received, connection is alive
+            break;
+            
+        case 'project_added':
+            // Add new project to list without refresh
+            if (data.data && !allProjects.find(p => p.id === data.data.id)) {
+                allProjects.unshift(data.data);
+                displayProjects(allProjects);
+                updateAdminDashboardIfVisible();
+                showToast('New project added: ' + data.data.topic);
+            }
+            break;
+            
+        case 'project_deleted':
+            // Remove project from list without refresh
+            const deletedId = data.data.id;
+            allProjects = allProjects.filter(p => p.id !== deletedId);
+            displayProjects(allProjects);
+            updateAdminDashboardIfVisible();
+            break;
+            
+        case 'order_created':
+            // Update order stats in real-time
+            updateAdminDashboardIfVisible();
+            refreshOrderStats();
+            showToast('New order received!');
+            break;
+            
+        case 'order_updated':
+            // Update order lists in real-time
+            updateAdminDashboardIfVisible();
+            refreshOrderStats();
+            break;
+            
+        case 'stats_update':
+            // Update dashboard stats
+            updateDashboardStats(data.data);
+            break;
+    }
+}
+
+// Show toast notification
+function showToast(message) {
+    let toast = document.getElementById('liveToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'liveToast';
+        toast.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; padding: 12px 24px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 20px rgba(0,0,0,0.3); font-weight: 500; animation: slideUp 0.3s ease-out;';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.display = 'block';
+    toast.style.opacity = '1';
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 300);
+    }, 3000);
+}
+
+// Update admin dashboard if it's visible
+function updateAdminDashboardIfVisible() {
+    const adminSection = document.getElementById('adminSection');
+    if (adminSection && adminSection.style.display === 'flex') {
+        updateAdminDashboard();
+    }
+}
+
+// Refresh order stats from server
+async function refreshOrderStats() {
+    try {
+        const response = await fetch('/api/orders/stats/summary');
+        const stats = await response.json();
+        
+        const pendingEl = document.getElementById('orderConfirmCount');
+        const confirmedEl = document.getElementById('confirmedOrderCount');
+        const cancelledEl = document.getElementById('cancelledOrderCount');
+        
+        if (pendingEl) pendingEl.textContent = stats.pending || 0;
+        if (confirmedEl) confirmedEl.textContent = stats.confirmed || 0;
+        if (cancelledEl) cancelledEl.textContent = stats.cancelled || 0;
+    } catch (error) {
+        console.error('Error refreshing order stats:', error);
+    }
+}
+
+// Auto-refresh stats every 30 seconds when admin dashboard is visible
+let statsRefreshInterval = null;
+
+function startStatsAutoRefresh() {
+    if (statsRefreshInterval) return;
+    
+    statsRefreshInterval = setInterval(() => {
+        const adminSection = document.getElementById('adminSection');
+        if (adminSection && adminSection.style.display === 'flex') {
+            fetchAndUpdateDashboardStats();
+        }
+    }, 30000);
+}
+
+// Fetch and update dashboard stats from database
+async function fetchAndUpdateDashboardStats() {
+    try {
+        const response = await fetch('/api/stats');
+        const stats = await response.json();
+        updateDashboardStats(stats);
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+    }
+}
+
+// Update dashboard with real stats
+function updateDashboardStats(stats) {
+    if (!stats) return;
+    
+    // Update quick stats
+    if (stats.unreadNotifications !== undefined) {
+        const notifEl = document.getElementById('notificationCount');
+        if (notifEl) notifEl.textContent = stats.unreadNotifications;
+    }
+    
+    if (stats.orderStats) {
+        const pendingEl = document.getElementById('orderConfirmCount');
+        const confirmedEl = document.getElementById('confirmedOrderCount');
+        const cancelledEl = document.getElementById('cancelledOrderCount');
+        const revenueEl = document.getElementById('totalRevenue');
+        
+        if (pendingEl) pendingEl.textContent = stats.orderStats.pending || 0;
+        if (confirmedEl) confirmedEl.textContent = stats.orderStats.confirmed || 0;
+        if (cancelledEl) cancelledEl.textContent = stats.orderStats.cancelled || 0;
+        if (revenueEl) revenueEl.textContent = '₹' + (stats.orderStats.totalRevenue || 0).toLocaleString();
+    }
+    
+    // Update project stats
+    if (stats.totalProjects !== undefined) {
+        const totalProjEl = document.getElementById('totalProjects');
+        const projTypesEl = document.getElementById('projectTypes');
+        if (totalProjEl) totalProjEl.textContent = stats.totalProjects;
+        if (projTypesEl) projTypesEl.textContent = stats.totalProjects;
+    }
+    
+    if (stats.totalSubjects !== undefined) {
+        const subjEl = document.getElementById('totalSubjects');
+        if (subjEl) subjEl.textContent = stats.totalSubjects;
+    }
+    
+    if (stats.totalColleges !== undefined) {
+        const collEl = document.getElementById('totalColleges');
+        if (collEl) collEl.textContent = stats.totalColleges;
+    }
+    
+    if (stats.totalUsers !== undefined) {
+        const usersEl = document.getElementById('registeredUsers');
+        if (usersEl) usersEl.textContent = stats.totalUsers.toLocaleString();
+    }
+}
+
 // Mobile menu toggle
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize SSE connection
+    initSSE();
+    
+    // Start auto-refresh for stats
+    startStatsAutoRefresh();
     const hamburger = document.getElementById('hamburger');
     const navMenu = document.getElementById('navMenu');
     
@@ -525,75 +740,101 @@ function showAdminDashboard() {
     window.scrollTo(0, 0);
 }
 
-function updateAdminDashboard() {
-    // Calculate meaningful stats
-    const totalRevenue = allProjects.reduce((sum, p) => sum + p.price, 0);
-    const subjects = [...new Set(allProjects.map(p => p.subject))];
-    const colleges = [...new Set(allProjects.map(p => p.college))];
-    
-    // Update quick stats safely
-    const notificationCountEl = document.getElementById('notificationCount');
-    const orderConfirmCountEl = document.getElementById('orderConfirmCount');
-    const confirmedOrderCountEl = document.getElementById('confirmedOrderCount');
-    const cancelledOrderCountEl = document.getElementById('cancelledOrderCount');
-    
-    if (notificationCountEl) notificationCountEl.textContent = '12';
-    if (orderConfirmCountEl) orderConfirmCountEl.textContent = '8';
-    if (confirmedOrderCountEl) confirmedOrderCountEl.textContent = '45';
-    if (cancelledOrderCountEl) cancelledOrderCountEl.textContent = '3';
-    
-    // Update stats - Box 1: Users & Revenue
-    const registeredUsersEl = document.getElementById('registeredUsers');
-    const visitorsEl = document.getElementById('visitors');
-    const todaySalesEl = document.getElementById('todaySales');
-    const totalRevenueEl = document.getElementById('totalRevenue');
-    
-    if (registeredUsersEl) registeredUsersEl.textContent = '1,234';
-    if (visitorsEl) visitorsEl.textContent = '5,678';
-    if (todaySalesEl) todaySalesEl.textContent = '42';
-    if (totalRevenueEl) totalRevenueEl.textContent = '₹' + totalRevenue.toLocaleString();
-    
-    // Update stats - Box 2: Projects & Classification
-    const totalProjectsEl = document.getElementById('totalProjects');
-    const projectTypesEl = document.getElementById('projectTypes');
-    const totalSubjectsEl = document.getElementById('totalSubjects');
-    const totalCollegesEl = document.getElementById('totalColleges');
-    
-    if (totalProjectsEl) totalProjectsEl.textContent = allProjects.length;
-    if (projectTypesEl) projectTypesEl.textContent = allProjects.length;
-    if (totalSubjectsEl) totalSubjectsEl.textContent = subjects.length;
-    if (totalCollegesEl) totalCollegesEl.textContent = colleges.length;
-    
-    // Populate filter dropdown
-    const filterSelect = document.getElementById('adminFilterSubject');
-    filterSelect.innerHTML = '<option value="">All Subjects</option>';
-    subjects.forEach(subject => {
-        const option = document.createElement('option');
-        option.value = subject;
-        option.textContent = subject;
-        filterSelect.appendChild(option);
-    });
-    
-    // Populate filter dropdown in main dropdown too
-    const mainDropdown = document.getElementById('dropdownMenu');
-    mainDropdown.innerHTML = '<button class="dropdown-item" onclick="filterBySubject(\'All\')">All Subjects</button>';
-    subjects.forEach(subject => {
-        const btn = document.createElement('button');
-        btn.className = 'dropdown-item';
-        btn.onclick = () => filterBySubject(subject);
-        btn.textContent = subject;
-        mainDropdown.appendChild(btn);
-    });
-    
-    
-    // Display all projects
-    displayAdminProjects(allProjects);
-    
-    // Create bar graphs
-    createProjectCharts(subjects, colleges);
-    
-    // Display users on dashboard
-    displayAdminUsers();
+async function updateAdminDashboard() {
+    // Fetch real stats from database
+    try {
+        const statsResponse = await fetch('/api/stats');
+        const stats = await statsResponse.json();
+        
+        // Update quick stats with real data
+        const notificationCountEl = document.getElementById('notificationCount');
+        const orderConfirmCountEl = document.getElementById('orderConfirmCount');
+        const confirmedOrderCountEl = document.getElementById('confirmedOrderCount');
+        const cancelledOrderCountEl = document.getElementById('cancelledOrderCount');
+        
+        if (notificationCountEl) notificationCountEl.textContent = stats.unreadNotifications || 0;
+        if (orderConfirmCountEl) orderConfirmCountEl.textContent = stats.orderStats?.pending || 0;
+        if (confirmedOrderCountEl) confirmedOrderCountEl.textContent = stats.orderStats?.confirmed || 0;
+        if (cancelledOrderCountEl) cancelledOrderCountEl.textContent = stats.orderStats?.cancelled || 0;
+        
+        // Update stats - Box 1: Users & Revenue
+        const registeredUsersEl = document.getElementById('registeredUsers');
+        const visitorsEl = document.getElementById('visitors');
+        const todaySalesEl = document.getElementById('todaySales');
+        const totalRevenueEl = document.getElementById('totalRevenue');
+        
+        if (registeredUsersEl) registeredUsersEl.textContent = (stats.totalUsers || 0).toLocaleString();
+        if (visitorsEl) visitorsEl.textContent = (stats.totalUsers * 5 || 0).toLocaleString();
+        if (todaySalesEl) todaySalesEl.textContent = stats.orderStats?.confirmed || 0;
+        if (totalRevenueEl) totalRevenueEl.textContent = '₹' + (stats.orderStats?.totalRevenue || 0).toLocaleString();
+        
+        // Update stats - Box 2: Projects & Classification
+        const totalProjectsEl = document.getElementById('totalProjects');
+        const projectTypesEl = document.getElementById('projectTypes');
+        const totalSubjectsEl = document.getElementById('totalSubjects');
+        const totalCollegesEl = document.getElementById('totalColleges');
+        
+        if (totalProjectsEl) totalProjectsEl.textContent = stats.totalProjects || allProjects.length;
+        if (projectTypesEl) projectTypesEl.textContent = stats.totalProjects || allProjects.length;
+        if (totalSubjectsEl) totalSubjectsEl.textContent = stats.totalSubjects || 0;
+        if (totalCollegesEl) totalCollegesEl.textContent = stats.totalColleges || 0;
+        
+        // Use subjects and colleges from stats or calculate from projects
+        const subjects = stats.subjects || [...new Set(allProjects.map(p => p.subject))];
+        const colleges = stats.colleges || [...new Set(allProjects.map(p => p.college).filter(c => c))];
+        
+        // Populate filter dropdown
+        const filterSelect = document.getElementById('adminFilterSubject');
+        if (filterSelect) {
+            filterSelect.innerHTML = '<option value="">All Subjects</option>';
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject;
+                option.textContent = subject;
+                filterSelect.appendChild(option);
+            });
+        }
+        
+        // Populate filter dropdown in main dropdown too
+        const mainDropdown = document.getElementById('dropdownMenu');
+        if (mainDropdown) {
+            mainDropdown.innerHTML = '<button class="dropdown-item" onclick="filterBySubject(\'All\')">All Subjects</button>';
+            subjects.forEach(subject => {
+                const btn = document.createElement('button');
+                btn.className = 'dropdown-item';
+                btn.onclick = () => filterBySubject(subject);
+                btn.textContent = subject;
+                mainDropdown.appendChild(btn);
+            });
+        }
+        
+        // Display all projects
+        displayAdminProjects(allProjects);
+        
+        // Create bar graphs
+        createProjectCharts(subjects, colleges);
+        
+        // Display users on dashboard
+        displayAdminUsers();
+        
+    } catch (error) {
+        console.error('Error updating admin dashboard:', error);
+        // Fallback to local data
+        const subjects = [...new Set(allProjects.map(p => p.subject))];
+        const colleges = [...new Set(allProjects.map(p => p.college).filter(c => c))];
+        
+        const totalProjectsEl = document.getElementById('totalProjects');
+        const totalSubjectsEl = document.getElementById('totalSubjects');
+        const totalCollegesEl = document.getElementById('totalColleges');
+        
+        if (totalProjectsEl) totalProjectsEl.textContent = allProjects.length;
+        if (totalSubjectsEl) totalSubjectsEl.textContent = subjects.length;
+        if (totalCollegesEl) totalCollegesEl.textContent = colleges.length;
+        
+        displayAdminProjects(allProjects);
+        createProjectCharts(subjects, colleges);
+        displayAdminUsers();
+    }
 }
 
 function createProjectCharts(subjects, colleges) {
