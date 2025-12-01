@@ -850,13 +850,17 @@ function closeAddProjectPage() {
     window.scrollTo(0, 0);
 }
 
-function displayAdminUsersFull(users = sampleUsers) {
+async function displayAdminUsersFull(users = null) {
+    if (!users) {
+        users = await loadRealUsers();
+    }
+    
     const usersList = document.getElementById('adminUsersListFull');
     const totalDisplay = document.getElementById('totalUsersDisplay');
     const bannedDisplay = document.getElementById('bannedUsersDisplay');
     
-    if (totalDisplay) totalDisplay.textContent = sampleUsers.length;
-    const bannedCount = sampleUsers.filter(u => u.banned).length;
+    if (totalDisplay) totalDisplay.textContent = users.length;
+    const bannedCount = users.filter(u => u.is_banned).length;
     if (bannedDisplay) bannedDisplay.textContent = bannedCount;
     
     if (users.length === 0) {
@@ -884,33 +888,35 @@ function displayAdminUsersFull(users = sampleUsers) {
     `).join('');
 }
 
-function toggleBanFilter() {
+async function toggleBanFilter() {
     isBanFilterActive = !isBanFilterActive;
     
+    const users = await loadRealUsers();
     const banBox = document.getElementById('banAccountBox');
     if (isBanFilterActive) {
         banBox.style.opacity = '0.7';
         banBox.style.transform = 'scale(0.95)';
-        const bannedUsers = sampleUsers.filter(u => u.banned);
+        const bannedUsers = users.filter(u => u.is_banned);
         displayAdminUsersFull(bannedUsers);
     } else {
         banBox.style.opacity = '1';
         banBox.style.transform = 'scale(1)';
-        displayAdminUsersFull(sampleUsers);
+        displayAdminUsersFull(users);
     }
 }
 
-function adminSearchUsersFull() {
+async function adminSearchUsersFull() {
     const query = document.getElementById('userSearchInputFull').value.toLowerCase();
-    let filtered = sampleUsers.filter(u =>
-        u.name.toLowerCase().includes(query) ||
-        u.email.toLowerCase().includes(query) ||
-        u.college.toLowerCase().includes(query)
+    const users = await loadRealUsers();
+    let filtered = users.filter(u =>
+        (u.name || '').toLowerCase().includes(query) ||
+        (u.email || '').toLowerCase().includes(query) ||
+        (u.college || '').toLowerCase().includes(query)
     );
     
     // Apply ban filter if active
     if (isBanFilterActive) {
-        filtered = filtered.filter(u => u.banned);
+        filtered = filtered.filter(u => u.is_banned);
     }
     
     displayAdminUsersFull(filtered);
@@ -932,19 +938,22 @@ function adminFilterProjects() {
     displayAdminProjects(filtered);
 }
 
-// Sample users data
-const sampleUsers = [
-    { id: 1, name: 'Aryan Mishra', email: 'aryan@example.com', college: 'IIT Delhi', purchases: 5, joinDate: '2025-01-15', banned: false },
-    { id: 2, name: 'Priya Singh', email: 'priya@example.com', college: 'NIT Bangalore', purchases: 3, joinDate: '2025-01-20', banned: true },
-    { id: 3, name: 'Amit Patel', email: 'amit@example.com', college: 'Delhi University', purchases: 8, joinDate: '2025-01-10', banned: false },
-    { id: 4, name: 'Neha Gupta', email: 'neha@example.com', college: 'IIT Bombay', purchases: 2, joinDate: '2025-01-25', banned: true },
-    { id: 5, name: 'Arjun Verma', email: 'arjun@example.com', college: 'NIT Pune', purchases: 6, joinDate: '2025-01-18', banned: false },
-    { id: 6, name: 'Sneha Reddy', email: 'sneha@example.com', college: 'IIT Madras', purchases: 7, joinDate: '2025-01-12', banned: false },
-    { id: 7, name: 'Vikram Singh', email: 'vikram@example.com', college: 'BITS Pilani', purchases: 4, joinDate: '2025-01-22', banned: true },
-    { id: 8, name: 'Pooja Sharma', email: 'pooja@example.com', college: 'Anna University', purchases: 9, joinDate: '2025-01-08', banned: false },
-];
+// Real users data from database
+let realUsers = [];
 
-function displayAdminUsers(users = sampleUsers) {
+// Load real users from database
+async function loadRealUsers() {
+    try {
+        const response = await fetch('/api/users');
+        realUsers = await response.json();
+        return realUsers;
+    } catch (error) {
+        console.error('Error loading users:', error);
+        return [];
+    }
+}
+
+function displayAdminUsers(users = realUsers) {
     const usersList = document.getElementById('adminUsersList');
     const totalCount = document.getElementById('totalUsersCount');
     
@@ -1261,14 +1270,16 @@ let typingTimeoutUser = null;
 let typingTimeoutAdmin = null;
 
 // Load chat users from database - WhatsApp Style
-function loadChatUsers() {
+async function loadChatUsers() {
     const chatUsersList = document.getElementById('chatUsersList');
     if (!chatUsersList) return;
     
     chatUsersList.innerHTML = '<div style="padding: 2rem; text-align: center; color: #8696a0;">Loading...</div>';
     
+    const users = await loadRealUsers();
+    
     // Initialize read status for all users
-    sampleUsers.forEach(user => {
+    users.forEach(user => {
         if (!userReadStatus[`user${user.id}`]) {
             userReadStatus[`user${user.id}`] = {
                 lastReadIndex: -1,
@@ -1278,7 +1289,7 @@ function loadChatUsers() {
     });
     
     // Get all users and sort by last message time
-    allChatUsers = sampleUsers.map((user, index) => {
+    allChatUsers = users.map((user, index) => {
         const userId = `user${user.id}`;
         const hasMessages = waUserMessages[userId] && waUserMessages[userId].length > 0;
         const lastMessage = hasMessages ? waUserMessages[userId][waUserMessages[userId].length - 1] : null;
