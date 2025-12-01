@@ -782,8 +782,8 @@ async function updateAdminDashboard() {
         if (totalCollegesEl) totalCollegesEl.textContent = stats.totalColleges || 0;
         
         // Use subjects and colleges from stats or calculate from projects
-        const subjects = stats.subjects || [...new Set(allProjects.map(p => p.subject))];
-        const colleges = stats.colleges || [...new Set(allProjects.map(p => p.college).filter(c => c))];
+        const subjects = stats.subjects && stats.subjects.length > 0 ? stats.subjects : [...new Set(allProjects.map(p => p.subject))];
+        const colleges = stats.colleges && stats.colleges.length > 0 ? stats.colleges : [...new Set(allProjects.map(p => p.college).filter(c => c))];
         
         // Populate filter dropdown
         const filterSelect = document.getElementById('adminFilterSubject');
@@ -822,19 +822,21 @@ async function updateAdminDashboard() {
     } catch (error) {
         console.error('Error updating admin dashboard:', error);
         // Fallback to local data
-        const subjects = [...new Set(allProjects.map(p => p.subject))];
-        const colleges = [...new Set(allProjects.map(p => p.college).filter(c => c))];
+        const subjects = allProjects && allProjects.length > 0 ? [...new Set(allProjects.map(p => p.subject))] : [];
+        const colleges = allProjects && allProjects.length > 0 ? [...new Set(allProjects.map(p => p.college).filter(c => c))] : [];
         
         const totalProjectsEl = document.getElementById('totalProjects');
         const totalSubjectsEl = document.getElementById('totalSubjects');
         const totalCollegesEl = document.getElementById('totalColleges');
         
-        if (totalProjectsEl) totalProjectsEl.textContent = allProjects.length;
+        if (totalProjectsEl) totalProjectsEl.textContent = allProjects ? allProjects.length : 0;
         if (totalSubjectsEl) totalSubjectsEl.textContent = subjects.length;
         if (totalCollegesEl) totalCollegesEl.textContent = colleges.length;
         
-        displayAdminProjects(allProjects);
-        createProjectCharts(subjects, colleges);
+        if (allProjects && allProjects.length > 0) {
+            displayAdminProjects(allProjects);
+            createProjectCharts(subjects, colleges);
+        }
         displayAdminUsers();
     }
 }

@@ -103,10 +103,6 @@
                         <span class="spec-value" id="detailSpecPackage">-</span>
                     </div>
                     <div class="spec-row">
-                        <span class="spec-label">Delivery:</span>
-                        <span class="spec-value">Digital Download</span>
-                    </div>
-                    <div class="spec-row">
                         <span class="spec-label">Stock Status:</span>
                         <span class="spec-value">In Stock</span>
                     </div>
@@ -414,64 +410,72 @@
             </div>
             
             <div class="add-section-content">
-                <form class="modern-form" onsubmit="addNewProject(event)" enctype="multipart/form-data">
-                    <!-- Primary Photo Upload -->
-                    <div class="form-field">
-                        <label for="projectPrimaryPhoto">📷 Primary Project Photo (Required)</label>
-                        <input type="file" id="projectPrimaryPhoto" accept="image/*" required class="file-input">
-                        <div class="photo-preview" id="primaryPhotoPreview"></div>
-                    </div>
-                    
-                    <!-- Other Photos Upload -->
-                    <div class="form-field">
-                        <label for="projectOtherPhotos">🖼️ Other Photos (Optional - Multiple)</label>
-                        <input type="file" id="projectOtherPhotos" accept="image/*" multiple class="file-input">
-                        <div class="photos-preview-grid" id="otherPhotosPreview"></div>
-                    </div>
-                    
-                    <!-- Project Topic -->
-                    <div class="form-field">
-                        <label for="newProjectTopic">📝 Project Topic</label>
-                        <input type="text" id="newProjectTopic" placeholder="Enter project topic" required>
-                    </div>
-                    
-                    <!-- Subject -->
-                    <div class="form-field">
-                        <label for="newProjectSubject">📚 Subject</label>
-                        <select id="newProjectSubject" required>
-                            <option value="">Select subject</option>
-                            <option value="CSE">Computer Science</option>
-                            <option value="ECE">Electronics</option>
-                            <option value="Mechanical">Mechanical</option>
-                            <option value="Civil">Civil</option>
-                            <option value="IT">Information Technology</option>
-                            <option value="EEE">Electrical</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-row">
-                        <!-- Price -->
-                        <div class="form-field">
-                            <label for="newProjectPrice">💰 Price (₹)</label>
-                            <input type="number" id="newProjectPrice" placeholder="Enter price" required min="1">
+                <form class="modern-form add-project-form" onsubmit="addNewProject(event)" enctype="multipart/form-data">
+                    <div class="form-grid-2">
+                        <!-- Left Column -->
+                        <div class="form-column">
+                            <!-- Primary Photo Upload -->
+                            <div class="form-field">
+                                <label for="projectPrimaryPhoto">📷 Primary Photo</label>
+                                <input type="file" id="projectPrimaryPhoto" accept="image/*" class="file-input">
+                                <div class="photo-preview" id="primaryPhotoPreview"></div>
+                            </div>
+                            
+                            <!-- Other Photos Upload -->
+                            <div class="form-field">
+                                <label for="projectOtherPhotos">🖼️ Other Photos (Optional)</label>
+                                <input type="file" id="projectOtherPhotos" accept="image/*" multiple class="file-input">
+                                <div class="photos-preview-grid" id="otherPhotosPreview"></div>
+                            </div>
                         </div>
-                        <!-- Pages -->
-                        <div class="form-field">
-                            <label for="newProjectPages">📄 Pages</label>
-                            <input type="number" id="newProjectPages" placeholder="Number of pages" min="1">
+                        
+                        <!-- Right Column -->
+                        <div class="form-column">
+                            <!-- Project Topic -->
+                            <div class="form-field">
+                                <label for="newProjectTopic">📝 Project Topic</label>
+                                <input type="text" id="newProjectTopic" placeholder="Enter project topic" required>
+                            </div>
+                            
+                            <!-- Subject -->
+                            <div class="form-field">
+                                <label for="newProjectSubject">📚 Subject</label>
+                                <select id="newProjectSubject" required>
+                                    <option value="">Select subject</option>
+                                    <option value="CSE">Computer Science</option>
+                                    <option value="ECE">Electronics</option>
+                                    <option value="Mechanical">Mechanical</option>
+                                    <option value="Civil">Civil</option>
+                                    <option value="IT">Information Technology</option>
+                                    <option value="EEE">Electrical</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-row">
+                                <!-- Price -->
+                                <div class="form-field">
+                                    <label for="newProjectPrice">💰 Price (₹)</label>
+                                    <input type="number" id="newProjectPrice" placeholder="Enter price" required min="1">
+                                </div>
+                                <!-- Pages -->
+                                <div class="form-field">
+                                    <label for="newProjectPages">📄 Pages</label>
+                                    <input type="number" id="newProjectPages" placeholder="Number of pages" min="1">
+                                </div>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="form-field">
+                                <label for="newProjectDescription">📋 Description</label>
+                                <textarea id="newProjectDescription" placeholder="Brief description of the project" rows="3" required></textarea>
+                            </div>
+                            
+                            <!-- Package Includes -->
+                            <div class="form-field">
+                                <label for="newProjectPackage">📦 Package Includes</label>
+                                <textarea id="newProjectPackage" placeholder="e.g., Source Code, Documentation, PPT, Report PDF, etc." rows="2" required></textarea>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <!-- Description -->
-                    <div class="form-field">
-                        <label for="newProjectDescription">📋 Description</label>
-                        <textarea id="newProjectDescription" placeholder="Brief description of the project" rows="3" required></textarea>
-                    </div>
-                    
-                    <!-- Package Includes -->
-                    <div class="form-field">
-                        <label for="newProjectPackage">📦 Package Includes</label>
-                        <textarea id="newProjectPackage" placeholder="e.g., Source Code, Documentation, PPT, Report PDF, etc." rows="2" required></textarea>
                     </div>
                     
                     <button type="submit" class="modern-submit-btn">
